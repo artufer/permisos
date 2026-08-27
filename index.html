@@ -9,9 +9,12 @@
   body { background: #f0f4f8; color: #2d3748; padding: 20px; padding-bottom: 80px; font-size: 14px; }
   .container { max-width: 1200px; margin: 0 auto; }
   h1 { color: #2c5282; margin-bottom: 20px; text-align: center; font-size: 26px; }
-  .tabs { display: flex; gap: 5px; margin-bottom: 20px; flex-wrap: wrap; }
-  .tab { padding: 12px 24px; background: #cbd5e0; border: none; border-radius: 8px 8px 0 0; cursor: pointer; font-weight: 600; font-size: 15px; transition: 0.2s; }
+  
+  /* TABS - Igual tamaño y centrados */
+  .tabs { display: flex; gap: 5px; margin-bottom: 20px; flex-wrap: wrap; justify-content: center; }
+  .tab { flex: 1; min-width: 120px; max-width: 160px; padding: 12px 8px; background: #cbd5e0; border: none; border-radius: 8px 8px 0 0; cursor: pointer; font-weight: 600; font-size: 14px; transition: 0.2s; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .tab.active { background: #2c5282; color: white; }
+  
   .panel { background: white; padding: 25px; border-radius: 0 12px 12px 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); display: none; }
   .panel.active { display: block; }
   .form-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px; align-items: end; }
@@ -29,21 +32,21 @@
   button.edit:hover { background: #dd6b20; }
   button.danger { background: #e53e3e; color: white; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; }
   button.danger:hover { background: #c53030; }
+  button.baja { background: #e53e3e; color: white; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; margin-right: 5px; }
+  button.baja:hover { background: #c53030; }
+  button.alta { background: #38a169; color: white; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; margin-right: 5px; }
+  button.alta:hover { background: #2f855a; }
   button.reset { background: #c53030; color: white; padding: 12px 24px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 14px; transition: 0.2s; margin-top: 20px; }
   button.reset:hover { background: #9b2c2c; }
   table { width: 100%; border-collapse: collapse; margin-top: 15px; }
   th { background: #2c5282; color: white; padding: 12px; text-align: left; font-size: 13px; }
   td { padding: 10px 12px; border-bottom: 1px solid #e2e8f0; font-size: 14px; }
   tr:hover { background: #f7fafc; }
-  .badge { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; border: none; cursor: default; }
+  .badge { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; }
   .badge.ordenanza { background: #bee3f8; color: #2c5282; }
   .badge.limpiador { background: #c6f6d5; color: #22543d; }
   .badge.reserva { background: #fefcbf; color: #744210; }
   .badge.encargado { background: #fed7d7; color: #742a2a; }
-  .badge.baja { background: #fff5f5; color: #c53030; border: 1px solid #feb2b2; cursor: pointer; font-size: 12px; }
-  .badge.baja:hover { background: #fed7d7; }
-  .badge.activo { background: #f0fff4; color: #22543d; border: 1px solid #9ae6b4; cursor: pointer; font-size: 12px; }
-  .badge.activo:hover { background: #c6f6d5; }
   .resumen-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 12px; margin-bottom: 15px; }
   .resumen-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; margin-top: 15px; }
   .stat { background: rgba(255,255,255,0.2); padding: 12px; border-radius: 8px; text-align: center; }
@@ -144,13 +147,13 @@
     h1 { font-size: 22px; margin-bottom: 15px; }
     .container { max-width: 100%; padding: 0 5px; }
     .tabs { gap: 3px; margin-bottom: 15px; }
-    .tab { padding: 10px 12px; font-size: 12px; border-radius: 6px 6px 0 0; }
+    .tab { min-width: 100px; max-width: none; padding: 10px 4px; font-size: 11px; border-radius: 6px 6px 0 0; }
     .panel { padding: 15px; border-radius: 0 8px 8px 8px; }
     .form-row { flex-direction: column; gap: 12px; }
     .form-group { width: 100%; min-width: 100%; }
     input, select { padding: 12px; font-size: 16px; min-height: 44px; }
     button.primary, button.secondary, button.info { padding: 14px 20px; font-size: 15px; width: 100%; margin-bottom: 8px; }
-    button.edit, button.danger { padding: 8px 12px; font-size: 13px; }
+    button.edit, button.danger, button.baja, button.alta { padding: 8px 12px; font-size: 11px; }
     table { display: block; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; }
     th, td { padding: 10px 8px; font-size: 13px; }
     .resumen-grid { grid-template-columns: 1fr; gap: 10px; }
@@ -191,7 +194,7 @@
   @media (max-width: 480px) {
     body { font-size: 13px; }
     h1 { font-size: 20px; }
-    .tab { padding: 8px 10px; font-size: 11px; }
+    .tab { min-width: 90px; padding: 8px 2px; font-size: 10px; }
     .panel { padding: 12px; }
     th, td { padding: 8px 6px; font-size: 12px; }
     button.primary, button.secondary, button.info { padding: 12px 16px; font-size: 14px; }
@@ -213,7 +216,7 @@
     <button class="tab" onclick="showPanel('consulta', this)">🔍 Consulta</button>
     <button class="tab" onclick="showPanel('resumen', this)">📊 Resumen</button>
     <button class="tab" onclick="showPanel('festivos', this)">🎉 Festivos</button>
-    <button class="tab" onclick="showPanel('historial', this)">📜 Historial</button>
+    <button class="tab" onclick="showPanel('historial', this)"> Historial</button>
   </div>
 
   <!-- PANEL EMPLEADOS -->
@@ -235,7 +238,7 @@
     <h2 style="color:#2c5282; margin-top:30px; margin-bottom:15px;">Lista</h2>
     <div id="listaEmpleados"></div>
     <div class="reset-zone">
-      <h3>🚨 Zona peligrosa</h3>
+      <h3> Zona peligrosa</h3>
       <p>Borrará TODOS los datos permanentemente.</p>
       <button class="reset" onclick="borrarTodosLosDatos()">🗑️ Borrar TODO</button>
     </div>
@@ -267,7 +270,7 @@
   <!-- PANEL PLANTILLA -->
   <div id="plantilla" class="panel">
     <div class="plantilla-header">
-      <h2>👷 Estado plantilla</h2>
+      <h2> Estado plantilla</h2>
       <div class="fecha-selector">
         <label style="color:white;">Fecha:</label>
         <input type="date" id="plantillaFecha">
@@ -320,7 +323,7 @@
       <input type="text" class="search" id="buscarHist" placeholder="🔍 Buscar..." oninput="renderHistorial()">
       <button class="primary" onclick="exportarDatos()">📤 Exportar</button>
       <button class="primary" onclick="document.getElementById('importFile').click()">📥 Importar</button>
-      <button class="reset" onclick="borrarTodosLosDatos()" style="margin-top:0; padding:10px 20px; font-size:13px;">🗑️ Borrar</button>
+      <button class="reset" onclick="borrarTodosLosDatos()" style="margin-top:0; padding:10px 20px; font-size:13px;">️ Borrar</button>
       <input type="file" id="importFile" style="display:none" accept=".json" onchange="importarDatos(event)">
     </div>
     <div id="historialContenido"></div>
@@ -360,8 +363,8 @@
   }
 
   function borrarTodosLosDatos() {
-    if (!confirm('⚠️ ¿Borrar TODOS los datos?')) return;
-    if (!confirm('🚨 ¿Seguro? No se puede deshacer.')) return;
+    if (!confirm('️ ¿Borrar TODOS los datos?')) return;
+    if (!confirm(' ¿Seguro? No se puede deshacer.')) return;
     empleados = []; registros = []; festivos = [];
     localStorage.removeItem('vac_emp');
     localStorage.removeItem('vac_reg');
@@ -398,7 +401,7 @@
     if (id === 'empleados') renderEmpleados();
   }
 
-  // === NUEVA FUNCIÓN: Alternar estado de baja ===
+  // === FUNCIÓN: Alternar estado de baja ===
   function toggleBaja(id) {
     const emp = empleados.find(e => e.id === id);
     if (!emp) return;
@@ -406,7 +409,6 @@
     emp.fechaBaja = emp.enBaja ? dateToFechaStr(getHoy()) : null;
     guardar();
     renderEmpleados();
-    // Si estamos en otra pestaña que lo muestra, actualizar (opcional, pero buena práctica)
     if(document.getElementById('consulta').classList.contains('active')) renderConsulta();
     if(document.getElementById('resumen').classList.contains('active')) renderResumen();
     if(document.getElementById('plantilla').classList.contains('active')) renderPlantilla();
@@ -472,19 +474,24 @@
   function renderEmpleados() {
     const cont = document.getElementById('listaEmpleados');
     if (empleados.length === 0) { cont.innerHTML = '<div class="empty">Sin empleados</div>'; return; }
-    let html = '<table><thead><tr><th>Nombre</th><th>Cat</th><th>Estado</th><th>Vac</th><th>AP</th><th>Sáb</th><th></th></tr></thead><tbody>';
+    let html = '<table><thead><tr><th>Nombre</th><th>Cat</th><th>Vac</th><th>AP</th><th>Sáb</th><th>Estado</th><th>Acciones</th></tr></thead><tbody>';
     empleados.forEach(e => {
       const cat = {encargado:'Encargado',ordenanza:'Ordenanza',limpiador:'Limpiador',reserva:'Reserva'}[e.categoria];
-      const estadoBtn = e.enBaja 
-        ? `<button class="badge baja" onclick="toggleBaja(${e.id})" title="Click para dar el alta">🔴 Baja (Desde ${formatearFechaCorta(e.fechaBaja)})</button>`
-        : `<button class="badge activo" onclick="toggleBaja(${e.id})" title="Click para poner de baja">🟢 Trabajando</button>`;
+      const estadoBadge = e.enBaja ? '<span style="color:#e53e3e;font-weight:600;">🔴 Baja</span>' : '<span style="color:#38a169;font-weight:600;">🟢 Activo</span>';
+      const btnBajaAlta = e.enBaja 
+        ? `<button class="alta" onclick="toggleBaja(${e.id})" title="Dar de alta">✅ Alta</button>`
+        : `<button class="baja" onclick="toggleBaja(${e.id})" title="Poner de baja">🚑 Baja</button>`;
       
       html += `<tr>
         <td><strong>${e.nombre}</strong></td>
         <td><span class="badge ${e.categoria}">${cat}</span></td>
-        <td>${estadoBtn}</td>
         <td>${e.vac}</td><td>${e.ap}</td><td>${e.sab}</td>
-        <td><button class="edit" onclick="editarEmpleado(${e.id})">✏️</button><button class="danger" onclick="eliminarEmpleado(${e.id})">🗑️</button></td>
+        <td>${estadoBadge}</td>
+        <td>
+          ${btnBajaAlta}
+          <button class="edit" onclick="editarEmpleado(${e.id})">✏️</button>
+          <button class="danger" onclick="eliminarEmpleado(${e.id})">🗑️</button>
+        </td>
       </tr>`;
     });
     html += '</tbody></table>';
@@ -616,7 +623,7 @@
     
     const trab={encargado:[],ordenanza:[],limpiador:[],reserva:[]};
     const vac={encargado:[],ordenanza:[],limpiador:[],reserva:[]};
-    const baja={encargado:[],ordenanza:[],limpiador:[],reserva:[]}; // Nueva categoría
+    const baja={encargado:[],ordenanza:[],limpiador:[],reserva:[]};
     
     empleados.forEach(emp => {
       if (emp.enBaja) {
@@ -629,14 +636,14 @@
     });
 
     let html='';
-    if(esFinde||esFestivo) html+=`<div class="info-box" style="margin-bottom:20px">ℹ️ ${formatearFechaLarga(fc)} es ${esFestivo?'festivo':'fin de semana'}. Sin jornada.</div>`;
+    if(esFinde||esFestivo) html+=`<div class="info-box" style="margin-bottom:20px">️ ${formatearFechaLarga(fc)} es ${esFestivo?'festivo':'fin de semana'}. Sin jornada.</div>`;
     
     html+='<div class="plantilla-grid">';
     
     // Columna 1: Trabajando
     html+='<div class="plantilla-columna"><h3>✅ Trabajando</h3>';
     ['encargado','ordenanza','limpiador','reserva'].forEach(cat=>{
-      const icon={encargado:'🏢',ordenanza:'👔',limpiador:'🧹',reserva:'🔄'}[cat];
+      const icon={encargado:'🏢',ordenanza:'👔',limpiador:'',reserva:'🔄'}[cat];
       const nom={encargado:'Encargado',ordenanza:'Ordenanzas',limpiador:'Limpieza',reserva:'Reserva'}[cat];
       if(cat==='reserva'&&trab[cat].length===0) return;
       html+=`<div class="categoria-seccion"><div class="categoria-header"><span>${icon} ${nom}</span><span class="categoria-contador">${trab[cat].length}</span></div>`;
@@ -659,7 +666,7 @@
     });
     html+='</div>';
 
-    // Columna 3: Baja Médica (NUEVA)
+    // Columna 3: Baja Médica
     html+='<div class="plantilla-columna"><h3>🚑 Baja Médica</h3>';
     let totalBaja = 0;
     ['encargado','ordenanza','limpiador','reserva'].forEach(cat=>{ totalBaja += baja[cat].length; });
@@ -669,14 +676,14 @@
     } else {
       ['encargado','ordenanza','limpiador','reserva'].forEach(cat=>{
         if(baja[cat].length === 0) return;
-        const icon={encargado:'🏢',ordenanza:'👔',limpiador:'🧹',reserva:'🔄'}[cat];
+        const icon={encargado:'🏢',ordenanza:'',limpiador:'🧹',reserva:'🔄'}[cat];
         const nom={encargado:'Encargado',ordenanza:'Ordenanzas',limpiador:'Limpieza',reserva:'Reserva'}[cat];
         html+=`<div class="categoria-seccion"><div class="categoria-header" style="border-left-color:#e53e3e;"><span>${icon} ${nom}</span><span class="categoria-contador" style="background:#e53e3e;">${baja[cat].length}</span></div>`;
         baja[cat].forEach(e=>html+=`<div class="trabajador-item baja-medica"><div class="trabajador-info"><div class="trabajador-nombre">${e.nombre}</div><div class="trabajador-periodo" style="color:#c53030;">📅 Desde: ${formatearFechaCorta(e.fechaBaja)}</div></div></div>`);
         html+='</div>';
       });
     }
-    html+='</div></div>'; // Cierre de plantilla-grid
+    html+='</div></div>';
     
     cont.innerHTML=html;
   }
@@ -707,7 +714,7 @@
     
     let estado = '✅ TRABAJANDO', color = '#38a169', extraEstado = '';
     if (emp.enBaja) {
-      estado = '🚑 DE BAJA MÉDICA';
+      estado = ' DE BAJA MÉDICA';
       color = '#e53e3e';
       extraEstado = `<div class="info-box" style="margin-top:15px; background:#fff5f5; color:#c53030; border-color:#e53e3e;"><strong>📅 Inicio de baja:</strong> ${formatearFecha(emp.fechaBaja)}. Pendiente de alta médica.</div>`;
     } else if (pHoy) {
@@ -716,7 +723,7 @@
     }
 
     const todos=registros.filter(r=>r.empId===emp.id).sort((a,b)=>fechaStrToDate(a.fecha)-fechaStrToDate(b.fecha));
-    const tipoTxt=t=>({vacaciones:'🏖️ Vacaciones',ap:'📋 Asuntos propios',sabados:'🗓️ Sábados'}[t]);
+    const tipoTxt=t=>({vacaciones:'️ Vacaciones',ap:'📋 Asuntos propios',sabados:'🗓️ Sábados'}[t]);
     
     let html=`<div class="ficha-empleado"><div class="ficha-encabezado"><div><div class="ficha-nombre">${emp.nombre}</div><span class="badge ${emp.categoria}" style="margin-top:8px;font-size:13px;padding:6px 14px">${cat}</span></div><div style="background:${color};color:white;padding:12px 20px;border-radius:8px;font-weight:bold;font-size:16px">${estado}</div></div><div class="ficha-datos"><div class="ficha-dato"><div class="ficha-dato-label">🏖️ Vacaciones</div><div class="ficha-dato-valor">${vr}/${emp.vac}</div><div style="font-size:11px;color:#718096;margin-top:4px">Gastadas:${v.consumidos}|Pendientes:${v.solicitados}</div></div><div class="ficha-dato"><div class="ficha-dato-label">📋 Asuntos propios</div><div class="ficha-dato-valor">${ar}/${emp.ap}</div><div style="font-size:11px;color:#718096;margin-top:4px">Gastados:${a.consumidos}|Pendientes:${a.solicitados}</div></div><div class="ficha-dato"><div class="ficha-dato-label">🗓️ Sábados</div><div class="ficha-dato-valor">${sr}/${emp.sab}</div><div style="font-size:11px;color:#718096;margin-top:4px">Gastados:${s.consumidos}|Pendientes:${s.solicitados}</div></div><div class="ficha-dato"><div class="ficha-dato-label">📆 Ventanas</div><div class="ficha-dato-valor">${ven}/${MAX_VENTANAS}</div><div style="font-size:11px;color:#718096;margin-top:4px">De 4 permitidas</div></div></div>${extraEstado}${vr<0||ar<0||sr<0?'<div class="alerta-negativa">⚠️ Días negativos (excedidos)</div>':''}${ven>MAX_VENTANAS?'<div class="alerta-ventanas">⚠️ Superadas 4 ventanas</div>':''}${pHoy?`<div class="info-box" style="margin-top:15px"><strong>📅 Periodo actual:</strong> del ${formatearFechaCorta(pHoy.inicio)} al ${formatearFechaCorta(pHoy.fin)} (${pHoy.dias} días)</div>`:''}</div>`;
     
@@ -805,7 +812,7 @@
       const dias=registros.filter(r=>r.empId===empId&&r.tipo==='vacaciones'&&r.id!==(registroEditando?registroEditando.id:null)).map(r=>fechaStrToDate(r.fecha));
       dias.push(fechaStrToDate(fecha)); dias.sort((a,b)=>a-b);
       let sim=1; for(let i=1;i<dias.length;i++) if((dias[i]-dias[i-1])/86400000>7) sim++;
-      if(sim>MAX_VENTANAS&&!confirm(`⚠️ Superaría ${MAX_VENTANAS} ventanas. ¿Guardar?`)) return;
+      if(sim>MAX_VENTANAS&&!confirm(`️ Superaría ${MAX_VENTANAS} ventanas. ¿Guardar?`)) return;
     }
     if(cantidad>disp&&!confirm(`⚠️ ${emp.nombre} tiene ${disp} días. ¿Guardar?`)) return;
     if(registroEditando) { Object.assign(registroEditando,{empId,fecha,tipo,cantidad,notas}); msg.innerHTML='<div style="background:#c6f6d5;padding:12px;border-radius:6px;color:#22543d">✅ Actualizado</div>'; }
@@ -830,7 +837,7 @@
       
       const badgeBaja = e.enBaja ? `<span style="background:#fff5f5;color:#c53030;padding:2px 8px;border-radius:8px;font-size:11px;font-weight:bold;border:1px solid #feb2b2; margin-left:8px;">🚑 DE BAJA</span>` : '';
       
-      html+=`<div class="resumen-card"><div><div style="font-size:20px;font-weight:bold;display:flex;align-items:center;flex-wrap:wrap;">${e.nombre}${badgeBaja} ${ven>=MAX_VENTANAS?'⚠️':''}</div><span class="badge ${e.categoria}" style="margin-top:5px">${cat}</span></div><div class="resumen-grid"><div class="stat"><div class="stat-label">🏖️ Vacaciones</div><div class="stat-value">${vr}/${e.vac}</div><div class="stat-sub">Consumidas:${v.consumidos}</div>${v.solicitados?`<div class="stat-sub" style="color:#fef08a;font-weight:600">Solicitadas:${v.solicitados}</div>`:''}</div><div class="stat" style="${ven>=MAX_VENTANAS?'background:rgba(229,62,62,0.3)':''}"><div class="stat-label">📆 Ventanas</div><div class="stat-value">${ven}/${MAX_VENTANAS}</div><div class="stat-sub">Usadas</div></div><div class="stat"><div class="stat-label">📋 Asuntos</div><div class="stat-value">${ar}/${e.ap}</div><div class="stat-sub">Consumidos:${a.consumidos}</div>${a.solicitados?`<div class="stat-sub" style="color:#fef08a;font-weight:600">Solicitados:${a.solicitados}</div>`:''}</div><div class="stat"><div class="stat-label">🗓️ Sábados</div><div class="stat-value">${sr}/${e.sab}</div><div class="stat-sub">Consumidos:${s.consumidos}</div>${s.solicitados?`<div class="stat-sub" style="color:#fef08a;font-weight:600">Solicitados:${s.solicitados}</div>`:''}</div></div>`;
+      html+=`<div class="resumen-card"><div><div style="font-size:20px;font-weight:bold;display:flex;align-items:center;flex-wrap:wrap;">${e.nombre}${badgeBaja} ${ven>=MAX_VENTANAS?'⚠️':''}</div><span class="badge ${e.categoria}" style="margin-top:5px">${cat}</span></div><div class="resumen-grid"><div class="stat"><div class="stat-label">🏖️ Vacaciones</div><div class="stat-value">${vr}/${e.vac}</div><div class="stat-sub">Consumidas:${v.consumidos}</div>${v.solicitados?`<div class="stat-sub" style="color:#fef08a;font-weight:600">Solicitadas:${v.solicitados}</div>`:''}</div><div class="stat" style="${ven>=MAX_VENTANAS?'background:rgba(229,62,62,0.3)':''}"><div class="stat-label">📆 Ventanas</div><div class="stat-value">${ven}/${MAX_VENTANAS}</div><div class="stat-sub">Usadas</div></div><div class="stat"><div class="stat-label"> Asuntos</div><div class="stat-value">${ar}/${e.ap}</div><div class="stat-sub">Consumidos:${a.consumidos}</div>${a.solicitados?`<div class="stat-sub" style="color:#fef08a;font-weight:600">Solicitados:${a.solicitados}</div>`:''}</div><div class="stat"><div class="stat-label">🗓️ Sábados</div><div class="stat-value">${sr}/${e.sab}</div><div class="stat-sub">Consumidos:${s.consumidos}</div>${s.solicitados?`<div class="stat-sub" style="color:#fef08a;font-weight:600">Solicitados:${s.solicitados}</div>`:''}</div></div>`;
       if(v.consumidos||a.consumidos||s.consumidos) {
         html+=`<div class="consumidos-box"><div class="consumidos-title">✅ Consumidos</div>`;
         if(v.consumidos) html+=`<div style="margin:8px 0"><div style="font-size:12px;font-weight:600;margin-bottom:6px;opacity:0.9">🏖️ Vacaciones:</div>${fVC.map(itemF).join('')}</div>`;
@@ -839,7 +846,7 @@
         html+='</div>';
       }
       if(v.solicitados||a.solicitados||s.solicitados) {
-        html+=`<div class="solicitados-box"><div class="solicitados-title">📅 Pendientes</div>`;
+        html+=`<div class="solicitados-box"><div class="solicitados-title"> Pendientes</div>`;
         if(v.solicitados) html+=`<div style="margin:8px 0"><div style="font-size:12px;font-weight:600;margin-bottom:6px;opacity:0.9">🏖️ Vacaciones:</div>${fVS.map(itemF).join('')}</div>`;
         if(a.solicitados) html+=`<div style="margin:8px 0"><div style="font-size:12px;font-weight:600;margin-bottom:6px;opacity:0.9">📋 Asuntos:</div>${fAS.map(itemF).join('')}</div>`;
         if(s.solicitados) html+=`<div style="margin:8px 0"><div style="font-size:12px;font-weight:600;margin-bottom:6px;opacity:0.9">🗓️ Sábados:</div>${fSS.map(itemF).join('')}</div>`;
@@ -869,7 +876,7 @@
     }
     if(cons.length) {
       html+=`<div class="seccion-historial"><h3>✅ Consumidos (${cons.length})</h3><table><thead><tr><th>Fecha</th><th>Empleado</th><th>Tipo</th><th>Días</th><th>Notas</th><th></th></tr></thead><tbody>`;
-      cons.forEach(r=>{const e=empleados.find(x=>x.id===r.empId);html+=`<tr><td>${formatearFechaCorta(r.fecha)}</td><td><strong>${e.nombre}</strong></td><td><span class="badge-estado badge-consumido">${tipoTxt(r.tipo)}</span></td><td>${r.cantidad}</td><td>${r.notas||'-'}</td><td><button class="edit" onclick="editarRegistro(${r.id})">✏️</button><button class="danger" onclick="borrarRegistro(${r.id})">🗑️</button></td></tr>`;});
+      cons.forEach(r=>{const e=empleados.find(x=>x.id===r.empId);html+=`<tr><td>${formatearFechaCorta(r.fecha)}</td><td><strong>${e.nombre}</strong></td><td><span class="badge-estado badge-consumido">${tipoTxt(r.tipo)}</span></td><td>${r.cantidad}</td><td>${r.notas||'-'}</td><td><button class="edit" onclick="editarRegistro(${r.id})">✏️</button><button class="danger" onclick="borrarRegistro(${r.id})">️</button></td></tr>`;});
       html+='</tbody></table></div>';
     }
     cont.innerHTML=html;
@@ -897,7 +904,7 @@
         const data=JSON.parse(e.target.result);
         if(data.empleados&&data.registros) {
           if(confirm('¿Reemplazar datos actuales?')) {
-            empleados=data.empleados.map(emp => ({ enBaja: false, fechaBaja: null, ...emp })); // Asegurar migración
+            empleados=data.empleados.map(emp => ({ enBaja: false, fechaBaja: null, ...emp }));
             registros=data.registros; festivos=data.festivos||[];
             guardar(); renderEmpleados();
             alert('✅ Importado');
