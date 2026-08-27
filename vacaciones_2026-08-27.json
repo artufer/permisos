@@ -1,0 +1,694 @@
+{
+  "empleados": [
+    {
+      "id": 1787817148207,
+      "nombre": "Leonardo Arturo Fernández Carbajo",
+      "categoria": "encargado",
+      "vac": 26,
+      "ap": 13,
+      "sab": 1
+    },
+    {
+      "id": 1787817173063,
+      "nombre": "Elena Arjones Porto",
+      "categoria": "ordenanza",
+      "vac": 25,
+      "ap": 9,
+      "sab": 1
+    },
+    {
+      "id": 1787817197159,
+      "nombre": "Carlos Macia Torralba",
+      "categoria": "ordenanza",
+      "vac": 23,
+      "ap": 7,
+      "sab": 1
+    },
+    {
+      "id": 1787817247406,
+      "nombre": "Mercedes Sutil García",
+      "categoria": "ordenanza",
+      "vac": 24,
+      "ap": 9,
+      "sab": 1
+    },
+    {
+      "id": 1787817293223,
+      "nombre": "Raquel Martínez Álvarez",
+      "categoria": "limpiador",
+      "vac": 23,
+      "ap": 8,
+      "sab": 1
+    },
+    {
+      "id": 1787817397933,
+      "nombre": "José Carlos Natal Fernández",
+      "categoria": "limpiador",
+      "vac": 26,
+      "ap": 11,
+      "sab": 1
+    },
+    {
+      "id": 1787817428326,
+      "nombre": "Rocio Ordoñez López",
+      "categoria": "limpiador",
+      "vac": 23,
+      "ap": 8,
+      "sab": 1
+    },
+    {
+      "id": 1787817461966,
+      "nombre": "María Ángeles Yagüe Fernández",
+      "categoria": "limpiador",
+      "vac": 26,
+      "ap": 11,
+      "sab": 1
+    },
+    {
+      "id": 1787817488893,
+      "nombre": "Claudia Baza Carrera",
+      "categoria": "limpiador",
+      "vac": 25,
+      "ap": 9,
+      "sab": 1
+    },
+    {
+      "id": 1787817513574,
+      "nombre": "Yolanda Fernández Álvarez",
+      "categoria": "limpiador",
+      "vac": 26,
+      "ap": 11,
+      "sab": 1
+    }
+  ],
+  "registros": [
+    {
+      "id": 1787818119060,
+      "empId": 1787817148207,
+      "fecha": "2026-03-03",
+      "tipo": "vacaciones",
+      "cantidad": 5,
+      "notas": ""
+    },
+    {
+      "id": 1787818142315,
+      "empId": 1787817148207,
+      "fecha": "2026-07-01",
+      "tipo": "vacaciones",
+      "cantidad": 13,
+      "notas": ""
+    },
+    {
+      "id": 1787818175043,
+      "empId": 1787817148207,
+      "fecha": "2026-08-10",
+      "tipo": "vacaciones",
+      "cantidad": 5,
+      "notas": ""
+    },
+    {
+      "id": 1787818301594,
+      "empId": 1787817148207,
+      "fecha": "2027-01-04",
+      "tipo": "vacaciones",
+      "cantidad": 3,
+      "notas": ""
+    },
+    {
+      "id": 1787818351179,
+      "empId": 1787817173063,
+      "fecha": "2026-05-26",
+      "tipo": "vacaciones",
+      "cantidad": 5,
+      "notas": ""
+    },
+    {
+      "id": 1787818392434,
+      "empId": 1787817173063,
+      "fecha": "2026-07-20",
+      "tipo": "vacaciones",
+      "cantidad": 15,
+      "notas": ""
+    },
+    {
+      "id": 1787818418258,
+      "empId": 1787817173063,
+      "fecha": "2026-12-22",
+      "tipo": "vacaciones",
+      "cantidad": 5,
+      "notas": ""
+    },
+    {
+      "id": 1787818779386,
+      "empId": 1787817197159,
+      "fecha": "2026-03-30",
+      "tipo": "vacaciones",
+      "cantidad": 3,
+      "notas": ""
+    },
+    {
+      "id": 1787818809633,
+      "empId": 1787817197159,
+      "fecha": "2026-05-25",
+      "tipo": "vacaciones",
+      "cantidad": 5,
+      "notas": ""
+    },
+    {
+      "id": 1787818867176,
+      "empId": 1787817197159,
+      "fecha": "2026-06-19",
+      "tipo": "vacaciones",
+      "cantidad": 5,
+      "notas": ""
+    },
+    {
+      "id": 1787818918648,
+      "empId": 1787817197159,
+      "fecha": "2026-08-31",
+      "tipo": "vacaciones",
+      "cantidad": 10,
+      "notas": ""
+    },
+    {
+      "id": 1787818950000,
+      "empId": 1787817247406,
+      "fecha": "2026-07-15",
+      "tipo": "vacaciones",
+      "cantidad": 23,
+      "notas": ""
+    },
+    {
+      "id": 1787818988257,
+      "empId": 1787817293223,
+      "fecha": "2026-09-02",
+      "tipo": "vacaciones",
+      "cantidad": 23,
+      "notas": ""
+    },
+    {
+      "id": 1787819018384,
+      "empId": 1787817397933,
+      "fecha": "2026-06-15",
+      "tipo": "vacaciones",
+      "cantidad": 9,
+      "notas": ""
+    },
+    {
+      "id": 1787819033208,
+      "empId": 1787817397933,
+      "fecha": "2026-07-27",
+      "tipo": "vacaciones",
+      "cantidad": 8,
+      "notas": ""
+    },
+    {
+      "id": 1787819050192,
+      "empId": 1787817397933,
+      "fecha": "2026-09-28",
+      "tipo": "vacaciones",
+      "cantidad": 9,
+      "notas": ""
+    },
+    {
+      "id": 1787819084735,
+      "empId": 1787817428326,
+      "fecha": "2026-07-02",
+      "tipo": "vacaciones",
+      "cantidad": 13,
+      "notas": ""
+    },
+    {
+      "id": 1787819101671,
+      "empId": 1787817428326,
+      "fecha": "2026-08-03",
+      "tipo": "vacaciones",
+      "cantidad": 10,
+      "notas": ""
+    },
+    {
+      "id": 1787819125720,
+      "empId": 1787817461966,
+      "fecha": "2026-07-27",
+      "tipo": "vacaciones",
+      "cantidad": 5,
+      "notas": ""
+    },
+    {
+      "id": 1787819144383,
+      "empId": 1787817461966,
+      "fecha": "2026-08-17",
+      "tipo": "vacaciones",
+      "cantidad": 21,
+      "notas": ""
+    },
+    {
+      "id": 1787819191071,
+      "empId": 1787817488893,
+      "fecha": "2026-08-24",
+      "tipo": "vacaciones",
+      "cantidad": 9,
+      "notas": ""
+    },
+    {
+      "id": 1787819214240,
+      "empId": 1787817488893,
+      "fecha": "2026-10-19",
+      "tipo": "vacaciones",
+      "cantidad": 5,
+      "notas": ""
+    },
+    {
+      "id": 1787819248655,
+      "empId": 1787817488893,
+      "fecha": "2027-01-11",
+      "tipo": "vacaciones",
+      "cantidad": 11,
+      "notas": ""
+    },
+    {
+      "id": 1787819367526,
+      "empId": 1787817513574,
+      "fecha": "2026-07-20",
+      "tipo": "vacaciones",
+      "cantidad": 8,
+      "notas": ""
+    },
+    {
+      "id": 1787819381567,
+      "empId": 1787817513574,
+      "fecha": "2026-08-14",
+      "tipo": "vacaciones",
+      "cantidad": 12,
+      "notas": ""
+    },
+    {
+      "id": 1787819397063,
+      "empId": 1787817513574,
+      "fecha": "2026-10-01",
+      "tipo": "vacaciones",
+      "cantidad": 6,
+      "notas": ""
+    },
+    {
+      "id": 1787821279688,
+      "empId": 1787817148207,
+      "fecha": "2026-01-23",
+      "tipo": "ap",
+      "cantidad": 1,
+      "notas": ""
+    },
+    {
+      "id": 1787821295879,
+      "empId": 1787817148207,
+      "fecha": "2026-01-30",
+      "tipo": "ap",
+      "cantidad": 1,
+      "notas": ""
+    },
+    {
+      "id": 1787821313447,
+      "empId": 1787817148207,
+      "fecha": "2026-02-13",
+      "tipo": "ap",
+      "cantidad": 1,
+      "notas": ""
+    },
+    {
+      "id": 1787821336487,
+      "empId": 1787817148207,
+      "fecha": "2026-03-27",
+      "tipo": "sabados",
+      "cantidad": 1,
+      "notas": ""
+    },
+    {
+      "id": 1787821360183,
+      "empId": 1787817148207,
+      "fecha": "2026-04-07",
+      "tipo": "ap",
+      "cantidad": 1,
+      "notas": ""
+    },
+    {
+      "id": 1787821375199,
+      "empId": 1787817148207,
+      "fecha": "2026-04-24",
+      "tipo": "ap",
+      "cantidad": 1,
+      "notas": ""
+    },
+    {
+      "id": 1787821405671,
+      "empId": 1787817148207,
+      "fecha": "2026-05-14",
+      "tipo": "ap",
+      "cantidad": 1,
+      "notas": ""
+    },
+    {
+      "id": 1787821423103,
+      "empId": 1787817148207,
+      "fecha": "2026-05-15",
+      "tipo": "ap",
+      "cantidad": 1,
+      "notas": ""
+    },
+    {
+      "id": 1787821438271,
+      "empId": 1787817148207,
+      "fecha": "2026-05-22",
+      "tipo": "ap",
+      "cantidad": 1,
+      "notas": ""
+    },
+    {
+      "id": 1787821478111,
+      "empId": 1787817173063,
+      "fecha": "2026-05-25",
+      "tipo": "ap",
+      "cantidad": 1,
+      "notas": ""
+    },
+    {
+      "id": 1787821538815,
+      "empId": 1787817173063,
+      "fecha": "2026-08-14",
+      "tipo": "sabados",
+      "cantidad": 1,
+      "notas": ""
+    },
+    {
+      "id": 1787821570447,
+      "empId": 1787817247406,
+      "fecha": "2026-04-08",
+      "tipo": "ap",
+      "cantidad": 1,
+      "notas": ""
+    },
+    {
+      "id": 1787821582871,
+      "empId": 1787817247406,
+      "fecha": "2026-04-09",
+      "tipo": "ap",
+      "cantidad": 1,
+      "notas": ""
+    },
+    {
+      "id": 1787821609990,
+      "empId": 1787817247406,
+      "fecha": "2026-04-10",
+      "tipo": "ap",
+      "cantidad": 1,
+      "notas": ""
+    },
+    {
+      "id": 1787821631470,
+      "empId": 1787817247406,
+      "fecha": "2026-04-13",
+      "tipo": "ap",
+      "cantidad": 1,
+      "notas": ""
+    },
+    {
+      "id": 1787821652486,
+      "empId": 1787817247406,
+      "fecha": "2026-04-14",
+      "tipo": "ap",
+      "cantidad": 1,
+      "notas": ""
+    },
+    {
+      "id": 1787821670830,
+      "empId": 1787817247406,
+      "fecha": "2026-04-24",
+      "tipo": "sabados",
+      "cantidad": 1,
+      "notas": ""
+    },
+    {
+      "id": 1787821711350,
+      "empId": 1787817293223,
+      "fecha": "2026-03-25",
+      "tipo": "sabados",
+      "cantidad": 1,
+      "notas": ""
+    },
+    {
+      "id": 1787821726238,
+      "empId": 1787817293223,
+      "fecha": "2026-05-27",
+      "tipo": "ap",
+      "cantidad": 1,
+      "notas": ""
+    },
+    {
+      "id": 1787821743118,
+      "empId": 1787817293223,
+      "fecha": "2026-06-03",
+      "tipo": "ap",
+      "cantidad": 1,
+      "notas": ""
+    },
+    {
+      "id": 1787821759486,
+      "empId": 1787817293223,
+      "fecha": "2026-07-01",
+      "tipo": "ap",
+      "cantidad": 1,
+      "notas": ""
+    },
+    {
+      "id": 1787821784574,
+      "empId": 1787817397933,
+      "fecha": "2026-03-30",
+      "tipo": "ap",
+      "cantidad": 1,
+      "notas": ""
+    },
+    {
+      "id": 1787821799198,
+      "empId": 1787817397933,
+      "fecha": "2026-03-31",
+      "tipo": "ap",
+      "cantidad": 1,
+      "notas": ""
+    },
+    {
+      "id": 1787821822893,
+      "empId": 1787817397933,
+      "fecha": "2026-04-01",
+      "tipo": "ap",
+      "cantidad": 1,
+      "notas": ""
+    },
+    {
+      "id": 1787821842661,
+      "empId": 1787817397933,
+      "fecha": "2026-04-09",
+      "tipo": "sabados",
+      "cantidad": 1,
+      "notas": ""
+    },
+    {
+      "id": 1787821861725,
+      "empId": 1787817397933,
+      "fecha": "2026-04-24",
+      "tipo": "ap",
+      "cantidad": 1,
+      "notas": ""
+    },
+    {
+      "id": 1787822054445,
+      "empId": 1787817428326,
+      "fecha": "2026-02-17",
+      "tipo": "sabados",
+      "cantidad": 1,
+      "notas": ""
+    },
+    {
+      "id": 1787822069853,
+      "empId": 1787817428326,
+      "fecha": "2026-04-06",
+      "tipo": "ap",
+      "cantidad": 1,
+      "notas": ""
+    },
+    {
+      "id": 1787822095909,
+      "empId": 1787817428326,
+      "fecha": "2026-06-08",
+      "tipo": "ap",
+      "cantidad": 1,
+      "notas": ""
+    },
+    {
+      "id": 1787822117428,
+      "empId": 1787817461966,
+      "fecha": "2026-02-27",
+      "tipo": "sabados",
+      "cantidad": 1,
+      "notas": ""
+    },
+    {
+      "id": 1787822134124,
+      "empId": 1787817461966,
+      "fecha": "2026-03-20",
+      "tipo": "ap",
+      "cantidad": 1,
+      "notas": ""
+    },
+    {
+      "id": 1787822152588,
+      "empId": 1787817461966,
+      "fecha": "2026-06-29",
+      "tipo": "ap",
+      "cantidad": 1,
+      "notas": ""
+    },
+    {
+      "id": 1787822165325,
+      "empId": 1787817461966,
+      "fecha": "2026-06-30",
+      "tipo": "ap",
+      "cantidad": 1,
+      "notas": ""
+    },
+    {
+      "id": 1787822185572,
+      "empId": 1787817461966,
+      "fecha": "2026-07-01",
+      "tipo": "ap",
+      "cantidad": 1,
+      "notas": ""
+    },
+    {
+      "id": 1787822224556,
+      "empId": 1787817513574,
+      "fecha": "2026-04-29",
+      "tipo": "ap",
+      "cantidad": 1,
+      "notas": ""
+    },
+    {
+      "id": 1787822390316,
+      "empId": 1787817488893,
+      "fecha": "2026-05-29",
+      "tipo": "ap",
+      "cantidad": 1,
+      "notas": ""
+    },
+    {
+      "id": 1787822411612,
+      "empId": 1787817488893,
+      "fecha": "2026-06-18",
+      "tipo": "ap",
+      "cantidad": 1,
+      "notas": ""
+    },
+    {
+      "id": 1787822430267,
+      "empId": 1787817488893,
+      "fecha": "2026-06-19",
+      "tipo": "ap",
+      "cantidad": 1,
+      "notas": ""
+    },
+    {
+      "id": 1787822443843,
+      "empId": 1787817488893,
+      "fecha": "2026-07-03",
+      "tipo": "ap",
+      "cantidad": 1,
+      "notas": ""
+    }
+  ],
+  "festivos": [
+    {
+      "id": 1787817552942,
+      "nombre": "Año nuevo",
+      "fecha": "2026-01-01"
+    },
+    {
+      "id": 1787817579429,
+      "nombre": "Día de Reyes",
+      "fecha": "2026-01-06"
+    },
+    {
+      "id": 1787817619301,
+      "nombre": "Jueves Santo",
+      "fecha": "2026-04-02"
+    },
+    {
+      "id": 1787817638205,
+      "nombre": "Viernes Santo",
+      "fecha": "2026-04-03"
+    },
+    {
+      "id": 1787817667541,
+      "nombre": "Día de la Comunidad de Castilla y León",
+      "fecha": "2026-04-23"
+    },
+    {
+      "id": 1787817687949,
+      "nombre": "Dia del Trabajo",
+      "fecha": "2026-05-01"
+    },
+    {
+      "id": 1787817729461,
+      "nombre": "Diía del Sagrado Corazón de Jesús",
+      "fecha": "2026-06-12"
+    },
+    {
+      "id": 1787817748388,
+      "nombre": "San Juan",
+      "fecha": "2026-06-24"
+    },
+    {
+      "id": 1787817772964,
+      "nombre": "Asunción de la Virgen",
+      "fecha": "2026-08-15"
+    },
+    {
+      "id": 1787817798044,
+      "nombre": "San Froilán",
+      "fecha": "2026-10-05"
+    },
+    {
+      "id": 1787817830284,
+      "nombre": "Día de la fiesta nacional de España",
+      "fecha": "2026-10-12"
+    },
+    {
+      "id": 1787817871748,
+      "nombre": "Lunes posterior a Todos los Santos",
+      "fecha": "2026-11-02"
+    },
+    {
+      "id": 1787817905532,
+      "nombre": "Lunes posterior al Día de la Constitución Española",
+      "fecha": "2026-12-07"
+    },
+    {
+      "id": 1787817929996,
+      "nombre": "Día de la Inmaculada",
+      "fecha": "2026-12-08"
+    },
+    {
+      "id": 1787817959196,
+      "nombre": "Día de nochebuena",
+      "fecha": "2026-12-24"
+    },
+    {
+      "id": 1787817975236,
+      "nombre": "Día de navidad",
+      "fecha": "2026-12-25"
+    },
+    {
+      "id": 1787817993628,
+      "nombre": "Día de nochevieja",
+      "fecha": "2026-12-31"
+    }
+  ],
+  "fecha": "2026-08-27T09:34:56.256Z"
+}
