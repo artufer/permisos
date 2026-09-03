@@ -150,6 +150,38 @@
   .modal-content p { color: #4a5568; margin-bottom: 15px; font-size: 14px; }
   .festivo-review-item { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; flex-wrap: wrap; }
   .festivo-review-item input { flex: 1; min-width: 120px; }
+
+  /* === NUEVO ESTILO RESUMEN ESCUETO === */
+  .resumen-tabs { display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; }
+  .resumen-tab { flex: 1; max-width: 200px; padding: 12px 20px; background: #e2e8f0; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 15px; transition: 0.2s; color: #4a5568; }
+  .resumen-tab.active { background: #2c5282; color: white; }
+  .resumen-tab:hover:not(.active) { background: #cbd5e0; }
+  
+  .resumen-table-container { background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); overflow: hidden; }
+  .resumen-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; border-bottom: 1px solid #e2e8f0; transition: background 0.15s; }
+  .resumen-row.header { background: #2c5282; color: white; font-weight: 600; font-size: 13px; text-transform: uppercase; }
+  .resumen-row.header .resumen-cell { color: white; }
+  .resumen-row:not(.header):hover { background: #f7fafc; }
+  .resumen-row.clickable { cursor: pointer; }
+  .resumen-row.clickable:hover { background: #ebf8ff; }
+  .resumen-cell { padding: 12px 15px; display: flex; align-items: center; font-size: 14px; }
+  .resumen-cell.nombre { font-weight: 600; color: #2c5282; }
+  .resumen-cell.center { justify-content: center; }
+  .resumen-cell .valor { font-weight: 700; font-size: 16px; }
+  .resumen-cell .valor.zero { color: #a0aec0; }
+  .resumen-cell .valor.low { color: #ed8936; }
+  .resumen-cell .valor.ok { color: #38a169; }
+  .resumen-detail { display: none; grid-column: 1 / -1; background: #f7fafc; padding: 15px; border-left: 4px solid #3182ce; }
+  .resumen-detail.open { display: block; }
+  .resumen-detail h4 { color: #2c5282; margin-bottom: 10px; font-size: 14px; }
+  .resumen-detail-section { margin-bottom: 12px; }
+  .resumen-detail-section:last-child { margin-bottom: 0; }
+  .resumen-detail-section-title { font-size: 12px; font-weight: 600; color: #718096; text-transform: uppercase; margin-bottom: 6px; }
+  .resumen-detail-item { background: white; padding: 8px 12px; border-radius: 6px; margin-bottom: 5px; font-size: 13px; display: flex; justify-content: space-between; align-items: center; border-left: 3px solid #3182ce; }
+  .resumen-detail-item.vac { border-left-color: #ed8936; }
+  .resumen-detail-item.ap { border-left-color: #805ad5; }
+  .resumen-detail-item.sab { border-left-color: #3182ce; }
+  .resumen-detail-empty { color: #a0aec0; font-style: italic; font-size: 13px; padding: 8px; }
   
   @media (max-width: 1024px) { .plantilla-grid { grid-template-columns: 1fr 1fr; } }
   @media (max-width: 768px) {
@@ -199,6 +231,11 @@
     .trabajador-item { padding: 10px; }
     .ficha-encabezado { flex-direction: column; align-items: flex-start; }
     .stat-label, .stat-sub { font-size: 10px; }
+    /* Resumen responsive */
+    .resumen-row { grid-template-columns: 1.5fr 1fr 1fr 1fr; }
+    .resumen-cell { padding: 10px 8px; font-size: 13px; }
+    .resumen-cell .valor { font-size: 14px; }
+    .resumen-cell.nombre { font-size: 13px; }
   }
   @media (max-width: 480px) {
     body { font-size: 13px; }
@@ -208,6 +245,9 @@
     th, td { padding: 8px 6px; font-size: 12px; }
     button.primary, button.secondary, button.info { padding: 12px 16px; font-size: 14px; }
     #btnSubir { width: 50px; height: 50px; bottom: 15px; right: 15px; }
+    .resumen-row { grid-template-columns: 1.3fr 1fr 1fr 1fr; }
+    .resumen-cell { padding: 8px 5px; font-size: 12px; }
+    .resumen-cell .valor { font-size: 13px; }
   }
   @media (max-height: 500px) and (orientation: landscape) {
     .tabs { position: sticky; top: 0; z-index: 100; background: #f0f4f8; padding: 5px; }
@@ -219,13 +259,13 @@
 <div class="container">
   <h1 id="top">🏖️ Control de Vacaciones</h1>
   <div class="tabs">
-    <button class="tab active" onclick="showPanel('empleados', this)"> Empleados</button>
+    <button class="tab active" onclick="showPanel('empleados', this)">👥 Empleados</button>
     <button class="tab" onclick="showPanel('registro', this)">📅 Permiso</button>
     <button class="tab" onclick="showPanel('plantilla', this)">👷 Plantilla</button>
     <button class="tab" onclick="showPanel('consulta', this)">🔍 Consulta</button>
     <button class="tab" onclick="showPanel('resumen', this)">📊 Resumen</button>
     <button class="tab" onclick="showPanel('festivos', this)">🎉 Festivos</button>
-    <button class="tab" onclick="showPanel('historial', this)">📜 Historial</button>
+    <button class="tab" onclick="showPanel('historial', this)"> Historial</button>
   </div>
 
   <!-- PANEL EMPLEADOS -->
@@ -250,11 +290,11 @@
     <div class="nuevo-anio-zone">
       <h3>🔄 Comenzar Nuevo Año</h3>
       <p>Borrará todos los permisos registrados (vacaciones, asuntos, sábados, conciliación). Conservará los empleados, sus días de derecho, su estado de baja y te permitirá revisar los festivos.</p>
-      <button class="info" onclick="abrirModalNuevoAnio()" style="width:100%; max-width:300px;"> Iniciar Revisión de Año</button>
+      <button class="info" onclick="abrirModalNuevoAnio()" style="width:100%; max-width:300px;">🚀 Iniciar Revisión de Año</button>
     </div>
 
     <div class="reset-zone">
-      <h3>🚨 Zona peligrosa</h3>
+      <h3> Zona peligrosa</h3>
       <p>Borrará TODOS los datos permanentemente (incluidos empleados y festivos).</p>
       <button class="reset" onclick="borrarTodosLosDatos()">🗑️ Borrar TODO</button>
     </div>
@@ -267,7 +307,7 @@
       <button class="secondary" onclick="cancelarEdicionRegistro()" style="padding:6px 12px; font-size:12px;">Cancelar</button>
     </div>
     <h2 style="color:#2c5282; margin-bottom:15px;" id="regFormTitle">Solicitar permiso</h2>
-    <div class="info-box" style="margin-bottom:15px;"><strong>️</strong> Solo días completos. Sábados, domingos y festivos se excluyen.</div>
+    <div class="info-box" style="margin-bottom:15px;"><strong>ℹ️</strong> Solo días completos. Sábados, domingos y festivos se excluyen.</div>
     <div class="form-row">
       <div class="form-group"><label>Empleado</label><select id="regEmpleado" onchange="verificarVentanas()"></select></div>
       <div class="form-group"><label>Fecha inicio</label><input type="date" id="regFecha" onchange="verificarVentanas()"></div>
@@ -291,7 +331,7 @@
         <label style="color:white;">Fecha:</label>
         <input type="date" id="plantillaFecha">
         <button onclick="renderPlantilla()"> Consultar</button>
-        <button onclick="document.getElementById('plantillaFecha').valueAsDate = new Date(); renderPlantilla();">📅 Hoy</button>
+        <button onclick="document.getElementById('plantillaFecha').valueAsDate = new Date(); renderPlantilla();"> Hoy</button>
       </div>
     </div>
     <div id="plantillaContenido"></div>
@@ -300,7 +340,7 @@
   <!-- PANEL CONSULTA -->
   <div id="consulta" class="panel">
     <div class="consulta-header">
-      <h2>🔍 Consulta empleado</h2>
+      <h2> Consulta empleado</h2>
       <div class="consulta-selector">
         <select id="consultaEmpleado" onchange="renderConsulta()">
           <option value="">-- Selecciona --</option>
@@ -313,15 +353,19 @@
 
   <!-- PANEL RESUMEN -->
   <div id="resumen" class="panel">
-    <h2 style="color:#2c5282; margin-bottom:15px;">Resumen</h2>
+    <h2 style="color:#2c5282; margin-bottom:15px;">📊 Resumen</h2>
     <div class="toolbar"><input type="text" class="search" id="buscarResumen" placeholder="🔍 Buscar..." oninput="renderResumen()"></div>
+    <div class="resumen-tabs">
+      <button class="resumen-tab active" id="tabConsumidos" onclick="cambiarVistaResumen('consumidos')">✅ Consumidos</button>
+      <button class="resumen-tab" id="tabRestantes" onclick="cambiarVistaResumen('restantes')"> Restantes</button>
+    </div>
     <div id="resumenContenido"></div>
   </div>
 
   <!-- PANEL FESTIVOS -->
   <div id="festivos" class="panel">
     <h2 style="color:#2c5282; margin-bottom:15px;">Festivos</h2>
-    <div class="info-box" style="margin-bottom:20px;"><strong>️</strong> Añade festivos locales. Sábados y domingos ya se excluyen.</div>
+    <div class="info-box" style="margin-bottom:20px;"><strong>ℹ️</strong> Añade festivos locales. Sábados y domingos ya se excluyen.</div>
     <div class="form-row">
       <div class="form-group"><label>Nombre</label><input type="text" id="festivoNombre" placeholder="Ej: Constitución"></div>
       <div class="form-group"><label>Fecha</label><input type="date" id="festivoFecha"></div>
@@ -371,6 +415,8 @@
   const MAX_VENTANAS = 4;
   let empleadoEditando = null;
   let registroEditando = null;
+  let vistaResumenActual = 'consumidos'; // 'consumidos' o 'restantes'
+  let detalleResumenAbierto = null; // id del empleado con detalle abierto
 
   window.addEventListener('scroll', function() {
     const btn = document.getElementById('btnSubir');
@@ -417,7 +463,7 @@
     if (id === 'registro') { cargarSelectEmpleados(); if (!registroEditando && !document.getElementById('regFecha').value) document.getElementById('regFecha').valueAsDate = new Date(); }
     if (id === 'plantilla') { if (!document.getElementById('plantillaFecha').value) document.getElementById('plantillaFecha').valueAsDate = new Date(); renderPlantilla(); }
     if (id === 'consulta') { cargarSelectConsulta(); renderConsulta(); }
-    if (id === 'resumen') renderResumen();
+    if (id === 'resumen') { detalleResumenAbierto = null; renderResumen(); }
     if (id === 'festivos') { actualizarFiltroAnos(); renderFestivos(); }
     if (id === 'historial') renderHistorial();
     if (id === 'empleados') renderEmpleados();
@@ -656,7 +702,7 @@
     const fr = sumarDiasHabiles(fi, cantidad);
     const tipoTxt = {vacaciones:'vacaciones',ap:'asuntos propios',sabados:'sábados',conciliacion1:'conciliación 1er grado',conciliacion2:'conciliación 2º grado'}[tipo];
     const festivosMedio = festivos.filter(f => { const ff=fechaStrToDate(f.fecha); return ff>fi && ff<fr; });
-    div.innerHTML = `<div class="reincorporacion-box"><div style="font-size:14px;margin-bottom:8px"><strong>Reincorporación</strong> para ${emp.nombre}</div><div style="margin:6px 0">📌 <strong>Inicio:</strong> ${formatearFecha(dateToFechaStr(fi))}</div><div style="margin:6px 0">⏱️ <strong>Duración:</strong> ${cantidad} día(s) de ${tipoTxt}</div>${festivosMedio.length?`<div style="margin:6px 0"> <strong>Festivos:</strong> ${festivosMedio.map(f=>f.nombre).join(', ')}</div>`:''}<div style="margin:6px 0">🔄 <strong>Reincorporación:</strong> <strong>${formatearFecha(dateToFechaStr(fr))}</strong></div><div style="font-size:11px;opacity:0.8;margin-top:8px">* Excluye sábados, domingos y festivos</div></div>`;
+    div.innerHTML = `<div class="reincorporacion-box"><div style="font-size:14px;margin-bottom:8px"><strong>Reincorporación</strong> para ${emp.nombre}</div><div style="margin:6px 0">📌 <strong>Inicio:</strong> ${formatearFecha(dateToFechaStr(fi))}</div><div style="margin:6px 0">️ <strong>Duración:</strong> ${cantidad} día(s) de ${tipoTxt}</div>${festivosMedio.length?`<div style="margin:6px 0"> <strong>Festivos:</strong> ${festivosMedio.map(f=>f.nombre).join(', ')}</div>`:''}<div style="margin:6px 0">🔄 <strong>Reincorporación:</strong> <strong>${formatearFecha(dateToFechaStr(fr))}</strong></div><div style="font-size:11px;opacity:0.8;margin-top:8px">* Excluye sábados, domingos y festivos</div></div>`;
   }
 
   function obtenerDiasHabilesDeRegistro(reg) {
@@ -665,7 +711,6 @@
     return dias;
   }
 
-  // FUNCIÓN GENÉRICA PARA OBTENER PERIODO DE CUALQUIER TIPO DE PERMISO
   function obtenerPeriodoPermiso(empId, fechaConsulta, tipo) {
     const fcStr = dateToFechaStr(fechaConsulta);
     const todos=[];
@@ -708,7 +753,6 @@
         if (pVac) {
           vac[emp.categoria].push({emp, p: pVac, tipo: 'vacaciones'});
         } else {
-          // Verificar otros tipos de permisos
           const pAP = obtenerPeriodoPermiso(emp.id, fcd, 'ap');
           const pSab = obtenerPeriodoPermiso(emp.id, fcd, 'sabados');
           const pC1 = obtenerPeriodoPermiso(emp.id, fcd, 'conciliacion1');
@@ -731,7 +775,7 @@
     html+='<div class="plantilla-grid">';
     html+='<div class="plantilla-columna"><h3>✅ Trabajando</h3>';
     ['encargado','ordenanza','limpiador','reserva'].forEach(cat=>{
-      const icon={encargado:'🏢',ordenanza:'👔',limpiador:'',reserva:'🔄'}[cat];
+      const icon={encargado:'🏢',ordenanza:'👔',limpiador:'🧹',reserva:'🔄'}[cat];
       const nom={encargado:'Encargado',ordenanza:'Ordenanzas',limpiador:'Limpieza',reserva:'Reserva'}[cat];
       if(cat==='reserva'&&trab[cat].length===0) return;
       html+=`<div class="categoria-seccion"><div class="categoria-header"><span>${icon} ${nom}</span><span class="categoria-contador">${trab[cat].length}</span></div>`;
@@ -750,9 +794,9 @@
       html+=`<div class="categoria-seccion"><div class="categoria-header"><span>${icon} ${nom}</span><span class="categoria-contador">${totalPermisos}</span></div>`;
       if(totalPermisos===0) html+='<div class="empty" style="padding:15px;font-size:13px">Ninguno</div>';
       else {
-        vac[cat].forEach(({emp,p})=>html+=`<div class="trabajador-item vacaciones"><div class="trabajador-info"><div class="trabajador-nombre">${emp.nombre}</div><div class="trabajador-periodo">️ ${formatearFechaCorta(p.inicio)} - ${formatearFechaCorta(p.fin)} (${p.dias} días)</div></div></div>`);
+        vac[cat].forEach(({emp,p})=>html+=`<div class="trabajador-item vacaciones"><div class="trabajador-info"><div class="trabajador-nombre">${emp.nombre}</div><div class="trabajador-periodo">📅 ${formatearFechaCorta(p.inicio)} - ${formatearFechaCorta(p.fin)} (${p.dias} días)</div></div></div>`);
         otros[cat].forEach(({emp,p,tipo})=>{
-          const tipoLabel = {ap:'📋 Asuntos propios',sabados:'🗓️ Sábados',conciliacion1:'👨‍👩‍👧 Conciliación 1er',conciliacion2:'👨👩‍👧‍ Conciliación 2º'}[tipo];
+          const tipoLabel = {ap:' Asuntos propios',sabados:'🗓️ Sábados',conciliacion1:'‍👩‍👧 Conciliación 1er',conciliacion2:'👨‍👩‍‍👦 Conciliación 2º'}[tipo];
           html+=`<div class="trabajador-item vacaciones"><div class="trabajador-info"><div class="trabajador-nombre">${emp.nombre}</div><div class="trabajador-periodo">${tipoLabel} ${formatearFechaCorta(p.inicio)} - ${formatearFechaCorta(p.fin)} (${p.dias} días)</div></div></div>`;
         });
       }
@@ -769,7 +813,7 @@
     } else {
       ['encargado','ordenanza','limpiador','reserva'].forEach(cat=>{
         if(baja[cat].length === 0) return;
-        const icon={encargado:'🏢',ordenanza:'👔',limpiador:'🧹',reserva:'🔄'}[cat];
+        const icon={encargado:'🏢',ordenanza:'👔',limpiador:'',reserva:'🔄'}[cat];
         const nom={encargado:'Encargado',ordenanza:'Ordenanzas',limpiador:'Limpieza',reserva:'Reserva'}[cat];
         html+=`<div class="categoria-seccion"><div class="categoria-header" style="border-left-color:#e53e3e;"><span>${icon} ${nom}</span><span class="categoria-contador" style="background:#e53e3e;">${baja[cat].length}</span></div>`;
         baja[cat].forEach(e=>html+=`<div class="trabajador-item baja-medica"><div class="trabajador-info"><div class="trabajador-nombre">${e.nombre}</div><div class="trabajador-periodo" style="color:#c53030;">📅 Desde: ${formatearFechaCorta(e.fechaBaja)}</div></div></div>`);
@@ -806,7 +850,6 @@
     const fVC=obtenerFechasConsumidas(emp.id,'vacaciones'), fAC=obtenerFechasConsumidas(emp.id,'ap'), fSC=obtenerFechasConsumidas(emp.id,'sabados');
     const fC1C=obtenerFechasConsumidas(emp.id,'conciliacion1'), fC2C=obtenerFechasConsumidas(emp.id,'conciliacion2');
     
-    // Verificar TODOS los tipos de permisos para hoy
     const pVacHoy=obtenerPeriodoVacaciones(emp.id,hoy);
     const pAPHoy=obtenerPeriodoPermiso(emp.id,hoy,'ap');
     const pSabHoy=obtenerPeriodoPermiso(emp.id,hoy,'sabados');
@@ -819,7 +862,7 @@
       color = '#e53e3e';
       extraEstado = `<div class="info-box" style="margin-top:15px; background:#fff5f5; color:#c53030; border-color:#e53e3e;"><strong>📅 Inicio de baja:</strong> ${formatearFecha(emp.fechaBaja)}. Pendiente de alta médica.</div>`;
     } else if (pVacHoy) {
-      estado = '️ DE VACACIONES';
+      estado = '🏖️ DE VACACIONES';
       color = '#ed8936';
       extraEstado = `<div class="info-box" style="margin-top:15px"><strong>📅 Periodo actual:</strong> del ${formatearFechaCorta(pVacHoy.inicio)} al ${formatearFechaCorta(pVacHoy.fin)} (${pVacHoy.dias} días)</div>`;
     } else if (pAPHoy) {
@@ -831,27 +874,27 @@
       color = '#3182ce';
       extraEstado = `<div class="info-box" style="margin-top:15px"><strong>📅 Periodo actual:</strong> del ${formatearFechaCorta(pSabHoy.inicio)} al ${formatearFechaCorta(pSabHoy.fin)} (${pSabHoy.dias} días)</div>`;
     } else if (pC1Hoy) {
-      estado = '👨‍‍👧 CONCILIACIÓN 1er GRADO';
+      estado = '👨‍👩‍👧 CONCILIACIÓN 1er GRADO';
       color = '#d69e2e';
       extraEstado = `<div class="info-box" style="margin-top:15px"><strong>📅 Periodo actual:</strong> del ${formatearFechaCorta(pC1Hoy.inicio)} al ${formatearFechaCorta(pC1Hoy.fin)} (${pC1Hoy.dias} días)</div>`;
     } else if (pC2Hoy) {
-      estado = '👨‍‍👧‍👦 CONCILIACIÓN 2º GRADO';
+      estado = '👨‍👩‍‍👦 CONCILIACIÓN 2º GRADO';
       color = '#38a169';
       extraEstado = `<div class="info-box" style="margin-top:15px"><strong>📅 Periodo actual:</strong> del ${formatearFechaCorta(pC2Hoy.inicio)} al ${formatearFechaCorta(pC2Hoy.fin)} (${pC2Hoy.dias} días)</div>`;
     }
 
     const todos=registros.filter(r=>r.empId===emp.id).sort((a,b)=>fechaStrToDate(a.fecha)-fechaStrToDate(b.fecha));
-    const tipoTxt=t=>({vacaciones:'🏖️ Vacaciones',ap:'📋 Asuntos propios',sabados:'🗓️ Sábados',conciliacion1:'👨‍👩‍👧 Conciliación 1er grado',conciliacion2:'👨‍👩‍👧‍👦 Conciliación 2º grado'}[t]);
+    const tipoTxt=t=>({vacaciones:'🏖️ Vacaciones',ap:'📋 Asuntos propios',sabados:'🗓️ Sábados',conciliacion1:'👨‍‍👧 Conciliación 1er grado',conciliacion2:'👨‍👩‍👧‍ Conciliación 2º grado'}[t]);
     
-    let html=`<div class="ficha-empleado"><div class="ficha-encabezado"><div><div class="ficha-nombre">${emp.nombre}</div><span class="badge ${emp.categoria}" style="margin-top:8px;font-size:13px;padding:6px 14px">${cat}</span></div><div style="background:${color};color:white;padding:12px 20px;border-radius:8px;font-weight:bold;font-size:16px">${estado}</div></div><div class="ficha-datos"><div class="ficha-dato"><div class="ficha-dato-label">🏖️ Vacaciones</div><div class="ficha-dato-valor">${vr}/${emp.vac}</div><div style="font-size:11px;color:#718096;margin-top:4px">Gastadas:${v.consumidos}|Pendientes:${v.solicitados}</div></div><div class="ficha-dato"><div class="ficha-dato-label"> Asuntos propios</div><div class="ficha-dato-valor">${ar}/${emp.ap}</div><div style="font-size:11px;color:#718096;margin-top:4px">Gastados:${a.consumidos}|Pendientes:${a.solicitados}</div></div><div class="ficha-dato"><div class="ficha-dato-label">🗓️ Sábados</div><div class="ficha-dato-valor">${sr}/${emp.sab}</div><div style="font-size:11px;color:#718096;margin-top:4px">Gastados:${s.consumidos}|Pendientes:${s.solicitados}</div></div><div class="ficha-dato"><div class="ficha-dato-label">👨👩‍👧 Conciliación 1er</div><div class="ficha-dato-valor">${c1.total} días</div><div style="font-size:11px;color:#718096;margin-top:4px">Consumidos:${c1.consumidos}|Pendientes:${c1.solicitados}</div></div><div class="ficha-dato"><div class="ficha-dato-label">‍👩‍👧👦 Conciliación 2º</div><div class="ficha-dato-valor">${c2.total} días</div><div style="font-size:11px;color:#718096;margin-top:4px">Consumidos:${c2.consumidos}|Pendientes:${c2.solicitados}</div></div><div class="ficha-dato"><div class="ficha-dato-label">📆 Ventanas</div><div class="ficha-dato-valor">${ven}/${MAX_VENTANAS}</div><div style="font-size:11px;color:#718096;margin-top:4px">De 4 permitidas</div></div></div>${extraEstado}${vr<0||ar<0||sr<0?'<div class="alerta-negativa">⚠️ Días negativos (excedidos)</div>':''}${ven>MAX_VENTANAS?'<div class="alerta-ventanas">⚠️ Superadas 4 ventanas</div>':''}</div>`;
+    let html=`<div class="ficha-empleado"><div class="ficha-encabezado"><div><div class="ficha-nombre">${emp.nombre}</div><span class="badge ${emp.categoria}" style="margin-top:8px;font-size:13px;padding:6px 14px">${cat}</span></div><div style="background:${color};color:white;padding:12px 20px;border-radius:8px;font-weight:bold;font-size:16px">${estado}</div></div><div class="ficha-datos"><div class="ficha-dato"><div class="ficha-dato-label">🏖️ Vacaciones</div><div class="ficha-dato-valor">${vr}/${emp.vac}</div><div style="font-size:11px;color:#718096;margin-top:4px">Gastadas:${v.consumidos}|Pendientes:${v.solicitados}</div></div><div class="ficha-dato"><div class="ficha-dato-label">📋 Asuntos propios</div><div class="ficha-dato-valor">${ar}/${emp.ap}</div><div style="font-size:11px;color:#718096;margin-top:4px">Gastados:${a.consumidos}|Pendientes:${a.solicitados}</div></div><div class="ficha-dato"><div class="ficha-dato-label">🗓️ Sábados</div><div class="ficha-dato-valor">${sr}/${emp.sab}</div><div style="font-size:11px;color:#718096;margin-top:4px">Gastados:${s.consumidos}|Pendientes:${s.solicitados}</div></div><div class="ficha-dato"><div class="ficha-dato-label">‍👩‍👧 Conciliación 1er</div><div class="ficha-dato-valor">${c1.total} días</div><div style="font-size:11px;color:#718096;margin-top:4px">Consumidos:${c1.consumidos}|Pendientes:${c1.solicitados}</div></div><div class="ficha-dato"><div class="ficha-dato-label">👨‍👩‍👧‍👦 Conciliación 2º</div><div class="ficha-dato-valor">${c2.total} días</div><div style="font-size:11px;color:#718096;margin-top:4px">Consumidos:${c2.consumidos}|Pendientes:${c2.solicitados}</div></div><div class="ficha-dato"><div class="ficha-dato-label">📆 Ventanas</div><div class="ficha-dato-valor">${ven}/${MAX_VENTANAS}</div><div style="font-size:11px;color:#718096;margin-top:4px">De 4 permitidas</div></div></div>${extraEstado}${vr<0||ar<0||sr<0?'<div class="alerta-negativa">⚠️ Días negativos (excedidos)</div>':''}${ven>MAX_VENTANAS?'<div class="alerta-ventanas">⚠️ Superadas 4 ventanas</div>':''}</div>`;
     
     if(fVC.length||fAC.length||fSC.length||fC1C.length||fC2C.length) {
       html+=`<div class="ficha-empleado"><div class="seccion-ficha"><h3>✅ Consumidos (${v.consumidos+a.consumidos+s.consumidos+c1.consumidos+c2.consumidos} días)</h3><div class="lista-fechas">`;
       if(fVC.length) { html+=`<div style="font-size:12px;font-weight:600;color:#718096;margin:8px 0 4px">🏖️ VACACIONES (${v.consumidos})</div>`; fVC.forEach(f=>html+=`<div class="fila-fecha consumida"><span class="fila-fecha-fecha">${formatearFechaLarga(f.fecha)}</span><span class="fila-fecha-tipo">${formatearFecha(f.fecha)}</span><span class="fila-fecha-cantidad">${f.cantidad} día${f.cantidad>1?'s':''}</span></div>`); }
-      if(fAC.length) { html+=`<div style="font-size:12px;font-weight:600;color:#718096;margin:8px 0 4px"> ASUNTOS (${a.consumidos})</div>`; fAC.forEach(f=>html+=`<div class="fila-fecha consumida"><span class="fila-fecha-fecha">${formatearFechaLarga(f.fecha)}</span><span class="fila-fecha-tipo">${formatearFecha(f.fecha)}</span><span class="fila-fecha-cantidad">${f.cantidad} día${f.cantidad>1?'s':''}</span></div>`); }
-      if(fSC.length) { html+=`<div style="font-size:12px;font-weight:600;color:#718096;margin:8px 0 4px">🗓️ SÁBADOS (${s.consumidos})</div>`; fSC.forEach(f=>html+=`<div class="fila-fecha consumida"><span class="fila-fecha-fecha">${formatearFechaLarga(f.fecha)}</span><span class="fila-fecha-tipo">${formatearFecha(f.fecha)}</span><span class="fila-fecha-cantidad">${f.cantidad} día${f.cantidad>1?'s':''}</span></div>`); }
-      if(fC1C.length) { html+=`<div style="font-size:12px;font-weight:600;color:#718096;margin:8px 0 4px">‍👩‍👧 CONCILIACIÓN 1er GRADO (${c1.consumidos})</div>`; fC1C.forEach(f=>html+=`<div class="fila-fecha consumida"><span class="fila-fecha-fecha">${formatearFechaLarga(f.fecha)}</span><span class="fila-fecha-tipo">${formatearFecha(f.fecha)}</span><span class="fila-fecha-cantidad">${f.cantidad} día${f.cantidad>1?'s':''}</span></div>`); }
-      if(fC2C.length) { html+=`<div style="font-size:12px;font-weight:600;color:#718096;margin:8px 0 4px">👨‍👩‍👧‍👦 CONCILIACIÓN 2º GRADO (${c2.consumidos})</div>`; fC2C.forEach(f=>html+=`<div class="fila-fecha consumida"><span class="fila-fecha-fecha">${formatearFechaLarga(f.fecha)}</span><span class="fila-fecha-tipo">${formatearFecha(f.fecha)}</span><span class="fila-fecha-cantidad">${f.cantidad} día${f.cantidad>1?'s':''}</span></div>`); }
+      if(fAC.length) { html+=`<div style="font-size:12px;font-weight:600;color:#718096;margin:8px 0 4px">📋 ASUNTOS (${a.consumidos})</div>`; fAC.forEach(f=>html+=`<div class="fila-fecha consumida"><span class="fila-fecha-fecha">${formatearFechaLarga(f.fecha)}</span><span class="fila-fecha-tipo">${formatearFecha(f.fecha)}</span><span class="fila-fecha-cantidad">${f.cantidad} día${f.cantidad>1?'s':''}</span></div>`); }
+      if(fSC.length) { html+=`<div style="font-size:12px;font-weight:600;color:#718096;margin:8px 0 4px">️ SÁBADOS (${s.consumidos})</div>`; fSC.forEach(f=>html+=`<div class="fila-fecha consumida"><span class="fila-fecha-fecha">${formatearFechaLarga(f.fecha)}</span><span class="fila-fecha-tipo">${formatearFecha(f.fecha)}</span><span class="fila-fecha-cantidad">${f.cantidad} día${f.cantidad>1?'s':''}</span></div>`); }
+      if(fC1C.length) { html+=`<div style="font-size:12px;font-weight:600;color:#718096;margin:8px 0 4px">👨👩‍👧 CONCILIACIÓN 1er GRADO (${c1.consumidos})</div>`; fC1C.forEach(f=>html+=`<div class="fila-fecha consumida"><span class="fila-fecha-fecha">${formatearFechaLarga(f.fecha)}</span><span class="fila-fecha-tipo">${formatearFecha(f.fecha)}</span><span class="fila-fecha-cantidad">${f.cantidad} día${f.cantidad>1?'s':''}</span></div>`); }
+      if(fC2C.length) { html+=`<div style="font-size:12px;font-weight:600;color:#718096;margin:8px 0 4px">👨👩‍👧‍ CONCILIACIÓN 2º GRADO (${c2.consumidos})</div>`; fC2C.forEach(f=>html+=`<div class="fila-fecha consumida"><span class="fila-fecha-fecha">${formatearFechaLarga(f.fecha)}</span><span class="fila-fecha-tipo">${formatearFecha(f.fecha)}</span><span class="fila-fecha-cantidad">${f.cantidad} día${f.cantidad>1?'s':''}</span></div>`); }
       html+='</div></div></div>';
     }
     if(fVS.length||fAS.length||fSS.length||fC1S.length||fC2S.length) {
@@ -859,12 +902,12 @@
       if(fVS.length) { html+=`<div style="font-size:12px;font-weight:600;color:#718096;margin:8px 0 4px">🏖️ VACACIONES (${v.solicitados})</div>`; fVS.forEach(f=>html+=`<div class="fila-fecha pendiente"><span class="fila-fecha-fecha">${formatearFechaLarga(f.fecha)}</span><span class="fila-fecha-tipo">${formatearFecha(f.fecha)}</span><span class="fila-fecha-cantidad">${f.cantidad} día${f.cantidad>1?'s':''}</span></div>`); }
       if(fAS.length) { html+=`<div style="font-size:12px;font-weight:600;color:#718096;margin:8px 0 4px"> ASUNTOS (${a.solicitados})</div>`; fAS.forEach(f=>html+=`<div class="fila-fecha pendiente"><span class="fila-fecha-fecha">${formatearFechaLarga(f.fecha)}</span><span class="fila-fecha-tipo">${formatearFecha(f.fecha)}</span><span class="fila-fecha-cantidad">${f.cantidad} día${f.cantidad>1?'s':''}</span></div>`); }
       if(fSS.length) { html+=`<div style="font-size:12px;font-weight:600;color:#718096;margin:8px 0 4px">🗓️ SÁBADOS (${s.solicitados})</div>`; fSS.forEach(f=>html+=`<div class="fila-fecha pendiente"><span class="fila-fecha-fecha">${formatearFechaLarga(f.fecha)}</span><span class="fila-fecha-tipo">${formatearFecha(f.fecha)}</span><span class="fila-fecha-cantidad">${f.cantidad} día${f.cantidad>1?'s':''}</span></div>`); }
-      if(fC1S.length) { html+=`<div style="font-size:12px;font-weight:600;color:#718096;margin:8px 0 4px">👨👩‍👧 CONCILIACIÓN 1er GRADO (${c1.solicitados})</div>`; fC1S.forEach(f=>html+=`<div class="fila-fecha pendiente"><span class="fila-fecha-fecha">${formatearFechaLarga(f.fecha)}</span><span class="fila-fecha-tipo">${formatearFecha(f.fecha)}</span><span class="fila-fecha-cantidad">${f.cantidad} día${f.cantidad>1?'s':''}</span></div>`); }
-      if(fC2S.length) { html+=`<div style="font-size:12px;font-weight:600;color:#718096;margin:8px 0 4px">👨👩‍👧‍ CONCILIACIÓN 2º GRADO (${c2.solicitados})</div>`; fC2S.forEach(f=>html+=`<div class="fila-fecha pendiente"><span class="fila-fecha-fecha">${formatearFechaLarga(f.fecha)}</span><span class="fila-fecha-tipo">${formatearFecha(f.fecha)}</span><span class="fila-fecha-cantidad">${f.cantidad} día${f.cantidad>1?'s':''}</span></div>`); }
+      if(fC1S.length) { html+=`<div style="font-size:12px;font-weight:600;color:#718096;margin:8px 0 4px">👨‍👩‍ CONCILIACIÓN 1er GRADO (${c1.solicitados})</div>`; fC1S.forEach(f=>html+=`<div class="fila-fecha pendiente"><span class="fila-fecha-fecha">${formatearFechaLarga(f.fecha)}</span><span class="fila-fecha-tipo">${formatearFecha(f.fecha)}</span><span class="fila-fecha-cantidad">${f.cantidad} día${f.cantidad>1?'s':''}</span></div>`); }
+      if(fC2S.length) { html+=`<div style="font-size:12px;font-weight:600;color:#718096;margin:8px 0 4px">👨‍👩‍‍👦 CONCILIACIÓN 2º GRADO (${c2.solicitados})</div>`; fC2S.forEach(f=>html+=`<div class="fila-fecha pendiente"><span class="fila-fecha-fecha">${formatearFechaLarga(f.fecha)}</span><span class="fila-fecha-tipo">${formatearFecha(f.fecha)}</span><span class="fila-fecha-cantidad">${f.cantidad} día${f.cantidad>1?'s':''}</span></div>`); }
       html+='</div></div></div>';
     }
     if(todos.length>0) {
-      html+=`<div class="ficha-empleado"><div class="seccion-ficha"><h3>📜 Historial (${todos.length} registros)</h3><table><thead><tr><th>Fecha</th><th>Tipo</th><th>Días</th><th>Estado</th><th>Notas</th></tr></thead><tbody>`;
+      html+=`<div class="ficha-empleado"><div class="seccion-ficha"><h3> Historial (${todos.length} registros)</h3><table><thead><tr><th>Fecha</th><th>Tipo</th><th>Días</th><th>Estado</th><th>Notas</th></tr></thead><tbody>`;
       todos.forEach(r=>{const est=fechaStrToDate(r.fecha)<=hoy?'<span class="badge-estado badge-consumido">Consumida</span>':'<span class="badge-estado badge-pendiente">Pendiente</span>';html+=`<tr><td>${formatearFechaCorta(r.fecha)}</td><td>${tipoTxt(r.tipo)}</td><td><strong>${r.cantidad}</strong></td><td>${est}</td><td>${r.notas||'-'}</td></tr>`;});
       html+='</tbody></table></div></div>';
     }
@@ -947,50 +990,165 @@
     guardar(); setTimeout(()=>{cancelarEdicionRegistro();msg.innerHTML='';},2000);
   }
 
+  // === NUEVAS FUNCIONES PARA RESUMEN ESCUETO ===
+  function cambiarVistaResumen(vista) {
+    vistaResumenActual = vista;
+    detalleResumenAbierto = null;
+    document.getElementById('tabConsumidos').classList.toggle('active', vista === 'consumidos');
+    document.getElementById('tabRestantes').classList.toggle('active', vista === 'restantes');
+    renderResumen();
+  }
+
+  function toggleDetalleResumen(empId) {
+    if (vistaResumenActual !== 'consumidos') return;
+    detalleResumenAbierto = detalleResumenAbierto === empId ? null : empId;
+    renderResumen();
+  }
+
   function renderResumen() {
-    const cont=document.getElementById('resumenContenido');
-    const filtro=(document.getElementById('buscarResumen').value||'').toLowerCase();
-    const lista=empleados.filter(e=>e.nombre.toLowerCase().includes(filtro));
-    if(lista.length===0) { cont.innerHTML='<div class="empty">Sin empleados</div>'; return; }
-    let html='';
-    lista.forEach(e=>{
-      const v=calcularDiasPorEstado(e.id,'vacaciones'), a=calcularDiasPorEstado(e.id,'ap'), s=calcularDiasPorEstado(e.id,'sabados');
-      const c1=calcularDiasPorEstado(e.id,'conciliacion1'), c2=calcularDiasPorEstado(e.id,'conciliacion2');
-      const vr=e.vac-v.total, ar=e.ap-a.total, sr=e.sab-s.total;
-      const ven=calcularVentanas(e.id);
-      const cat={encargado:'Encargado',ordenanza:'Ordenanza',limpiador:'Limpiador',reserva:'Reserva'}[e.categoria];
-      const fVS=obtenerFechasSolicitadas(e.id,'vacaciones'), fAS=obtenerFechasSolicitadas(e.id,'ap'), fSS=obtenerFechasSolicitadas(e.id,'sabados');
-      const fC1S=obtenerFechasSolicitadas(e.id,'conciliacion1'), fC2S=obtenerFechasSolicitadas(e.id,'conciliacion2');
-      const fVC=obtenerFechasConsumidas(e.id,'vacaciones'), fAC=obtenerFechasConsumidas(e.id,'ap'), fSC=obtenerFechasConsumidas(e.id,'sabados');
-      const fC1C=obtenerFechasConsumidas(e.id,'conciliacion1'), fC2C=obtenerFechasConsumidas(e.id,'conciliacion2');
-      const itemF=f=>`<div class="fecha-item"><span class="fecha-text">${formatearFechaLarga(f.fecha)}</span><span class="fecha-dias">${f.cantidad} ${f.cantidad>1?'días':'día'}</span></div>`;
-      
-      const badgeBaja = e.enBaja ? `<span style="background:#fff5f5;color:#c53030;padding:2px 8px;border-radius:8px;font-size:11px;font-weight:bold;border:1px solid #feb2b2; margin-left:8px;"> DE BAJA</span>` : '';
-      
-      html+=`<div class="resumen-card"><div><div style="font-size:20px;font-weight:bold;display:flex;align-items:center;flex-wrap:wrap;">${e.nombre}${badgeBaja} ${ven>=MAX_VENTANAS?'⚠️':''}</div><span class="badge ${e.categoria}" style="margin-top:5px">${cat}</span></div><div class="resumen-grid"><div class="stat"><div class="stat-label">🏖️ Vacaciones</div><div class="stat-value">${vr}/${e.vac}</div><div class="stat-sub">Consumidas:${v.consumidos}</div>${v.solicitados?`<div class="stat-sub" style="color:#fef08a;font-weight:600">Solicitadas:${v.solicitados}</div>`:''}</div><div class="stat" style="${ven>=MAX_VENTANAS?'background:rgba(229,62,62,0.3)':''}"><div class="stat-label">📆 Ventanas</div><div class="stat-value">${ven}/${MAX_VENTANAS}</div><div class="stat-sub">Usadas</div></div><div class="stat"><div class="stat-label">📋 Asuntos</div><div class="stat-value">${ar}/${e.ap}</div><div class="stat-sub">Consumidos:${a.consumidos}</div>${a.solicitados?`<div class="stat-sub" style="color:#fef08a;font-weight:600">Solicitados:${a.solicitados}</div>`:''}</div><div class="stat"><div class="stat-label">🗓️ Sábados</div><div class="stat-value">${sr}/${e.sab}</div><div class="stat-sub">Consumidos:${s.consumidos}</div>${s.solicitados?`<div class="stat-sub" style="color:#fef08a;font-weight:600">Solicitados:${s.solicitados}</div>`:''}</div><div class="stat"><div class="stat-label">👨‍👩‍👧 Conc. 1er</div><div class="stat-value">${c1.total}</div><div class="stat-sub">Consumidos:${c1.consumidos}</div>${c1.solicitados?`<div class="stat-sub" style="color:#fef08a;font-weight:600">Solicitados:${c1.solicitados}</div>`:''}</div><div class="stat"><div class="stat-label">👨‍👩‍‍👦 Conc. 2º</div><div class="stat-value">${c2.total}</div><div class="stat-sub">Consumidos:${c2.consumidos}</div>${c2.solicitados?`<div class="stat-sub" style="color:#fef08a;font-weight:600">Solicitados:${c2.solicitados}</div>`:''}</div></div>`;
-      if(v.consumidos||a.consumidos||s.consumidos||c1.consumidos||c2.consumidos) {
-        html+=`<div class="consumidos-box"><div class="consumidos-title">✅ Consumidos</div>`;
-        if(v.consumidos) html+=`<div style="margin:8px 0"><div style="font-size:12px;font-weight:600;margin-bottom:6px;opacity:0.9">🏖️ Vacaciones:</div>${fVC.map(itemF).join('')}</div>`;
-        if(a.consumidos) html+=`<div style="margin:8px 0"><div style="font-size:12px;font-weight:600;margin-bottom:6px;opacity:0.9">📋 Asuntos:</div>${fAC.map(itemF).join('')}</div>`;
-        if(s.consumidos) html+=`<div style="margin:8px 0"><div style="font-size:12px;font-weight:600;margin-bottom:6px;opacity:0.9">🗓️ Sábados:</div>${fSC.map(itemF).join('')}</div>`;
-        if(c1.consumidos) html+=`<div style="margin:8px 0"><div style="font-size:12px;font-weight:600;margin-bottom:6px;opacity:0.9">👨‍👩‍👧 Conciliación 1er grado:</div>${fC1C.map(itemF).join('')}</div>`;
-        if(c2.consumidos) html+=`<div style="margin:8px 0"><div style="font-size:12px;font-weight:600;margin-bottom:6px;opacity:0.9">👨‍‍👧‍👦 Conciliación 2º grado:</div>${fC2C.map(itemF).join('')}</div>`;
-        html+='</div>';
-      }
-      if(v.solicitados||a.solicitados||s.solicitados||c1.solicitados||c2.solicitados) {
-        html+=`<div class="solicitados-box"><div class="solicitados-title">📅 Pendientes</div>`;
-        if(v.solicitados) html+=`<div style="margin:8px 0"><div style="font-size:12px;font-weight:600;margin-bottom:6px;opacity:0.9">🏖️ Vacaciones:</div>${fVS.map(itemF).join('')}</div>`;
-        if(a.solicitados) html+=`<div style="margin:8px 0"><div style="font-size:12px;font-weight:600;margin-bottom:6px;opacity:0.9"> Asuntos:</div>${fAS.map(itemF).join('')}</div>`;
-        if(s.solicitados) html+=`<div style="margin:8px 0"><div style="font-size:12px;font-weight:600;margin-bottom:6px;opacity:0.9">🗓️ Sábados:</div>${fSS.map(itemF).join('')}</div>`;
-        if(c1.solicitados) html+=`<div style="margin:8px 0"><div style="font-size:12px;font-weight:600;margin-bottom:6px;opacity:0.9">‍👩‍👧 Conciliación 1er grado:</div>${fC1S.map(itemF).join('')}</div>`;
-        if(c2.solicitados) html+=`<div style="margin:8px 0"><div style="font-size:12px;font-weight:600;margin-bottom:6px;opacity:0.9">👨‍👩‍👧‍👦 Conciliación 2º grado:</div>${fC2S.map(itemF).join('')}</div>`;
-        html+='</div>';
-      }
-      if(vr<0||ar<0||sr<0) html+='<div style="margin-top:10px;background:rgba(229,62,62,0.3);padding:8px;border-radius:6px">⚠️ Días negativos</div>';
-      if(ven>MAX_VENTANAS) html+='<div style="margin-top:10px;background:rgba(229,62,62,0.3);padding:8px;border-radius:6px">⚠️ +4 ventanas</div>';
-      html+='</div>';
+    const cont = document.getElementById('resumenContenido');
+    const filtro = (document.getElementById('buscarResumen').value || '').toLowerCase();
+    const lista = empleados.filter(e => e.nombre.toLowerCase().includes(filtro)).sort((a,b) => a.nombre.localeCompare(b.nombre));
+    
+    if (lista.length === 0) { cont.innerHTML = '<div class="empty">Sin empleados</div>'; return; }
+    
+    const hoy = getHoy();
+    
+    // Calcular datos de cada empleado
+    const datos = lista.map(e => {
+      const v = calcularDiasPorEstado(e.id, 'vacaciones');
+      const a = calcularDiasPorEstado(e.id, 'ap');
+      const s = calcularDiasPorEstado(e.id, 'sabados');
+      const vr = e.vac - v.total;
+      const ar = e.ap - a.total;
+      const sr = e.sab - s.total;
+      return { emp: e, v, a, s, vr, ar, sr };
     });
-    cont.innerHTML=html;
+    
+    let html = '<div class="resumen-table-container">';
+    
+    // Cabecera
+    html += '<div class="resumen-row header">';
+    html += '<div class="resumen-cell">Nombre y Apellidos</div>';
+    html += '<div class="resumen-cell center">Vacaciones</div>';
+    html += '<div class="resumen-cell center">Asuntos Propios</div>';
+    html += '<div class="resumen-cell center">Sábados</div>';
+    html += '</div>';
+    
+    // Filas
+    datos.forEach(d => {
+      let valVac, valAP, valSab;
+      if (vistaResumenActual === 'consumidos') {
+        valVac = d.v.consumidos;
+        valAP = d.a.consumidos;
+        valSab = d.s.consumidos;
+      } else {
+        valVac = d.vr;
+        valAP = d.ar;
+        valSab = d.sr;
+      }
+      
+      const claseVac = valVac === 0 ? 'zero' : valVac < 0 ? 'low' : 'ok';
+      const claseAP = valAP === 0 ? 'zero' : valAP < 0 ? 'low' : 'ok';
+      const claseSab = valSab === 0 ? 'zero' : valSab < 0 ? 'low' : 'ok';
+      
+      const esClick = vistaResumenActual === 'consumidos';
+      const isOpen = detalleResumenAbierto === d.emp.id;
+      
+      html += `<div class="resumen-row${esClick ? ' clickable' : ''}"${esClick ? ` onclick="toggleDetalleResumen(${d.emp.id})"` : ''}>`;
+      html += `<div class="resumen-cell nombre">${esClick ? '👉 ' : ''}${d.emp.nombre}</div>`;
+      html += `<div class="resumen-cell center"><span class="valor ${claseVac}">${valVac}</span></div>`;
+      html += `<div class="resumen-cell center"><span class="valor ${claseAP}">${valAP}</span></div>`;
+      html += `<div class="resumen-cell center"><span class="valor ${claseSab}">${valSab}</span></div>`;
+      html += '</div>';
+      
+      // Detalle expandible (solo en consumidos y solo si está abierto)
+      if (esClick && isOpen) {
+        const fVC = obtenerFechasConsumidas(d.emp.id, 'vacaciones');
+        const fAC = obtenerFechasConsumidas(d.emp.id, 'ap');
+        const fSC = obtenerFechasConsumidas(d.emp.id, 'sabados');
+        
+        html += '<div class="resumen-detail open">';
+        html += `<h4>📋 Detalle de días consumidos - ${d.emp.nombre}</h4>`;
+        
+        // Vacaciones: mostrar periodos (inicio - fin)
+        html += '<div class="resumen-detail-section">';
+        html += '<div class="resumen-detail-section-title">🏖️ Vacaciones consumidas</div>';
+        if (fVC.length === 0) {
+          html += '<div class="resumen-detail-empty">Sin vacaciones consumidas</div>';
+        } else {
+          // Agrupar por periodos
+          const periodos = agruparPeriodos(fVC);
+          periodos.forEach(p => {
+            html += `<div class="resumen-detail-item vac">`;
+            html += `<span>📅 ${formatearFechaCorta(p.inicio)} - ${formatearFechaCorta(p.fin)}</span>`;
+            html += `<span><strong>${p.dias} día${p.dias>1?'s':''}</strong></span>`;
+            html += `</div>`;
+          });
+        }
+        html += '</div>';
+        
+        // Asuntos propios: cada registro con fecha
+        html += '<div class="resumen-detail-section">';
+        html += '<div class="resumen-detail-section-title">📋 Asuntos propios consumidos</div>';
+        if (fAC.length === 0) {
+          html += '<div class="resumen-detail-empty">Sin asuntos propios consumidos</div>';
+        } else {
+          fAC.forEach(f => {
+            html += `<div class="resumen-detail-item ap">`;
+            html += `<span>📅 ${formatearFechaLarga(f.fecha)}</span>`;
+            html += `<span><strong>${f.cantidad} día${f.cantidad>1?'s':''}</strong></span>`;
+            html += `</div>`;
+          });
+        }
+        html += '</div>';
+        
+        // Sábados: cada registro con fecha
+        html += '<div class="resumen-detail-section">';
+        html += '<div class="resumen-detail-section-title">️ Sábados consumidos</div>';
+        if (fSC.length === 0) {
+          html += '<div class="resumen-detail-empty">Sin sábados consumidos</div>';
+        } else {
+          fSC.forEach(f => {
+            html += `<div class="resumen-detail-item sab">`;
+            html += `<span>📅 ${formatearFechaLarga(f.fecha)}</span>`;
+            html += `<span><strong>${f.cantidad} día${f.cantidad>1?'s':''}</strong></span>`;
+            html += `</div>`;
+          });
+        }
+        html += '</div>';
+        
+        html += '</div>';
+      }
+    });
+    
+    html += '</div>';
+    cont.innerHTML = html;
+  }
+
+  // Agrupa registros de vacaciones en periodos continuos
+  function agruparPeriodos(registros) {
+    if (registros.length === 0) return [];
+    // Expandir cada registro en sus días hábiles individuales
+    const todosDias = [];
+    registros.forEach(reg => {
+      obtenerDiasHabilesDeRegistro(reg).forEach(d => todosDias.push(d));
+    });
+    const unicos = [...new Set(todosDias)].sort();
+    if (unicos.length === 0) return [];
+    
+    const periodos = [];
+    let actual = [unicos[0]];
+    for (let i = 1; i < unicos.length; i++) {
+      const ant = fechaStrToDate(unicos[i-1]);
+      const act = fechaStrToDate(unicos[i]);
+      let t = new Date(ant), entre = 0;
+      while (t < act) { t.setDate(t.getDate()+1); if (esDiaHabil(t)) entre++; }
+      if (entre <= 1) actual.push(unicos[i]);
+      else { periodos.push({inicio: actual[0], fin: actual[actual.length-1], dias: actual.length}); actual = [unicos[i]]; }
+    }
+    periodos.push({inicio: actual[0], fin: actual[actual.length-1], dias: actual.length});
+    return periodos;
   }
 
   function renderHistorial() {
