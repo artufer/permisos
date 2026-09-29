@@ -2,1701 +2,1575 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Control de Personal</title>
+<title>Control de Personal - Edificio</title>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+<script src="config.js"></script>
 <style>
-*{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',Tahoma,sans-serif}
-body{background:#f0f4f8;color:#2d3748;padding:20px;padding-bottom:80px;font-size:14px}
-.container{max-width:1400px;margin:0 auto}
-h1{color:#2c5282;margin-bottom:15px;text-align:center;font-size:26px}
-.tabs{display:flex;gap:5px;margin-bottom:20px;flex-wrap:wrap;justify-content:center}
-.tab{flex:1;min-width:100px;max-width:140px;padding:12px 8px;background:#cbd5e0;border:none;border-radius:8px 8px 0 0;cursor:pointer;font-weight:600;font-size:13px;transition:.2s;text-align:center}
-.tab.active{background:#2c5282;color:white}
-.panel{background:white;padding:25px;border-radius:0 12px 12px 12px;box-shadow:0 4px 12px rgba(0,0,0,.08);display:none}
-.panel.active{display:block}
-.form-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:15px;align-items:end}
-.form-group{display:flex;flex-direction:column;flex:1;min-width:150px}
-label{font-size:13px;font-weight:600;margin-bottom:5px;color:#4a5568}
-input,select{padding:10px;border:1px solid #cbd5e0;border-radius:6px;font-size:14px}
-input:focus,select:focus{outline:none;border-color:#2c5282}
-button.primary{background:#2c5282;color:white;padding:10px 20px;border:none;border-radius:6px;cursor:pointer;font-weight:600;font-size:14px}
-button.primary:hover{background:#2b6cb0}
-button.secondary{background:#718096;color:white;padding:10px 20px;border:none;border-radius:6px;cursor:pointer;font-weight:600;font-size:14px}
-button.secondary:hover{background:#4a5568}
-button.info{background:#3182ce;color:white;padding:10px 20px;border:none;border-radius:6px;cursor:pointer;font-weight:600;font-size:14px}
-button.info:hover{background:#2b6cb0}
-button.edit{background:#ed8936;color:white;padding:6px 12px;border:none;border-radius:4px;cursor:pointer;font-size:12px;margin-right:5px}
-button.danger{background:#e53e3e;color:white;padding:6px 12px;border:none;border-radius:4px;cursor:pointer;font-size:12px}
-button.baja{background:#e53e3e;color:white;padding:6px 12px;border:none;border-radius:4px;cursor:pointer;font-size:12px;margin-right:5px}
-button.alta{background:#38a169;color:white;padding:6px 12px;border:none;border-radius:4px;cursor:pointer;font-size:12px;margin-right:5px}
-button.reset{background:#c53030;color:white;padding:12px 24px;border:none;border-radius:6px;cursor:pointer;font-weight:600;font-size:14px;margin-top:20px}
-button.reformar{background:#805ad5;color:white;padding:6px 12px;border:none;border-radius:4px;cursor:pointer;font-size:12px;margin-right:5px}
-table{width:100%;border-collapse:collapse;margin-top:15px}
-th{background:#2c5282;color:white;padding:12px;text-align:left;font-size:13px}
-td{padding:10px 12px;border-bottom:1px solid #e2e8f0;font-size:14px}
-tr:hover{background:#f7fafc}
-.badge{display:inline-block;padding:4px 10px;border-radius:12px;font-size:11px;font-weight:600;text-transform:uppercase}
-.badge.ordenanza{background:#bee3f8;color:#2c5282}
-.badge.limpiador{background:#c6f6d5;color:#22543d}
-.badge.reserva{background:#fefcbf;color:#744210}
-.badge.encargado{background:#fed7d7;color:#742a2a}
-.badge-estado{display:inline-block;padding:3px 8px;border-radius:10px;font-size:11px;font-weight:600}
-.badge-consumido{background:#c6f6d5;color:#22543d}
-.badge-pendiente{background:#fefcbf;color:#744210}
-.empty{text-align:center;padding:40px;color:#a0aec0}
-.toolbar{display:flex;gap:10px;margin-bottom:15px;flex-wrap:wrap}
-.search{flex:1;min-width:200px}
-.warning-box{background:#fed7d7;border-left:4px solid #e53e3e;padding:12px;border-radius:6px;margin-top:10px;color:#742a2a}
-.info-box{background:#bee3f8;border-left:4px solid #2c5282;padding:12px;border-radius:6px;margin-top:10px;color:#2c5282}
-.success-box{background:#c6f6d5;border-left:4px solid #38a169;padding:12px;border-radius:6px;margin-top:10px;color:#22543d}
-.edit-mode-banner{background:#ed8936;color:white;padding:12px;border-radius:6px;margin-bottom:15px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
-.edit-mode-banner.reformando{background:#805ad5}
-.reset-zone{background:#fff5f5;border:2px dashed #e53e3e;border-radius:12px;padding:20px;margin-top:30px;text-align:center}
-.nuevo-anio-zone{background:#ebf8ff;border:2px dashed #3182ce;border-radius:12px;padding:20px;margin-top:20px;text-align:center}
-.plantilla-header{background:linear-gradient(135deg,#4299e1,#3182ce);color:white;padding:20px;border-radius:12px;margin-bottom:20px}
-.fecha-selector{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.fecha-selector input{padding:10px;border-radius:6px;border:none;font-size:14px}
-.fecha-selector button{background:white;color:#2c5282;padding:10px 20px;border:none;border-radius:6px;cursor:pointer;font-weight:600}
-.plantilla-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-top:20px}
-.plantilla-columna{background:white;padding:20px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,.08)}
-.plantilla-columna h3{margin-bottom:15px;padding-bottom:10px;border-bottom:2px solid #e2e8f0}
-.categoria-seccion{margin-bottom:20px}
-.categoria-header{background:#f7fafc;padding:10px 15px;border-radius:8px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;border-left:4px solid #2c5282}
-.categoria-contador{background:#2c5282;color:white;padding:4px 12px;border-radius:12px;font-size:12px;font-weight:600}
-.trabajador-item{padding:12px;margin-bottom:10px;border-radius:8px;display:flex;justify-content:space-between;align-items:center}
-.trabajando{background:#f0fff4;border-left:4px solid #38a169}
-.vacaciones{background:#fffaf0;border-left:4px solid #ed8936}
-.baja-medica{background:#fff5f5;border-left:4px solid #e53e3e}
-.trabajador-nombre{font-weight:600;font-size:15px}
-.trabajador-periodo{font-size:12px;color:#2c5282;margin-top:4px;font-weight:500}
-.festivos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:15px;margin-top:15px}
-.festivo-card{background:#f7fafc;padding:15px;border-radius:8px;border-left:4px solid #e53e3e;display:flex;justify-content:space-between;align-items:center}
-.consulta-header{background:linear-gradient(135deg,#48bb78,#38a169);color:white;padding:25px;border-radius:12px;margin-bottom:20px}
-.consulta-selector{display:flex;gap:10px;align-items:end;flex-wrap:wrap}
-.consulta-selector select{padding:12px;border-radius:6px;border:none;font-size:15px;min-width:280px;font-weight:500}
-.consulta-selector button{background:white;color:#2c5282;padding:12px 24px;border:none;border-radius:6px;cursor:pointer;font-weight:600}
-.ficha-empleado{background:white;padding:25px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,.08);margin-bottom:20px}
-.ficha-encabezado{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:15px;padding-bottom:15px;border-bottom:2px solid #e2e8f0;margin-bottom:20px}
-.ficha-nombre{font-size:28px;font-weight:bold;color:#2c5282}
-.ficha-datos{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:15px;margin-bottom:25px}
-.ficha-dato{background:#f7fafc;padding:15px;border-radius:8px;border-left:4px solid #2c5282}
-.ficha-dato-label{font-size:11px;color:#718096;text-transform:uppercase;font-weight:600}
-.ficha-dato-valor{font-size:18px;font-weight:bold;color:#2d3748;margin-top:4px}
-.seccion-ficha{margin-top:20px}
-.seccion-ficha h3{color:#2c5282;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid #e2e8f0}
-.lista-fechas{display:flex;flex-direction:column;gap:6px}
-.fila-fecha{background:#f7fafc;padding:10px 14px;border-radius:6px;display:flex;justify-content:space-between;align-items:center;font-size:14px;flex-wrap:wrap;gap:8px}
-.fila-fecha.consumida{border-left:4px solid #38a169}
-.fila-fecha.pendiente{border-left:4px solid #ed8936}
-.fila-fecha-fecha{font-weight:600;color:#2d3748}
-.fila-fecha-cantidad{background:#2c5282;color:white;padding:4px 10px;border-radius:12px;font-size:12px;font-weight:600}
-.fila-fecha-acciones{display:flex;gap:5px}
-.alerta-negativa{background:#fed7d7;color:#742a2a;padding:10px;border-radius:6px;margin-top:10px;font-weight:600}
-.alerta-ventanas{background:#fefcbf;color:#744210;padding:10px;border-radius:6px;margin-top:10px;font-weight:600}
-#btnSubir{position:fixed;bottom:30px;right:30px;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#2c5282,#2b6cb0);color:white;border:none;cursor:pointer;font-size:24px;font-weight:bold;box-shadow:0 4px 15px rgba(44,82,130,.4);display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transform:translateY(20px);transition:all .3s ease;z-index:9999}
-#btnSubir.visible{opacity:1;visibility:visible;transform:translateY(0)}
-#btnSubir::after{content:'↑';font-size:28px}
-.modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);z-index:10000;justify-content:center;align-items:center}
-.modal-content{background:white;padding:25px;border-radius:12px;max-width:600px;width:90%;max-height:90vh;overflow-y:auto;box-shadow:0 10px 25px rgba(0,0,0,.3)}
-.modal-content h3{color:#2c5282;margin-bottom:15px}
-.dashboard-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:15px;margin-bottom:25px}
-.dashboard-card{background:linear-gradient(135deg,#667eea,#764ba2);color:white;padding:20px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,.1);cursor:pointer;transition:transform .2s}
-.dashboard-card:hover{transform:translateY(-3px)}
-.dashboard-card.verde{background:linear-gradient(135deg,#48bb78,#38a169)}
-.dashboard-card.rojo{background:linear-gradient(135deg,#f56565,#e53e3e)}
-.dashboard-card.naranja{background:linear-gradient(135deg,#ed8936,#dd6b20)}
-.dashboard-card.azul{background:linear-gradient(135deg,#4299e1,#3182ce)}
-.dashboard-card.morado{background:linear-gradient(135deg,#9f7aea,#805ad5)}
-.dashboard-card h3{font-size:13px;opacity:.9;margin-bottom:8px;text-transform:uppercase}
-.dashboard-card .valor{font-size:32px;font-weight:bold}
-.dashboard-card .sub{font-size:12px;opacity:.85;margin-top:4px}
-.dashboard-seccion{background:white;padding:20px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.06);margin-bottom:20px}
-.dashboard-seccion h3{color:#2c5282;margin-bottom:15px;padding-bottom:8px;border-bottom:2px solid #e2e8f0}
-.accesos-rapidos{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
-.acceso-rapido{background:#f7fafc;padding:15px;border-radius:8px;text-align:center;cursor:pointer;transition:all .2s;border:2px solid transparent}
-.acceso-rapido:hover{background:#ebf8ff;border-color:#3182ce}
-.acceso-rapido .icono{font-size:28px;margin-bottom:5px}
-.acceso-rapido .texto{font-size:13px;font-weight:600;color:#2c5282}
-.calendario-header{background:linear-gradient(135deg,#667eea,#764ba2);color:white;padding:20px;border-radius:12px;margin-bottom:20px}
-.calendario-nav{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:space-between}
-.calendario-nav-botones{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.calendario-nav-botones button{background:white;color:#2c5282;padding:10px 16px;border:none;border-radius:6px;cursor:pointer;font-weight:600;font-size:14px}
-.calendario-nav-botones select{padding:10px;border-radius:6px;border:none;font-size:14px;font-weight:600}
-.calendario-mes-titulo{font-size:22px;font-weight:bold;text-transform:capitalize}
-.calendario-leyenda{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:15px;padding:12px;background:#f7fafc;border-radius:8px}
-.leyenda-item{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600}
-.leyenda-color{width:16px;height:16px;border-radius:4px}
-.leyenda-color.vac{background:#ed8936}
-.leyenda-color.ap{background:#805ad5}
-.leyenda-color.sab{background:#3182ce}
-.leyenda-color.c1{background:#d69e2e}
-.leyenda-color.c2{background:#38a169}
-.leyenda-color.baja{background:#e53e3e}
-.leyenda-color.reposo{background:#9f7aea}
-.leyenda-color.sinSueldo{background:#718096}
-.leyenda-color.festivo{background:#a0aec0}
-.calendario-filtro-grupo{margin-bottom:15px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.calendario-filtro-grupo select{padding:10px;border-radius:6px;border:1px solid #cbd5e0;font-size:14px;flex:1;min-width:200px}
-.calendario-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;background:#e2e8f0;padding:8px;border-radius:8px}
-.calendario-dia-header{background:#2c5282;color:white;padding:12px 4px;text-align:center;font-weight:600;font-size:13px;text-transform:uppercase}
-.calendario-dia{background:white;min-height:140px;padding:8px;border-radius:6px;position:relative;cursor:pointer;transition:all .2s}
-.calendario-dia:hover{background:#ebf8ff;transform:scale(1.02);z-index:2}
-.calendario-dia.hoy{box-shadow:0 0 0 3px #3182ce}
-.calendario-dia.otro-mes{background:#f7fafc;opacity:.5}
-.calendario-dia.festivo{background:#fed7d7}
-.calendario-dia.resaltado{box-shadow:0 0 0 3px #d69e2e;z-index:1}
-.dia-numero{font-size:14px;font-weight:bold;color:#2d3748;margin-bottom:6px}
-.dia-festivo-nombre{font-size:10px;color:#c53030;font-weight:600;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.dia-permisos{display:flex;flex-direction:column;gap:3px}
-.dia-permiso{font-size:10px;padding:3px 5px;border-radius:4px;color:white;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
-.dia-permiso.vac{background:#ed8936}
-.dia-permiso.ap{background:#805ad5}
-.dia-permiso.sab{background:#3182ce}
-.dia-permiso.c1{background:#d69e2e}
-.dia-permiso.c2{background:#38a169}
-.dia-permiso.baja{background:#e53e3e}
-.dia-permiso.reposo{background:#9f7aea}
-.dia-permiso.sinSueldo{background:#718096}
-.dia-mas{font-size:10px;color:#718096;font-weight:600;text-align:center;margin-top:3px}
-.calendario-detalle{margin-top:20px;background:white;padding:25px;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,.15);display:none;border:3px solid #2c5282}
-.calendario-detalle.activo{display:block;animation:slideDown .3s ease}
-@keyframes slideDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
-.calendario-detalle h3{color:#2c5282;margin-bottom:20px;padding-bottom:12px;border-bottom:3px solid #e2e8f0;font-size:22px}
-.detalle-empleado-item{padding:12px;margin-bottom:10px;border-radius:8px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;font-size:15px}
-.detalle-empleado-item.vac{background:#fffaf0;border-left:5px solid #ed8936}
-.detalle-empleado-item.ap{background:#faf5ff;border-left:5px solid #805ad5}
-.detalle-empleado-item.sab{background:#ebf8ff;border-left:5px solid #3182ce}
-.detalle-empleado-item.c1{background:#fefcbf;border-left:5px solid #d69e2e}
-.detalle-empleado-item.c2{background:#f0fff4;border-left:5px solid #38a169}
-.detalle-empleado-item.baja{background:#fff5f5;border-left:5px solid #e53e3e}
-.detalle-empleado-item.reposo{background:#faf5ff;border-left:5px solid #9f7aea}
-.detalle-empleado-item.sinSueldo{background:#f7fafc;border-left:5px solid #718096}
-.plantilla-btn-calendario{background:white;color:#2c5282;padding:10px 20px;border:none;border-radius:6px;cursor:pointer;font-weight:600;font-size:14px;margin-left:10px}
-.calendario-individual-header{background:linear-gradient(135deg,#48bb78,#38a169);color:white;padding:20px;border-radius:12px;margin-bottom:20px}
-.calendario-individual-selector{display:flex;gap:10px;align-items:end;flex-wrap:wrap}
-.calendario-individual-selector select{padding:12px;border-radius:6px;border:none;font-size:15px;min-width:280px;font-weight:500}
-.calendario-individual-selector button{background:white;color:#2c5282;padding:12px 24px;border:none;border-radius:6px;cursor:pointer;font-weight:600}
-.calendario-individual-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;background:#e2e8f0;padding:6px;border-radius:8px;margin-top:20px}
-.calendario-individual-dia-header{background:#2c5282;color:white;padding:10px 4px;text-align:center;font-weight:600;font-size:12px;text-transform:uppercase}
-.calendario-individual-dia{background:white;min-height:80px;padding:6px;border-radius:4px;position:relative}
-.calendario-individual-dia.hoy{box-shadow:0 0 0 2px #3182ce}
-.calendario-individual-dia.otro-mes{background:#f7fafc;opacity:.5}
-.calendario-individual-dia.festivo{background:#fed7d7}
-.calendario-individual-dia.vacaciones{background:#fffaf0;border:2px solid #ed8936}
-.calendario-individual-dia.asuntos{background:#faf5ff;border:2px solid #805ad5}
-.calendario-individual-dia.sabados{background:#ebf8ff;border:2px solid #3182ce}
-.calendario-individual-dia.conciliacion1{background:#fefcbf;border:2px solid #d69e2e}
-.calendario-individual-dia.conciliacion2{background:#f0fff4;border:2px solid #38a169}
-.calendario-individual-dia.baja{background:#fff5f5;border:2px solid #e53e3e}
-.calendario-individual-dia.reposo{background:#faf5ff;border:2px solid #9f7aea}
-.calendario-individual-dia.sinSueldo{background:#f7fafc;border:2px solid #718096}
-.ind-dia-numero{font-size:13px;font-weight:bold;color:#2d3748;margin-bottom:4px}
-.ind-dia-tipo{font-size:9px;padding:2px 4px;border-radius:3px;color:white;font-weight:600}
-.ind-dia-tipo.vac{background:#ed8936}
-.ind-dia-tipo.ap{background:#805ad5}
-.ind-dia-tipo.sab{background:#3182ce}
-.ind-dia-tipo.c1{background:#d69e2e}
-.ind-dia-tipo.c2{background:#38a169}
-.ind-dia-tipo.baja{background:#e53e3e}
-.ind-dia-tipo.reposo{background:#9f7aea}
-.ind-dia-tipo.sinSueldo{background:#718096}
-.resumen-tabla-wrapper{max-height:600px;overflow-y:auto;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.06);margin-bottom:20px;background:white}
-.resumen-tabla-container{background:white}
-.resumen-tabla-header{display:grid;grid-template-columns:2fr repeat(5,1fr);background:#2c5282;color:white;font-weight:600;font-size:11px;text-transform:uppercase;position:sticky;top:0;z-index:10}
-.resumen-tabla-header>div{padding:12px 6px;text-align:center}
-.resumen-tabla-header>div:first-child{text-align:left;padding-left:15px}
-.resumen-tabla-fila{display:grid;grid-template-columns:2fr repeat(5,1fr);border-bottom:1px solid #e2e8f0;transition:background .15s}
-.resumen-tabla-fila:hover{background:#f7fafc}
-.resumen-tabla-celda{padding:10px 6px;text-align:center;font-size:12px;display:flex;flex-direction:column;gap:2px}
-.resumen-tabla-celda.nombre{text-align:left;padding-left:15px;font-weight:600;color:#2c5282;justify-content:center}
-.resumen-tabla-celda .valor-otorgado{font-weight:700;font-size:14px;color:#2c5282}
-.resumen-tabla-celda .valor-consumido{font-weight:700;font-size:14px;color:#ed8936}
-.resumen-tabla-celda .valor-restante{font-weight:700;font-size:14px}
-.valor-restante.positivo{color:#38a169}
-.valor-restante.negativo{color:#e53e3e}
-.valor-restante.cero{color:#a0aec0}
-.resumen-subtitulo{font-size:9px;color:#718096;text-transform:uppercase}
-.seccion-historial{margin-bottom:25px}
-.seccion-historial h3{color:#2c5282;margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid #e2e8f0}
-.sync-status{position:fixed;top:10px;right:10px;background:#38a169;color:white;padding:8px 15px;border-radius:20px;font-size:12px;font-weight:600;z-index:9999;box-shadow:0 2px 8px rgba(0,0,0,.2)}
-.sync-status.error{background:#e53e3e}
-.sync-status.syncing{background:#ed8936}
-@media(max-width:768px){body{padding:10px}.tabs{gap:3px}.tab{min-width:80px;padding:8px 3px;font-size:10px}.panel{padding:15px}.form-row{flex-direction:column}.form-group{width:100%}input,select{padding:12px;font-size:16px;min-height:44px}button.primary,button.secondary,button.info{padding:14px 20px;width:100%;margin-bottom:8px}.plantilla-grid{grid-template-columns:1fr}.fecha-selector{flex-direction:column;align-items:stretch}.fecha-selector input,.fecha-selector button,.plantilla-btn-calendario{width:100%;margin-top:8px}.ficha-datos{grid-template-columns:1fr}.consulta-selector{flex-direction:column}.consulta-selector select,.consulta-selector button{width:100%}.calendario-grid{gap:4px;padding:4px}.calendario-dia-header{padding:8px 2px;font-size:11px}.calendario-dia{min-height:110px;padding:5px}.dia-numero{font-size:12px}.dia-permiso{font-size:8px}.calendario-nav{flex-direction:column}.calendario-nav-botones{justify-content:center}.resumen-tabla-header,.resumen-tabla-fila{grid-template-columns:1.3fr repeat(5,1fr);font-size:9px}.resumen-tabla-celda{padding:5px 3px}.dashboard-grid{grid-template-columns:1fr 1fr}.dashboard-card .valor{font-size:24px}}
-@media(max-width:480px){h1{font-size:20px}.tab{min-width:70px;padding:6px 2px;font-size:9px}.dashboard-grid{grid-template-columns:1fr}.calendario-dia{min-height:90px}.dia-permiso{font-size:7px}}
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f0f2f5; color: #333; padding: 20px; }
+  .container { max-width: 1500px; margin: 0 auto; }
+  h1 { color: #1a4d7a; margin-bottom: 10px; }
+  h2 { color: #1a4d7a; margin: 20px 0 10px; border-bottom: 2px solid #1a4d7a; padding-bottom: 5px; }
+  h3 { color: #2c6fa8; margin: 15px 0 8px; }
+
+  .tabs { display: flex; gap: 5px; margin-bottom: 20px; flex-wrap: wrap; }
+  .tab { padding: 10px 18px; background: #d0d8e0; border: none; cursor: pointer; border-radius: 6px 6px 0 0; font-weight: 600; font-size: 14px; }
+  .tab.active { background: #1a4d7a; color: white; }
+  .panel { display: none; background: white; padding: 20px; border-radius: 0 8px 8px 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+  .panel.active { display: block; }
+
+  .card { background: #fafbfc; border: 1px solid #e1e4e8; border-radius: 8px; padding: 15px; margin-bottom: 15px; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
+  @media (max-width: 768px) { .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; } }
+
+  label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 4px; color: #555; }
+  input, select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; margin-bottom: 10px; }
+  input:focus, select:focus { outline: none; border-color: #1a4d7a; }
+
+  button { padding: 8px 16px; background: #1a4d7a; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; margin-right: 5px; margin-bottom: 5px; transition: all 0.2s; }
+  button:hover { background: #143a5c; transform: translateY(-1px); }
+  button:active { transform: translateY(0); }
+  button.danger { background: #c0392b; }
+  button.danger:hover { background: #922b21; }
+  button.success { background: #27ae60; }
+  button.success:hover { background: #1e8449; }
+  button.warning { background: #f39c12; }
+  button.warning:hover { background: #d68910; }
+  button.small { padding: 4px 10px; font-size: 12px; }
+
+  table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+  th, td { padding: 8px; text-align: left; border-bottom: 1px solid #e1e4e8; }
+  th { background: #1a4d7a; color: white; }
+  tr:hover { background: #f5f7fa; }
+
+  .badge { display: inline-block; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; color: white; }
+  .b-ord { background: #3498db; }
+  .b-limp { background: #e67e22; }
+  .b-enc { background: #8e44ad; }
+  .b-vac { background: #27ae60; }
+  .b-ap { background: #f39c12; }
+  .b-comp { background: #16a085; }
+  .b-baja { background: #c0392b; }
+  .b-trab { background: #2ecc71; }
+
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 15px; }
+  .stat { background: linear-gradient(135deg, #1a4d7a, #2c6fa8); color: white; padding: 15px; border-radius: 8px; text-align: center; }
+  .stat .num { font-size: 28px; font-weight: bold; }
+  .stat .lbl { font-size: 12px; opacity: 0.9; }
+
+  .info { background: #e8f4fd; border-left: 4px solid #1a4d7a; padding: 10px; margin: 10px 0; font-size: 13px; border-radius: 4px; }
+  .warn { background: #fef5e7; border-left: 4px solid #f39c12; padding: 10px; margin: 10px 0; font-size: 13px; border-radius: 4px; }
+  .err { background: #fdecea; border-left: 4px solid #c0392b; padding: 10px; margin: 10px 0; font-size: 13px; border-radius: 4px; }
+  .ok { background: #e8f8f0; border-left: 4px solid #27ae60; padding: 10px; margin: 10px 0; font-size: 13px; border-radius: 4px; }
+
+  .ausencia-item { background: white; border: 1px solid #e1e4e8; border-radius: 6px; padding: 10px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+  .ausencia-info { flex: 1; }
+  .ausencia-info strong { color: #1a4d7a; }
+
+  .festivo-chip { display: inline-block; background: #e74c3c; color: white; padding: 4px 10px; margin: 3px; border-radius: 14px; font-size: 12px; }
+  .festivo-chip button { background: rgba(255,255,255,0.3); color: white; padding: 0 6px; margin: 0 0 0 6px; font-size: 11px; border-radius: 10px; }
+
+  .disponible-box { background: #f8f9fa; border: 1px dashed #1a4d7a; padding: 10px; border-radius: 6px; margin: 10px 0; font-size: 13px; }
+  .disponible-box strong { color: #1a4d7a; }
+
+  /* CALENDARIO */
+  .cal-controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 15px; }
+  .cal-controls select, .cal-controls button { margin-bottom: 0; }
+  .cal-nav { display: flex; gap: 5px; }
+
+  .cal-wrapper { overflow-x: auto; border: 1px solid #ccc; border-radius: 6px; }
+  table.cal { border-collapse: collapse; font-size: 11px; min-width: 100%; }
+  table.cal th, table.cal td { padding: 0; text-align: center; border: 1px solid #e1e4e8; min-width: 28px; height: 28px; }
+  table.cal th.nombre { min-width: 180px; text-align: left; padding: 6px 10px; position: sticky; left: 0; background: #1a4d7a; z-index: 3; }
+  table.cal td.nombre { text-align: left; padding: 4px 8px; font-weight: 600; position: sticky; left: 0; background: white; z-index: 2; white-space: nowrap; }
+  table.cal thead th { background: #1a4d7a; color: white; font-size: 11px; padding: 4px 2px; }
+  table.cal thead tr.dias th { background: #2c6fa8; font-weight: bold; }
+  table.cal thead tr.nombres th { background: #1a4d7a; }
+  table.cal thead th.festivo-col { background: #c0392b !important; }
+  table.cal thead th.finsemana-col { background: #7f8c8d !important; }
+
+  .cal-cell { width: 100%; height: 100%; display: block; cursor: pointer; position: relative; }
+  .cal-cell.trab { background: #d5f5e3; }
+  .cal-cell.vac { background: #27ae60; color: white; font-weight: bold; }
+  .cal-cell.ap { background: #f39c12; color: white; font-weight: bold; }
+  .cal-cell.comp { background: #16a085; color: white; font-weight: bold; }
+  .cal-cell.baja { background: #c0392b; color: white; font-weight: bold; }
+  .cal-cell.finsemana { background: #ecf0f1; color: #95a5a6; }
+  .cal-cell.festivo { background: #e74c3c; color: white; font-weight: bold; }
+  .cal-cell.fuera { background: #f8f9fa; }
+  .cal-cell.hoy { outline: 2px solid #1a4d7a; outline-offset: -2px; }
+
+  .leyenda { display: flex; gap: 12px; flex-wrap: wrap; margin: 15px 0; font-size: 12px; align-items: center; }
+  .leyenda-item { display: flex; align-items: center; gap: 5px; }
+  .leyenda-color { width: 18px; height: 18px; border-radius: 3px; border: 1px solid rgba(0,0,0,0.1); }
+
+  .resumen-dia { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 5px; margin-top: 15px; }
+  .resumen-dia-item { background: #f8f9fa; border: 1px solid #e1e4e8; border-radius: 4px; padding: 6px; text-align: center; font-size: 11px; }
+  .resumen-dia-item .dia-num { font-weight: bold; color: #1a4d7a; font-size: 14px; }
+  .resumen-dia-item .trabajan { color: #27ae60; font-weight: bold; }
+  .resumen-dia-item .ausentes { color: #c0392b; font-weight: bold; }
+  .resumen-dia-item.es-finsemana { background: #ecf0f1; }
+  .resumen-dia-item.es-festivo { background: #fadbd8; }
+
+  /* MODAL PERSONALIZADO */
+  .modal-overlay {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;
+    z-index: 9999; opacity: 0; pointer-events: none; transition: opacity 0.25s;
+    backdrop-filter: blur(3px);
+  }
+  .modal-overlay.visible { opacity: 1; pointer-events: auto; }
+  .modal-box {
+    background: white; border-radius: 12px; padding: 0; min-width: 360px; max-width: 520px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3); transform: scale(0.9) translateY(20px);
+    transition: transform 0.25s; overflow: hidden;
+  }
+  .modal-overlay.visible .modal-box { transform: scale(1) translateY(0); }
+  .modal-header {
+    padding: 18px 22px; color: white; display: flex; align-items: center; gap: 12px;
+    font-size: 17px; font-weight: 600;
+  }
+  .modal-header.info { background: linear-gradient(135deg, #1a4d7a, #2c6fa8); }
+  .modal-header.success { background: linear-gradient(135deg, #27ae60, #2ecc71); }
+  .modal-header.warning { background: linear-gradient(135deg, #e67e22, #f39c12); }
+  .modal-header.error { background: linear-gradient(135deg, #c0392b, #e74c3c); }
+  .modal-header.confirm { background: linear-gradient(135deg, #8e44ad, #9b59b6); }
+  .modal-icon { font-size: 26px; }
+  .modal-body { padding: 22px; font-size: 14px; line-height: 1.6; color: #333; white-space: pre-wrap; }
+  .modal-footer { padding: 14px 22px; background: #f8f9fa; display: flex; justify-content: flex-end; gap: 8px; border-top: 1px solid #e1e4e8; }
+  .modal-footer button { margin: 0; }
+  .modal-input { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; margin-top: 10px; font-size: 14px; }
+
+  /* TOAST */
+  .toast-container {
+    position: fixed; top: 20px; right: 20px; z-index: 10000;
+    display: flex; flex-direction: column; gap: 10px; pointer-events: none;
+  }
+  .toast {
+    background: white; padding: 14px 20px; border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15); min-width: 280px; max-width: 400px;
+    display: flex; align-items: center; gap: 12px;
+    transform: translateX(420px); transition: transform 0.3s;
+    pointer-events: auto; border-left: 5px solid #1a4d7a;
+  }
+  .toast.visible { transform: translateX(0); }
+  .toast.success { border-left-color: #27ae60; }
+  .toast.warning { border-left-color: #f39c12; }
+  .toast.error { border-left-color: #c0392b; }
+  .toast.info { border-left-color: #1a4d7a; }
+  .toast-icon { font-size: 22px; }
+  .toast-content { flex: 1; }
+  .toast-title { font-weight: 600; font-size: 14px; margin-bottom: 2px; }
+  .toast-msg { font-size: 13px; color: #555; }
+
+  /* Estado de conexión */
+  .status-bar {
+    position: fixed; bottom: 10px; right: 10px; background: white;
+    padding: 6px 12px; border-radius: 20px; font-size: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 6px;
+    z-index: 100;
+  }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #95a5a6; }
+  .status-dot.online { background: #27ae60; animation: pulse 2s infinite; }
+  .status-dot.offline { background: #c0392b; }
+  .status-dot.local { background: #f39c12; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
 </style>
 </head>
-
 <body>
-<div class="sync-status" id="syncStatus">🔄 Conectando...</div>
 <div class="container">
-<h1 id="top">👥 Control de Personal</h1>
-<div class="tabs">
-<button class="tab active" onclick="showPanel('dashboard',this)">📊 Dashboard</button>
-<button class="tab" onclick="showPanel('empleados',this)">👥 Empleados</button>
-<button class="tab" onclick="showPanel('registro',this)">📅 Permiso</button>
-<button class="tab" onclick="showPanel('plantilla',this)">👷 Plantilla</button>
-<button class="tab" onclick="showPanel('calendario',this)">📆 Calendario</button>
-<button class="tab" onclick="showPanel('calendarioIndividual',this)">👤 Personal</button>
-<button class="tab" onclick="showPanel('consulta', this)">🔍 Consulta</button>
-<button class="tab" onclick="showPanel('resumen',this)">📈 Resumen</button>
-<button class="tab" onclick="showPanel('festivos',this)">🎉 Festivos</button>
-<button class="tab" onclick="showPanel('historial',this)"> Historial</button>
+  <h1> Control de Personal - Edificio</h1>
+  <p style="color:#666;margin-bottom:15px;">Gestión de trabajadores, ausencias, festivos y calendario mensual</p>
+
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('inicio', this)"> Inicio</button>
+    <button class="tab" onclick="showTab('trabajadores', this)">👥 Trabajadores</button>
+    <button class="tab" onclick="showTab('config', this)">⚙️ Configuración</button>
+    <button class="tab" onclick="showTab('calendario', this)">📅 Calendario</button>
+    <button class="tab" onclick="showTab('ausencias', this)">📝 Ausencias</button>
+    <button class="tab" onclick="showTab('historial', this)"> Historial</button>
+  </div>
+
+  <!-- INICIO -->
+  <div id="inicio" class="panel active">
+    <h2>Resumen General</h2>
+    <div class="stats" id="statsGeneral"></div>
+    <div class="info">
+      <strong>Plantilla prevista:</strong> 1 Encargado + 4 Ordenanzas + 7 Limpiadores/as = 12 personas
+    </div>
+    <h3>Estado actual de la plantilla</h3>
+    <div id="estadoPlantilla"></div>
+  </div>
+
+  <!-- TRABAJADORES -->
+  <div id="trabajadores" class="panel">
+    <h2>Gestión de Trabajadores</h2>
+    <div class="card">
+      <h3>Añadir / Editar trabajador</h3>
+      <div class="grid-3">
+        <div><label>Nombre</label><input type="text" id="tNombre" placeholder="Nombre"></div>
+        <div><label>Apellidos</label><input type="text" id="tApellidos" placeholder="Apellidos"></div>
+        <div><label>Categoría</label>
+          <select id="tCategoria">
+            <option value="encargado">Encargado/a de edificio</option>
+            <option value="ordenanza">Ordenanza</option>
+            <option value="limpiador">Limpiador/a</option>
+          </select>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div><label>Fecha de incorporación</label><input type="date" id="tFecha"></div>
+        <div><label>DNI / Identificación (opcional)</label><input type="text" id="tDni" placeholder="DNI"></div>
+      </div>
+      <button class="success" onclick="guardarTrabajador()">💾 Guardar trabajador</button>
+      <button onclick="limpiarFormTrabajador()">🔄 Limpiar</button>
+      <input type="hidden" id="tId">
+    </div>
+
+    <h3>Listado de trabajadores</h3>
+    <div class="info">
+      💡 Los días de vacaciones y asuntos propios se calculan automáticamente según la antigüedad de cada trabajador al 1 de enero del año en curso.
+    </div>
+    <div id="listaTrabajadores"></div>
+  </div>
+
+  <!-- CONFIGURACIÓN -->
+  <div id="config" class="panel">
+    <h2>Configuración Anual y Festivos</h2>
+
+    <div class="card">
+      <h3>⚙️ Parámetros del año</h3>
+      <div class="info">
+        Los días de vacaciones y asuntos propios <strong>base</strong> son fijos; los días reales de cada trabajador se calculan según su antigüedad.
+        La <strong>compensación por sábados festivos</strong> varía cada año.
+      </div>
+      <div class="grid-3">
+        <div><label>Año</label><input type="number" id="cAnio" min="2020" max="2040"></div>
+        <div><label>Días compensación (sábados festivos)</label><input type="number" id="cCompensacion" min="0" max="30" placeholder="Ej: 3"></div>
+        <div><label>Vacaciones base (días hábiles)</label><input type="number" id="cVacaciones" value="22" readonly style="background:#eee;"></div>
+      </div>
+      <div class="grid-3">
+        <div><label>Asuntos propios base</label><input type="number" id="cAP" value="6" readonly style="background:#eee;"></div>
+        <div><label>Máx. periodos vacaciones</label><input type="number" id="cMaxPeriodos" value="4" readonly style="background:#eee;"></div>
+        <div><label>Mín. días por periodo (naturales)</label><input type="number" id="cMinDias" value="7" readonly style="background:#eee;"></div>
+      </div>
+      <button class="success" onclick="guardarConfig()">💾 Guardar configuración del año</button>
+    </div>
+
+    <div class="card">
+      <h3> Festivos del año (no computan como día hábil)</h3>
+      <div class="info">
+        Introduce aquí los festivos del año (nacionales, autonómicos y locales). <strong>No se contarán</strong> al calcular vacaciones, asuntos propios ni compensaciones.
+      </div>
+      <div class="grid-3">
+        <div><label>Año</label><input type="number" id="fAnio" min="2020" max="2040"></div>
+        <div><label>Fecha del festivo</label><input type="date" id="fFecha"></div>
+        <div><label>Descripción</label><input type="text" id="fNombre" placeholder="Ej: Año Nuevo"></div>
+      </div>
+      <button class="success" onclick="añadirFestivo()">➕ Añadir festivo</button>
+      <button onclick="copiarFestivos()">📋 Copiar de otro año</button>
+      <button class="danger" onclick="borrarFestivosAnio()">🗑️ Borrar todos del año</button>
+
+      <div style="margin-top:15px;">
+        <label>Ver/editar festivos del año:</label>
+        <select id="fVerAnio" onchange="renderFestivos()"></select>
+      </div>
+      <div id="listaFestivos" style="margin-top:10px;"></div>
+    </div>
+
+    <div class="card">
+      <h3>📊 Tabla de antigüedad aplicada</h3>
+      <div class="grid-2">
+        <div>
+          <strong>🏖️ Vacaciones</strong>
+          <table>
+            <tr><th>Antigüedad</th><th>Días hábiles</th></tr>
+            <tr><td>Menos de 15 años</td><td>22</td></tr>
+            <tr><td>15 años o más</td><td>23</td></tr>
+            <tr><td>20 años o más</td><td>24</td></tr>
+            <tr><td>25 años o más</td><td>25</td></tr>
+            <tr><td>30 años o más</td><td>26</td></tr>
+          </table>
+        </div>
+        <div>
+          <strong>📝 Asuntos propios</strong>
+          <table>
+            <tr><th>Antigüedad</th><th>Días</th></tr>
+            <tr><td>Menos de 19 años</td><td>6</td></tr>
+            <tr><td>19 años o más</td><td>8</td></tr>
+            <tr><td>25 años o más</td><td>9</td></tr>
+            <tr><td>28 años o más</td><td>10</td></tr>
+            <tr><td>31 años o más</td><td>11</td></tr>
+            <tr><td colspan="2"><em>...y +1 cada trienio a partir de 25 años</em></td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <h3>Configuraciones guardadas</h3>
+    <div id="listaConfig"></div>
+  </div>
+
+  <!-- CALENDARIO -->
+  <div id="calendario" class="panel">
+    <h2>Calendario Mensual del Equipo</h2>
+    <div class="cal-controls">
+      <div class="cal-nav">
+        <button onclick="cambiarMes(-1)">◀ Anterior</button>
+        <button onclick="irHoy()">📍 Hoy</button>
+        <button onclick="cambiarMes(1)">Siguiente ▶</button>
+      </div>
+      <div>
+        <label style="margin:0;">Mes</label>
+        <select id="calMes" onchange="renderCalendario()" style="margin-bottom:0;"></select>
+      </div>
+      <div>
+        <label style="margin:0;">Año</label>
+        <input type="number" id="calAnio" onchange="renderCalendario()" style="margin-bottom:0;width:100px;">
+      </div>
+      <div>
+        <label style="margin:0;">Categoría</label>
+        <select id="calCategoria" onchange="renderCalendario()" style="margin-bottom:0;">
+          <option value="">-- Todas --</option>
+          <option value="encargado">Encargados</option>
+          <option value="ordenanza">Ordenanzas</option>
+          <option value="limpiador">Limpiadores</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="leyenda">
+      <strong>Leyenda:</strong>
+      <div class="leyenda-item"><div class="leyenda-color" style="background:#d5f5e3;"></div>Trabajando</div>
+      <div class="leyenda-item"><div class="leyenda-color" style="background:#27ae60;"></div>Vacaciones</div>
+      <div class="leyenda-item"><div class="leyenda-color" style="background:#f39c12;"></div>Asuntos propios</div>
+      <div class="leyenda-item"><div class="leyenda-color" style="background:#16a085;"></div>Compensación</div>
+      <div class="leyenda-item"><div class="leyenda-color" style="background:#c0392b;"></div>Baja médica</div>
+      <div class="leyenda-item"><div class="leyenda-color" style="background:#ecf0f1;"></div>Fin de semana</div>
+      <div class="leyenda-item"><div class="leyenda-color" style="background:#e74c3c;"></div>Festivo</div>
+    </div>
+
+    <div class="cal-wrapper">
+      <table class="cal" id="tablaCalendario"></table>
+    </div>
+
+    <h3 style="margin-top:20px;">Resumen diario</h3>
+    <div class="resumen-dia" id="resumenDiario"></div>
+  </div>
+
+  <!-- AUSENCIAS -->
+  <div id="ausencias" class="panel">
+    <h2>Registrar Ausencia</h2>
+    <div class="card">
+      <div class="grid-2">
+        <div><label>Trabajador</label><select id="aTrabajador" onchange="mostrarDisponibles()"></select></div>
+        <div><label>Año de la ausencia</label><select id="aAnio" onchange="mostrarDisponibles()"></select></div>
+      </div>
+      <div id="disponibles" class="disponible-box"></div>
+      <div class="grid-2">
+        <div><label>Tipo de ausencia</label>
+          <select id="aTipo" onchange="actualizarInfoTipo()">
+            <option value="vacaciones">🏖️ Vacaciones</option>
+            <option value="asuntos_propios">📝 Asuntos propios</option>
+            <option value="compensacion"> Compensación sábados festivos</option>
+            <option value="baja">🏥 Baja médica</option>
+          </select>
+        </div>
+        <div></div>
+      </div>
+      <div class="grid-2">
+        <div><label>Fecha inicio</label><input type="date" id="aInicio"></div>
+        <div><label>Fecha fin (inclusive)</label><input type="date" id="aFin"></div>
+      </div>
+      <div id="infoTipo" class="info"></div>
+      <div id="diasCalculo" style="margin-bottom:10px;font-weight:600;"></div>
+      <div><label>Observaciones (opcional)</label><input type="text" id="aObs" placeholder="Notas..."></div>
+      <button class="success" onclick="guardarAusencia()">💾 Registrar ausencia</button>
+      <button onclick="calcularDias()">🔢 Calcular días</button>
+    </div>
+
+    <h3>Ausencias registradas</h3>
+    <div id="listaAusencias"></div>
+  </div>
+
+  <!-- HISTORIAL -->
+  <div id="historial" class="panel">
+    <h2>Historial y Consultas</h2>
+    <div class="card">
+      <div class="grid-4">
+        <div><label>Trabajador</label><select id="hTrabajador" onchange="mostrarHistorial()"><option value="">-- Todos --</option></select></div>
+        <div><label>Año</label><select id="hAnio" onchange="mostrarHistorial()"></select></div>
+        <div><label>Tipo</label>
+          <select id="hTipo" onchange="mostrarHistorial()">
+            <option value="">-- Todos --</option>
+            <option value="vacaciones">Vacaciones</option>
+            <option value="asuntos_propios">Asuntos propios</option>
+            <option value="compensacion">Compensación</option>
+            <option value="baja">Baja</option>
+          </select>
+        </div>
+        <div></div>
+      </div>
+    </div>
+    <div id="resultadoHistorial"></div>
+  </div>
 </div>
 
-<div id="dashboard" class="panel active">
-<h2 style="color:#2c5282;margin-bottom:15px">📊 Panel de Control</h2>
-<div class="dashboard-grid" id="dashboardKPIs"></div>
-<div class="dashboard-seccion">
-<h3>⚡ Accesos rápidos</h3>
-<div class="accesos-rapidos">
-<div class="acceso-rapido" onclick="showPanel('registro',document.querySelectorAll('.tab')[2])"><div class="icono">📅</div><div class="texto">Nuevo permiso</div></div>
-<div class="acceso-rapido" onclick="showPanel('consulta',document.querySelectorAll('.tab')[6])"><div class="icono">🔍</div><div class="texto">Consultar empleado</div></div>
-<div class="acceso-rapido" onclick="showPanel('plantilla',document.querySelectorAll('.tab')[3])"><div class="icono">👷</div><div class="texto">Ver plantilla hoy</div></div>
-<div class="acceso-rapido" onclick="showPanel('calendario',document.querySelectorAll('.tab')[4])"><div class="icono">📆</div><div class="texto">Calendario visual</div></div>
-<div class="acceso-rapido" onclick="showPanel('resumen',document.querySelectorAll('.tab')[7])"><div class="icono">📈</div><div class="texto">Ver resumen</div></div>
+<!-- Contenedor de modales y toasts -->
+<div id="modalOverlay" class="modal-overlay"></div>
+<div id="toastContainer" class="toast-container"></div>
+<div id="statusBar" class="status-bar" style="display:none;">
+  <span class="status-dot" id="statusDot"></span>
+  <span id="statusText">Conectando...</span>
 </div>
-</div>
-<div class="dashboard-seccion">
-<h3>👥 Estado del personal</h3>
-<div id="dashboardStaff"></div>
-</div>
-</div>
-
-<div id="empleados" class="panel">
-<div id="editModeBannerEmp" style="display:none" class="edit-mode-banner">
-<span>✏️ <strong>Editando:</strong> <span id="editEmployeeName"></span></span>
-<button class="secondary" onclick="cancelarEdicionEmpleado()" style="padding:6px 12px;font-size:12px">Cancelar</button>
-</div>
-<h2 style="color:#2c5282;margin-bottom:15px" id="formTitle">Añadir empleado</h2>
-<div class="form-row">
-<div class="form-group"><label>Nombre</label><input type="text" id="empNombre" placeholder="Ej: Juan Pérez"></div>
-<div class="form-group"><label>Categoría</label><select id="empCategoria"><option value="encargado">Encargado</option><option value="ordenanza">Ordenanza</option><option value="limpiador">Limpiador/a</option><option value="reserva">Reserva</option></select></div>
-<div class="form-group"><label>Fecha antigüedad</label><input type="date" id="empAntiguedad"></div>
-</div>
-<div class="info-box" style="margin-bottom:15px">
-<strong>ℹ️ Cálculo automático (a partir de 2027):</strong><br>
-• <strong>Vacaciones:</strong> 22 días base + 1 al cumplir 16, 21, 26 y 31 años<br>
-• <strong>Asuntos propios:</strong> 6 días base + 2 al cumplir 18, +1 al cumplir 24, +1 cada trienio
-</div>
-<div class="form-row">
-<div class="form-group"><label>Vacaciones</label><input type="number" id="empVac" value="22" min="0"></div>
-<div class="form-group"><label>Asuntos propios</label><input type="number" id="empAP" value="6" min="0"></div>
-<div class="form-group"><label>Sábados</label><input type="number" id="empSab" value="0" min="0"></div>
-</div>
-<button class="primary" id="btnGuardarEmpleado" onclick="guardarEmpleado()">💾 Guardar</button>
-<button class="secondary" id="btnCancelarEdicionEmp" onclick="cancelarEdicionEmpleado()" style="display:none">Cancelar</button>
-<h2 style="color:#2c5282;margin-top:30px;margin-bottom:15px">Lista</h2>
-<div id="listaEmpleados"></div>
-<div class="nuevo-anio-zone">
-<h3>🔄 Comenzar Nuevo Año</h3>
-<p>Conservará los empleados. Borrará todos los permisos registrados.</p>
-<button class="info" onclick="abrirModalNuevoAnio()" style="width:100%;max-width:300px">🚀 Iniciar Cambio de Año</button>
-</div>
-<div class="reset-zone">
-<h3> Zona peligrosa</h3>
-<p>Borrará TODOS los datos permanentemente.</p>
-<button class="reset" onclick="borrarTodosLosDatos()">🗑️ Borrar TODO</button>
-</div>
-</div>
-
-<div id="registro" class="panel">
-<div id="editModeBannerReg" style="display:none" class="edit-mode-banner">
-<span id="editModeBannerText">️ <strong>Editando:</strong> <span id="editRegistroInfo"></span></span>
-<button class="secondary" onclick="cancelarEdicionRegistro()" style="padding:6px 12px;font-size:12px">Cancelar</button>
-</div>
-<h2 style="color:#2c5282;margin-bottom:15px" id="regFormTitle">Registrar permiso</h2>
-<div class="info-box" style="margin-bottom:15px"><strong>ℹ️</strong> Solo días completos. Sábados, domingos y festivos se excluyen.</div>
-<div class="form-row">
-<div class="form-group"><label>Empleado</label><select id="regEmpleado" onchange="verificarVentanas()"></select></div>
-<div class="form-group"><label>Fecha inicio</label><input type="date" id="regFecha" onchange="verificarVentanas()"></div>
-<div class="form-group"><label>Tipo</label><select id="regTipo" onchange="verificarVentanas()">
-<option value="vacaciones">Vacaciones</option>
-<option value="ap">Asuntos propios</option>
-<option value="sabados">Sábados</option>
-<option value="conciliacion1">Conciliación 1er grado</option>
-<option value="conciliacion2">Conciliación 2º grado</option>
-<option value="reposo">Reposo domiciliario (máx. 2 días)</option>
-<option value="sinSueldo">Permiso sin sueldo (mín. 15 días)</option>
-</select></div>
-<div class="form-group"><label>Cantidad</label><input type="number" id="regCantidad" value="1" min="1" step="1" onchange="calcularReincorporacion()"></div>
-<div class="form-group"><label>Notas</label><input type="text" id="regNotas" placeholder="Opcional"></div>
-</div>
-<button class="info" onclick="calcularReincorporacion()" style="margin-bottom:15px">📅 Calcular reincorporación</button>
-<div id="reincorporacionResultado"></div>
-<div id="alertaVentanas"></div>
-<button class="primary" id="btnGuardarRegistro" onclick="guardarRegistro()">✅ Registrar</button>
-<button class="secondary" id="btnCancelarEdicionReg" onclick="cancelarEdicionRegistro()" style="display:none">Cancelar</button>
-<div id="mensajeRegistro" style="margin-top:15px"></div>
-</div>
-
-<div id="plantilla" class="panel">
-<div class="plantilla-header">
-<h2>👷 Estado plantilla</h2>
-<div class="fecha-selector">
-<label style="color:white">Fecha:</label>
-<input type="date" id="plantillaFecha">
-<button onclick="renderPlantilla()">📅 Consultar</button>
-<button onclick="document.getElementById('plantillaFecha').valueAsDate=new Date();renderPlantilla()"> Hoy</button>
-<button class="plantilla-btn-calendario" onclick="irACalendarioDesdePlantilla()">📆 Ver Calendario</button>
-</div>
-</div>
-<div id="plantillaContenido"></div>
-</div>
-
-<div id="calendario" class="panel">
-<div class="calendario-header">
-<h2>📆 Calendario Visual</h2>
-<div class="calendario-nav">
-<div class="calendario-nav-botones">
-<button onclick="cambiarMesCalendario(-1)">◀ Anterior</button>
-<button onclick="irAMesActual()">📅 Hoy</button>
-<button onclick="cambiarMesCalendario(1)">Siguiente ▶</button>
-</div>
-<div class="calendario-nav-botones">
-<select id="calendarioMesSelect" onchange="actualizarCalendarioDesdeSelect()"></select>
-<select id="calendarioAnoSelect" onchange="actualizarCalendarioDesdeSelect()"></select>
-</div>
-</div>
-<div style="text-align:center;margin-top:15px"><div class="calendario-mes-titulo" id="calendarioMesTitulo"></div></div>
-</div>
-<div class="calendario-leyenda">
-<div class="leyenda-item"><div class="leyenda-color vac"></div>Vacaciones</div>
-<div class="leyenda-item"><div class="leyenda-color ap"></div>Asuntos propios</div>
-<div class="leyenda-item"><div class="leyenda-color sab"></div>Sábados</div>
-<div class="leyenda-item"><div class="leyenda-color c1"></div>Conciliación 1er</div>
-<div class="leyenda-item"><div class="leyenda-color c2"></div>Conciliación 2º</div>
-<div class="leyenda-item"><div class="leyenda-color reposo"></div>Reposo</div>
-<div class="leyenda-item"><div class="leyenda-color sinSueldo"></div>Sin sueldo</div>
-<div class="leyenda-item"><div class="leyenda-color baja"></div>Baja médica</div>
-<div class="leyenda-item"><div class="leyenda-color festivo"></div>Festivo</div>
-</div>
-<div class="calendario-filtro-grupo">
-<label style="font-weight:600"> Filtrar por grupo:</label>
-<select id="calendarioFiltroGrupo" onchange="renderCalendario()">
-<option value="todos">👥 Todos los empleados</option>
-<option value="limpieza">🧹 Personal de limpieza</option>
-<option value="resto">🏢 Encargados y Ordenanzas</option>
-</select>
-</div>
-<div class="calendario-grid" id="calendarioGrid"></div>
-<div class="calendario-detalle" id="calendarioDetalle">
-<h3 id="calendarioDetalleTitulo"></h3>
-<div id="calendarioDetalleContenido"></div>
-</div>
-</div>
-
-<div id="calendarioIndividual" class="panel">
-<div class="calendario-individual-header">
-<h2>👤 Calendario Individual</h2>
-<div class="calendario-individual-selector">
-<select id="calendarioIndEmpleado" onchange="renderCalendarioIndividual()">
-<option value="">-- Selecciona empleado --</option>
-</select>
-<button onclick="irAMesActualIndividual()">📅 Mes Actual</button>
-<button onclick="cambiarMesIndividual(-1)">◀ Anterior</button>
-<button onclick="cambiarMesIndividual(1)">Siguiente ▶</button>
-</div>
-</div>
-<div id="calendarioIndividualContenido"></div>
-</div>
-
-<div id="consulta" class="panel">
-<div class="consulta-header">
-<h2>🔍 Consulta empleado</h2>
-<div class="consulta-selector">
-<select id="consultaEmpleado" onchange="renderConsulta()">
-<option value="">-- Selecciona --</option>
-</select>
-<button onclick="document.getElementById('consultaEmpleado').value='';renderConsulta()">🔄 Limpiar</button>
-</div>
-</div>
-<div id="consultaContenido"></div>
-</div>
-
-<div id="resumen" class="panel">
-<h2 style="color:#2c5282;margin-bottom:15px"> Resumen</h2>
-<div class="toolbar"><input type="text" class="search" id="buscarResumen" placeholder="🔍 Buscar..." oninput="renderResumen()"></div>
-<div id="resumenContenido"></div>
-</div>
-
-<div id="festivos" class="panel">
-<h2 style="color:#2c5282;margin-bottom:15px"> Festivos</h2>
-<div class="info-box" style="margin-bottom:20px"><strong>ℹ️</strong> Añade festivos locales. Sábados y domingos ya se excluyen.</div>
-<div class="form-row">
-<div class="form-group"><label>Nombre</label><input type="text" id="festivoNombre" placeholder="Ej: Constitución"></div>
-<div class="form-group"><label>Fecha</label><input type="date" id="festivoFecha"></div>
-</div>
-<button class="primary" onclick="guardarFestivo()">➕ Añadir</button>
-<h3 style="color:#2c5282;margin-top:30px;margin-bottom:15px">Registrados</h3>
-<div class="toolbar"><select id="filtroAnoFestivo" onchange="renderFestivos()"><option value="todos">Todos</option></select></div>
-<div id="listaFestivos"></div>
-</div>
-
-<div id="historial" class="panel">
-<h2 style="color:#2c5282;margin-bottom:15px"> Historial</h2>
-<div class="toolbar">
-<input type="text" class="search" id="buscarHist" placeholder="🔍 Buscar..." oninput="renderHistorial()">
-<button class="primary" onclick="exportarDatos()">📤 Exportar JSON</button>
-<button class="primary" onclick="document.getElementById('importFile').click()">📥 Importar</button>
-<button class="reset" onclick="borrarTodosLosDatos()" style="margin-top:0;padding:10px 20px;font-size:13px">🗑️ Borrar</button>
-<input type="file" id="importFile" style="display:none" accept=".json" onchange="importarDatos(event)">
-</div>
-<div id="historialContenido"></div>
-</div>
-</div>
-
-<div id="modalNuevoAnio" class="modal-overlay">
-<div class="modal-content">
-<h3>🔄 Cambio de Año</h3>
-<div id="modalNuevoAnioContenido"></div>
-</div>
-</div>
-
-<button id="btnSubir" onclick="subirArriba()" title="Subir"></button>
-
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-
 
 <script>
-const firebaseConfig = {
-  apiKey: "AIzaSyCK_iKL8_g9Ik9g28zWeAGJDmPEHrvrh7E",
-  authDomain: "empleados-f4bcc.firebaseapp.com",
-  databaseURL: "https://empleados-f4bcc-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "empleados-f4bcc",
-  storageBucket: "empleados-f4bcc.firebasestorage.app",
-  messagingSenderId: "659132601371",
-  appId: "1:659132601371:web:74718b5eb296054d0cd4be"
-};
+// ============ DATOS ============
+let trabajadores = [];
+let ausencias = [];
+let configs = {};
+let festivos = {};
 
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+let db = null;
+let unsubscribes = [];
 
-let empleados = [];
-let registros = [];
-let festivos = [];
-const MAX_VENTANAS = 4;
-let empleadoEditando = null, registroEditando = null;
-let calendarioMesActual = new Date().getMonth(), calendarioAnoActual = new Date().getFullYear(), calendarioGrupoFiltro = 'todos';
-let calendarioIndMesActual = new Date().getMonth(), calendarioIndAnoActual = new Date().getFullYear();
-const MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
-const DIAS_SEMANA = ['Lun','Mar','Mié','Jue','Vie'];
+// ============ FIREBASE ============
+async function initFirebase() {
+  const bar = document.getElementById('statusBar');
+  const dot = document.getElementById('statusDot');
+  const txt = document.getElementById('statusText');
+  bar.style.display = 'flex';
 
-function updateSyncStatus(status, message) {
-  const el = document.getElementById('syncStatus');
-  el.className = 'sync-status ' + status;
-  el.textContent = message;
-  if (status === '') setTimeout(() => { el.style.display = 'none'; }, 2000);
+  if (typeof USE_FIREBASE === 'undefined' || !USE_FIREBASE) {
+    dot.className = 'status-dot local';
+    txt.textContent = 'Modo local (sin nube)';
+    cargarDatosLocales();
+    renderInicio();
+    return;
+  }
+
+  try {
+    if (typeof FIREBASE_CONFIG === 'undefined' || FIREBASE_CONFIG.apiKey === 'PEGA_AQUI_TU_API_KEY') {
+      dot.className = 'status-dot offline';
+      txt.textContent = 'Configura Firebase en config.js';
+      showAlert('Configuración pendiente',
+        'Para usar la sincronización en la nube:\n\n' +
+        '1. Crea un proyecto en https://console.firebase.google.com/\n' +
+        '2. Añade una app web y copia las credenciales\n' +
+        '3. Edita el archivo config.js con tus datos\n' +
+        '4. Activa Firestore Database en tu proyecto\n\n' +
+        'Mientras tanto, la app funciona en modo local.',
+        'warning');
+      cargarDatosLocales();
+      renderInicio();
+      return;
+    }
+
+    firebase.initializeApp(FIREBASE_CONFIG);
+    db = firebase.firestore();
+
+    dot.className = 'status-dot online';
+    txt.textContent = 'Sincronizado en la nube';
+
+    await cargarDesdeFirestore();
+    subscribirseACambios();
+
+    toast('Conectado', 'Datos sincronizados con la nube', 'success');
+  } catch (e) {
+    console.error(e);
+    dot.className = 'status-dot offline';
+    txt.textContent = 'Error de conexión';
+    showAlert('Error de conexión', 'No se ha podido conectar con Firebase. Usando modo local.\n\nDetalle: ' + e.message, 'error');
+    cargarDatosLocales();
+    renderInicio();
+  }
 }
 
-function cargarDatosFirebase() {
-  updateSyncStatus('syncing', '🔄 Sincronizando...');
-  db.ref('empleados').on('value', (snapshot) => {
-    const data = snapshot.val();
-    empleados = data ? Object.values(data) : [];
-    empleados = empleados.map(e => ({enBaja: e.enBaja || false, fechaBaja: e.fechaBaja || null, fechaAntiguedad: e.fechaAntiguedad || null, ...e}));
-    renderEmpleados();
-    if (document.getElementById('dashboard').classList.contains('active')) renderDashboard();
-    updateSyncStatus('', '✅ Sincronizado');
+async function cargarDesdeFirestore() {
+  try {
+    const [tSnap, aSnap, cSnap, fSnap] = await Promise.all([
+      db.collection('trabajadores').get(),
+      db.collection('ausencias').get(),
+      db.collection('configs').get(),
+      db.collection('festivos').get()
+    ]);
+    trabajadores = tSnap.docs.map(d => ({id: d.id, ...d.data()}));
+    ausencias = aSnap.docs.map(d => ({id: d.id, ...d.data()}));
+    cSnap.docs.forEach(d => { configs[d.id] = d.data(); });
+    fSnap.docs.forEach(d => {
+      const [anio] = d.id.split('_');
+      if (!festivos[anio]) festivos[anio] = [];
+      festivos[anio].push(d.data());
+      festivos[anio].sort((a,b) => a.fecha.localeCompare(b.fecha));
+    });
+    guardarLocal();
+  } catch (e) {
+    console.error(e);
+    toast('Error', 'No se pudieron cargar los datos de la nube', 'error');
+    cargarDatosLocales();
+  }
+}
+
+function subscribirseACambios() {
+  unsubscribes.push(
+    db.collection('trabajadores').onSnapshot(snap => {
+      trabajadores = snap.docs.map(d => ({id: d.id, ...d.data()}));
+      guardarLocal();
+      refrescarVistaActual();
+    }),
+    db.collection('ausencias').onSnapshot(snap => {
+      ausencias = snap.docs.map(d => ({id: d.id, ...d.data()}));
+      guardarLocal();
+      refrescarVistaActual();
+    }),
+    db.collection('configs').onSnapshot(snap => {
+      configs = {};
+      snap.docs.forEach(d => { configs[d.id] = d.data(); });
+      guardarLocal();
+      refrescarVistaActual();
+    }),
+    db.collection('festivos').onSnapshot(snap => {
+      festivos = {};
+      snap.docs.forEach(d => {
+        const [anio] = d.id.split('_');
+        if (!festivos[anio]) festivos[anio] = [];
+        festivos[anio].push(d.data());
+        festivos[anio].sort((a,b) => a.fecha.localeCompare(b.fecha));
+      });
+      guardarLocal();
+      refrescarVistaActual();
+    })
+  );
+}
+
+function refrescarVistaActual() {
+  const active = document.querySelector('.panel.active');
+  if (!active) return;
+  const id = active.id;
+  if (id === 'inicio') renderInicio();
+  else if (id === 'trabajadores') renderTrabajadores();
+  else if (id === 'config') renderConfig();
+  else if (id === 'calendario') renderCalendario();
+  else if (id === 'ausencias') { cargarSelectTrabajadores(); cargarSelectAniosAusencia(); renderAusencias(); mostrarDisponibles(); }
+  else if (id === 'historial') { cargarSelectHistorial(); mostrarHistorial(); }
+}
+
+function guardarLocal() {
+  localStorage.setItem('trabajadores', JSON.stringify(trabajadores));
+  localStorage.setItem('ausencias', JSON.stringify(ausencias));
+  localStorage.setItem('configs', JSON.stringify(configs));
+  localStorage.setItem('festivos', JSON.stringify(festivos));
+}
+
+function cargarDatosLocales() {
+  trabajadores = JSON.parse(localStorage.getItem('trabajadores') || '[]');
+  ausencias = JSON.parse(localStorage.getItem('ausencias') || '[]');
+  configs = JSON.parse(localStorage.getItem('configs') || '{}');
+  festivos = JSON.parse(localStorage.getItem('festivos') || '{}');
+}
+
+async function fsSet(coleccion, id, data) {
+  if (!db) return;
+  try { await db.collection(coleccion).doc(id).set(data); }
+  catch (e) { toast('Error', 'No se pudo guardar en la nube: ' + e.message, 'error'); }
+}
+async function fsDelete(coleccion, id) {
+  if (!db) return;
+  try { await db.collection(coleccion).doc(id).delete(); }
+  catch (e) { toast('Error', 'No se pudo eliminar de la nube: ' + e.message, 'error'); }
+}
+
+// ============ MODAL Y TOAST PERSONALIZADOS ============
+function showAlert(titulo, mensaje, tipo = 'info') {
+  return new Promise(resolve => {
+    const iconos = { info: '️', success: '✅', warning: '️', error: '❌', confirm: '❓' };
+    const overlay = document.getElementById('modalOverlay');
+    overlay.innerHTML = `
+      <div class="modal-box">
+        <div class="modal-header ${tipo}">
+          <span class="modal-icon">${iconos[tipo] || '️'}</span>
+          <span>${titulo}</span>
+        </div>
+        <div class="modal-body">${mensaje}</div>
+        <div class="modal-footer">
+          <button class="success" id="modalOk">Entendido</button>
+        </div>
+      </div>
+    `;
+    requestAnimationFrame(() => overlay.classList.add('visible'));
+    const cerrar = () => {
+      overlay.classList.remove('visible');
+      setTimeout(() => { overlay.innerHTML = ''; resolve(true); }, 250);
+    };
+    document.getElementById('modalOk').onclick = cerrar;
+    overlay.onclick = e => { if (e.target === overlay) cerrar(); };
   });
-  db.ref('registros').on('value', (snapshot) => {
-    registros = snapshot.val() ? Object.values(snapshot.val()) : [];
-    if (document.getElementById('historial').classList.contains('active')) renderHistorial();
-    if (document.getElementById('consulta').classList.contains('active')) renderConsulta();
-    if (document.getElementById('dashboard').classList.contains('active')) renderDashboard();
+}
+
+function showConfirm(titulo, mensaje, tipo = 'confirm') {
+  return new Promise(resolve => {
+    const iconos = { info: 'ℹ️', success: '✅', warning: '⚠️', error: '❌', confirm: '❓' };
+    const overlay = document.getElementById('modalOverlay');
+    overlay.innerHTML = `
+      <div class="modal-box">
+        <div class="modal-header ${tipo}">
+          <span class="modal-icon">${iconos[tipo] || '❓'}</span>
+          <span>${titulo}</span>
+        </div>
+        <div class="modal-body">${mensaje}</div>
+        <div class="modal-footer">
+          <button id="modalNo">Cancelar</button>
+          <button class="${tipo === 'error' ? 'danger' : 'success'}" id="modalSi">Confirmar</button>
+        </div>
+      </div>
+    `;
+    requestAnimationFrame(() => overlay.classList.add('visible'));
+    const cerrar = (valor) => {
+      overlay.classList.remove('visible');
+      setTimeout(() => { overlay.innerHTML = ''; resolve(valor); }, 250);
+    };
+    document.getElementById('modalSi').onclick = () => cerrar(true);
+    document.getElementById('modalNo').onclick = () => cerrar(false);
+    overlay.onclick = e => { if (e.target === overlay) cerrar(false); };
   });
-  db.ref('festivos').on('value', (snapshot) => {
-    festivos = snapshot.val() ? Object.values(snapshot.val()) : [];
-    if (document.getElementById('festivos').classList.contains('active')) renderFestivos();
+}
+
+function showPrompt(titulo, mensaje, valorInicial = '') {
+  return new Promise(resolve => {
+    const overlay = document.getElementById('modalOverlay');
+    overlay.innerHTML = `
+      <div class="modal-box">
+        <div class="modal-header confirm">
+          <span class="modal-icon">✏️</span>
+          <span>${titulo}</span>
+        </div>
+        <div class="modal-body">
+          ${mensaje}
+          <input type="text" class="modal-input" id="modalInput" value="${valorInicial}">
+        </div>
+        <div class="modal-footer">
+          <button id="modalNo">Cancelar</button>
+          <button class="success" id="modalSi">Aceptar</button>
+        </div>
+      </div>
+    `;
+    requestAnimationFrame(() => overlay.classList.add('visible'));
+    const input = document.getElementById('modalInput');
+    input.focus();
+    input.select();
+    const cerrar = (valor) => {
+      overlay.classList.remove('visible');
+      setTimeout(() => { overlay.innerHTML = ''; resolve(valor); }, 250);
+    };
+    document.getElementById('modalSi').onclick = () => cerrar(document.getElementById('modalInput').value);
+    document.getElementById('modalNo').onclick = () => cerrar(null);
+    input.onkeydown = e => { if (e.key === 'Enter') cerrar(input.value); if (e.key === 'Escape') cerrar(null); };
   });
 }
 
-function guardarEnFirebase(tipo, datos) {
-  updateSyncStatus('syncing', '💾 Guardando...');
-  db.ref(tipo).set(datos).then(() => {
-    updateSyncStatus('', '✅ Guardado');
-  }).catch((error) => {
-    updateSyncStatus('error', ' Error: ' + error.message);
-  });
+function toast(titulo, mensaje, tipo = 'info', duracion = 3500) {
+  const iconos = { info: 'ℹ️', success: '✅', warning: '⚠️', error: '❌' };
+  const cont = document.getElementById('toastContainer');
+  const el = document.createElement('div');
+  el.className = `toast ${tipo}`;
+  el.innerHTML = `
+    <span class="toast-icon">${iconos[tipo] || 'ℹ️'}</span>
+    <div class="toast-content">
+      <div class="toast-title">${titulo}</div>
+      <div class="toast-msg">${mensaje}</div>
+    </div>
+  `;
+  cont.appendChild(el);
+  requestAnimationFrame(() => el.classList.add('visible'));
+  setTimeout(() => {
+    el.classList.remove('visible');
+    setTimeout(() => el.remove(), 300);
+  }, duracion);
 }
 
-window.addEventListener('scroll', function() {
-  const btn = document.getElementById('btnSubir');
-  if (window.scrollY > 300) btn.classList.add('visible');
-  else btn.classList.remove('visible');
-});
-
-function subirArriba() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
-
-function borrarTodosLosDatos() {
-  if (!confirm('⚠️ ¿Borrar TODOS los datos?')) return;
-  if (!confirm('🚨 ¿Seguro?')) return;
-  db.ref('empleados').remove();
-  db.ref('registros').remove();
-  db.ref('festivos').remove();
-  empleados = []; registros = []; festivos = [];
-  cancelarEdicionEmpleado(); cancelarEdicionRegistro();
-  renderEmpleados();
-  alert('✅ Datos borrados');
-  subirArriba();
-}
-
-function getHoy() { const h = new Date(); h.setHours(0,0,0,0); return h; }
-function fechaStrToDate(s) { const [y,m,d] = s.split('-').map(Number); return new Date(y,m-1,d); }
-function dateToFechaStr(f) { return `${f.getFullYear()}-${String(f.getMonth()+1).padStart(2,'0')}-${String(f.getDate()).padStart(2,'0')}`; }
-function esDiaHabil(f) { const d = f.getDay(); if (d===0||d===6) return false; if (festivos.some(x => x.fecha===dateToFechaStr(f))) return false; return true; }
-function sumarDiasHabiles(fi, d) { const f = new Date(fi); let c=0; while(c<d) { f.setDate(f.getDate()+1); if(esDiaHabil(f)) c++; } return f; }
-function formatearFecha(s) { return fechaStrToDate(s).toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long',year:'numeric'}); }
-function formatearFechaCorta(s) { return fechaStrToDate(s).toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit',year:'numeric'}); }
-function formatearFechaLarga(s) { return fechaStrToDate(s).toLocaleDateString('es-ES',{weekday:'short',day:'numeric',month:'short'}); }
-
-function calcularAniosAntiguedad(fechaAntiguedad, anoReferencia) {
-  if (!fechaAntiguedad) return 0;
-  const fa = fechaStrToDate(fechaAntiguedad);
-  const finAno = new Date(anoReferencia, 11, 31);
-  let anios = finAno.getFullYear() - fa.getFullYear();
-  const mesDiff = finAno.getMonth() - fa.getMonth();
-  if (mesDiff < 0 || (mesDiff === 0 && finAno.getDate() < fa.getDate())) anios--;
-  return Math.max(0, anios);
-}
-
-function calcularVacacionesPorAntiguedad(anios) {
-  let vac = 22;
-  if (anios >= 16) vac++;
-  if (anios >= 21) vac++;
-  if (anios >= 26) vac++;
-  if (anios >= 31) vac++;
-  return vac;
-}
-
-function calcularAsuntosPropiosPorAntiguedad(anios) {
-  let ap = 6;
-  if (anios >= 18) ap += 2;
-  if (anios >= 24) ap += 1;
-  if (anios >= 27) ap += Math.floor((anios - 24) / 3);
-  return ap;
-}
-
-function aplicarCalculoAutomatico(emp, ano) {
-  if (!emp.fechaAntiguedad || ano < 2027) return emp;
-  const anios = calcularAniosAntiguedad(emp.fechaAntiguedad, ano);
-  emp.vac = calcularVacacionesPorAntiguedad(anios);
-  emp.ap = calcularAsuntosPropiosPorAntiguedad(anios);
-  return emp;
-}
-
-function showPanel(id, btn) {
+// ============ TABS ============
+function showTab(id, btn) {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   btn.classList.add('active');
-  if (id !== 'registro') cancelarEdicionRegistro();
-  if (id !== 'empleados') cancelarEdicionEmpleado();
-  subirArriba();
-  if (id === 'dashboard') renderDashboard();
-  if (id === 'registro') { cargarSelectEmpleados(); if (!registroEditando && !document.getElementById('regFecha').value) document.getElementById('regFecha').valueAsDate = new Date(); }
-  if (id === 'plantilla') { if (!document.getElementById('plantillaFecha').value) document.getElementById('plantillaFecha').valueAsDate = new Date(); renderPlantilla(); }
-  if (id === 'calendario') { inicializarCalendario(); renderCalendario(); }
-  if (id === 'calendarioIndividual') { inicializarCalendarioIndividual(); renderCalendarioIndividual(); }
-  if (id === 'consulta') { cargarSelectConsulta(); renderConsulta(); }
-  if (id === 'resumen') renderResumen();
-  if (id === 'festivos') { actualizarFiltroAnos(); renderFestivos(); }
-  if (id === 'historial') renderHistorial();
-  if (id === 'empleados') renderEmpleados();
+  if (id === 'inicio') renderInicio();
+  if (id === 'trabajadores') renderTrabajadores();
+  if (id === 'config') renderConfig();
+  if (id === 'calendario') renderCalendarioTab();
+  if (id === 'ausencias') { cargarSelectTrabajadores(); cargarSelectAniosAusencia(); renderAusencias(); actualizarInfoTipo(); mostrarDisponibles(); }
+  if (id === 'historial') { cargarSelectHistorial(); mostrarHistorial(); }
 }
 
-function estaEnBaja(empId, fecha) {
-  const emp = empleados.find(e => e.id === empId);
-  if (!emp || !emp.enBaja || !emp.fechaBaja) return false;
-  return fechaStrToDate(emp.fechaBaja) <= fecha;
+// ============ ANTIGÜEDAD ============
+function añosAntiguedad(fechaInc, año) {
+  const inc = new Date(fechaInc + 'T00:00:00');
+  const ref = new Date(año, 0, 1);
+  let años = ref.getFullYear() - inc.getFullYear();
+  if (ref.getMonth() < inc.getMonth() || (ref.getMonth() === inc.getMonth() && ref.getDate() < inc.getDate())) años--;
+  return Math.max(0, años);
 }
 
-// MODIFICADA: Ahora devuelve también las fechas de inicio y fin del periodo
-function obtenerPermisoActivo(empId, fecha) {
-  const fechaConsulta = dateToFechaStr(fecha);
-  const permisosEmpleado = registros.filter(r => r.empId === empId);
-  for (const reg of permisosEmpleado) {
-    let fi = fechaStrToDate(reg.fecha);
-    let count = 0;
-    while (count < reg.cantidad) {
-      if (fi.getDay() !== 0 && fi.getDay() !== 6) {
-        const fechaPermiso = dateToFechaStr(fi);
-        if (fechaPermiso === fechaConsulta) {
-          // Calcular la fecha de reincorporación
-          let fr = new Date(fi);
-          let diasRestantes = reg.cantidad - count;
-          while (diasRestantes > 0) {
-            fr.setDate(fr.getDate() + 1);
-            if (fr.getDay() !== 0 && fr.getDay() !== 6) {
-              diasRestantes--;
-            }
-          }
-          return { 
-            tipo: reg.tipo, 
-            inicio: reg.fecha, 
-            cantidad: reg.cantidad,
-            reincorporacion: dateToFechaStr(fr)
-          };
-        }
-        count++;
-      }
-      fi.setDate(fi.getDate() + 1);
-    }
+function diasVacacionesPorAntiguedad(años) {
+  if (años >= 30) return 26;
+  if (años >= 25) return 25;
+  if (años >= 20) return 24;
+  if (años >= 15) return 23;
+  return 22;
+}
+
+function diasAPPorAntiguedad(años) {
+  let dias = 6;
+  if (años >= 19) dias += 2;
+  if (años >= 25) dias += 1;
+  if (años >= 25) {
+    const trienios = Math.floor((años - 25) / 3);
+    dias += trienios;
   }
-  return null;
-}
-
-function toggleBaja(id) {
-  const emp = empleados.find(e => e.id === id);
-  if (!emp) return;
-  emp.enBaja = !emp.enBaja;
-  emp.fechaBaja = emp.enBaja ? dateToFechaStr(getHoy()) : null;
-  db.ref('empleados/' + id).update({ enBaja: emp.enBaja, fechaBaja: emp.fechaBaja });
-  renderEmpleados();
-  if (document.getElementById('dashboard').classList.contains('active')) renderDashboard();
-  if (document.getElementById('consulta').classList.contains('active')) renderConsulta();
-  if (document.getElementById('resumen').classList.contains('active')) renderResumen();
-  if (document.getElementById('plantilla').classList.contains('active')) renderPlantilla();
-}
-
-function guardarEmpleado() {
-  const nombre = document.getElementById('empNombre').value.trim();
-  const categoria = document.getElementById('empCategoria').value;
-  const fechaAntiguedad = document.getElementById('empAntiguedad').value || null;
-  const vac = parseFloat(document.getElementById('empVac').value) || 0;
-  const ap = parseFloat(document.getElementById('empAP').value) || 0;
-  const sab = parseFloat(document.getElementById('empSab').value) || 0;
-  if (!nombre) { alert('Introduce nombre'); return; }
-  if (empleadoEditando) {
-    Object.assign(empleadoEditando, { nombre, categoria, fechaAntiguedad, vac, ap, sab });
-    db.ref('empleados/' + empleadoEditando.id).set(empleadoEditando);
-    alert('✅ Actualizado');
-  } else {
-    const ex = empleados.find(e => e.nombre.toLowerCase() === nombre.toLowerCase());
-    if (ex) {
-      if (!confirm(`"${nombre}" existe. ¿Actualizar?`)) return;
-      Object.assign(ex, { categoria, fechaAntiguedad, vac, ap, sab });
-      db.ref('empleados/' + ex.id).set(ex);
-    } else {
-      const nuevo = { id: Date.now(), nombre, categoria, fechaAntiguedad, vac, ap, sab, enBaja: false, fechaBaja: null };
-      db.ref('empleados/' + nuevo.id).set(nuevo);
-      alert('✅ Guardado');
-    }
-  }
-  cancelarEdicionEmpleado();
-  renderEmpleados();
-}
-
-function editarEmpleado(id) {
-  const emp = empleados.find(e => e.id === id);
-  if (!emp) return;
-  empleadoEditando = emp;
-  document.getElementById('empNombre').value = emp.nombre;
-  document.getElementById('empCategoria').value = emp.categoria;
-  document.getElementById('empAntiguedad').value = emp.fechaAntiguedad || '';
-  document.getElementById('empVac').value = emp.vac;
-  document.getElementById('empAP').value = emp.ap;
-  document.getElementById('empSab').value = emp.sab;
-  document.getElementById('formTitle').textContent = '✏️ Editar';
-  document.getElementById('btnGuardarEmpleado').textContent = '💾 Actualizar';
-  document.getElementById('btnCancelarEdicionEmp').style.display = 'inline-block';
-  document.getElementById('editModeBannerEmp').style.display = 'flex';
-  document.getElementById('editEmployeeName').textContent = emp.nombre;
-  subirArriba();
-}
-
-function cancelarEdicionEmpleado() {
-  empleadoEditando = null;
-  document.getElementById('empNombre').value = '';
-  document.getElementById('empCategoria').value = 'encargado';
-  document.getElementById('empAntiguedad').value = '';
-  document.getElementById('empVac').value = '22';
-  document.getElementById('empAP').value = '6';
-  document.getElementById('empSab').value = '0';
-  document.getElementById('formTitle').textContent = 'Añadir empleado';
-  document.getElementById('btnGuardarEmpleado').textContent = '💾 Guardar';
-  document.getElementById('btnCancelarEdicionEmp').style.display = 'none';
-  document.getElementById('editModeBannerEmp').style.display = 'none';
-}
-
-function eliminarEmpleado(id) {
-  if (!confirm('¿Eliminar empleado y sus registros?')) return;
-  db.ref('empleados/' + id).remove();
-  db.ref('registros').once('value').then(snapshot => {
-    const regs = snapshot.val();
-    if (regs) {
-      Object.keys(regs).forEach(key => {
-        if (regs[key].empId === id) db.ref('registros/' + key).remove();
-      });
-    }
-  });
-  if (empleadoEditando && empleadoEditando.id === id) cancelarEdicionEmpleado();
-  renderEmpleados();
-}
-
-function renderEmpleados() {
-  const cont = document.getElementById('listaEmpleados');
-  if (empleados.length === 0) { cont.innerHTML = '<div class="empty">Sin empleados</div>'; return; }
-  let html = '<table><thead><tr><th>Nombre</th><th>Cat</th><th>Antigüedad</th><th>Vac</th><th>AP</th><th>Sáb</th><th>Estado</th><th>Acciones</th></tr></thead><tbody>';
-  empleados.forEach(e => {
-    const cat = {encargado:'Encargado',ordenanza:'Ordenanza',limpiador:'Limpiador/a',reserva:'Reserva'}[e.categoria];
-    const estadoBadge = e.enBaja ? '<span style="color:#e53e3e;font-weight:600">🔴 Baja</span>' : '<span style="color:#38a169;font-weight:600">🟢 Activo</span>';
-    const antiguedadTxt = e.fechaAntiguedad ? formatearFechaCorta(e.fechaAntiguedad) : '<em style="color:#a0aec0">Manual</em>';
-    const btnBajaAlta = e.enBaja ? `<button class="alta" onclick="toggleBaja(${e.id})">✅ Alta</button>` : `<button class="baja" onclick="toggleBaja(${e.id})"> Baja</button>`;
-    html += `<tr><td><strong>${e.nombre}</strong></td><td><span class="badge ${e.categoria}">${cat}</span></td><td>${antiguedadTxt}</td><td>${e.vac}</td><td>${e.ap}</td><td>${e.sab}</td><td>${estadoBadge}</td><td>${btnBajaAlta}<button class="edit" onclick="editarEmpleado(${e.id})">✏️</button><button class="danger" onclick="eliminarEmpleado(${e.id})">🗑️</button></td></tr>`;
-  });
-  html += '</tbody></table>';
-  cont.innerHTML = html;
-}
-
-function abrirModalNuevoAnio() {
-  const anoActual = new Date().getFullYear();
-  const anoSiguiente = anoActual + 1;
-  const contenido = document.getElementById('modalNuevoAnioContenido');
-  contenido.innerHTML = `<p style="margin-bottom:15px">Se conservarán los empleados y se borrarán todos los permisos registrados.</p><div style="margin-bottom:15px"><label style="font-weight:600;display:block;margin-bottom:5px">Año destino:</label><input type="number" id="nuevoAnoInput" value="${anoSiguiente}" min="${anoActual}" style="width:100%;padding:10px;border:1px solid #cbd5e0;border-radius:6px;font-size:16px"></div><div style="margin-bottom:15px"><label style="font-weight:600;display:block;margin-bottom:5px">Sábados compensados:</label><input type="number" id="nuevosSabadosInput" value="0" min="0" style="width:100%;padding:10px;border:1px solid #cbd5e0;border-radius:6px;font-size:16px"></div><div id="previewCalculos" style="margin-bottom:15px;padding:12px;background:#ebf8ff;border-radius:8px;font-size:13px;max-height:200px;overflow-y:auto"></div><div style="margin-top:20px;display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap"><button class="secondary" onclick="cerrarModalNuevoAnio()">Cancelar</button><button class="primary" onclick="ejecutarCambioAnio()">✅ Ejecutar</button></div>`;
-  document.getElementById('modalNuevoAnio').style.display = 'flex';
-  actualizarPreviewCalculos();
-  document.getElementById('nuevoAnoInput').addEventListener('input', actualizarPreviewCalculos);
-}
-
-function actualizarPreviewCalculos() {
-  const ano = parseInt(document.getElementById('nuevoAnoInput').value) || new Date().getFullYear() + 1;
-  const preview = document.getElementById('previewCalculos');
-  let html = `<strong>Vista previa para ${ano}:</strong><br><br>`;
-  empleados.forEach(emp => {
-    const anios = emp.fechaAntiguedad ? calcularAniosAntiguedad(emp.fechaAntiguedad, ano) : 0;
-    const automatico = emp.fechaAntiguedad && ano >= 2027;
-    if (automatico) {
-      html += `<strong>${emp.nombre}</strong> (${anios} años): Vac: ${calcularVacacionesPorAntiguedad(anios)} | AP: ${calcularAsuntosPropiosPorAntiguedad(anios)} <span style="color:#38a169">✅ Auto</span><br>`;
-    } else {
-      html += `<strong>${emp.nombre}</strong>: Vac: ${emp.vac} | AP: ${emp.ap} <span style="color:#ed8936">⚠️ Manual</span><br>`;
-    }
-  });
-  preview.innerHTML = html;
-}
-
-function cerrarModalNuevoAnio() { document.getElementById('modalNuevoAnio').style.display = 'none'; }
-
-function ejecutarCambioAnio() {
-  const ano = parseInt(document.getElementById('nuevoAnoInput').value);
-  const sabados = parseInt(document.getElementById('nuevosSabadosInput').value) || 0;
-  const anoActual = new Date().getFullYear();
-  if (!ano || ano < anoActual) { alert('Año inválido'); return; }
-  if (!confirm(`⚠️ ¿Confirmar cambio al año ${ano}?\n\n• Se borrarán TODOS los permisos\n• Sábados: ${sabados} días\n${ano >= 2027 ? '• Cálculo automático por antigüedad' : '• Valores manuales'}`)) return;
-  registros = [];
-  empleados.forEach(emp => {
-    if (emp.fechaAntiguedad && ano >= 2027) aplicarCalculoAutomatico(emp, ano);
-    emp.sab = sabados;
-    db.ref('empleados/' + emp.id).update({ vac: emp.vac, ap: emp.ap, sab: emp.sab });
-  });
-  db.ref('registros').remove();
-  cerrarModalNuevoAnio();
-  alert(`✅ Año ${ano} iniciado`);
-  renderEmpleados();
-  renderFestivos();
-  renderHistorial();
-}
-
-function guardarFestivo() {
-  const nombre = document.getElementById('festivoNombre').value.trim();
-  const fecha = document.getElementById('festivoFecha').value;
-  if (!nombre || !fecha) { alert('Nombre y fecha requeridos'); return; }
-  const ex = festivos.find(f => f.fecha === fecha);
-  if (ex) {
-    if (!confirm(`Ya existe el ${formatearFechaCorta(fecha)}. ¿Reemplazar?`)) return;
-    ex.nombre = nombre;
-  } else {
-    festivos.push({ id: Date.now(), nombre, fecha });
-  }
-  db.ref('festivos').set(festivos);
-  document.getElementById('festivoNombre').value = '';
-  document.getElementById('festivoFecha').value = '';
-  actualizarFiltroAnos();
-  renderFestivos();
-  alert('✅ Festivo guardado');
-}
-
-function eliminarFestivo(id) {
-  if (!confirm('¿Eliminar festivo?')) return;
-  festivos = festivos.filter(f => f.id !== id);
-  db.ref('festivos').set(festivos);
-  renderFestivos();
-}
-
-function actualizarFiltroAnos() {
-  const sel = document.getElementById('filtroAnoFestivo');
-  const anos = [...new Set(festivos.map(f => new Date(f.fecha).getFullYear()))].sort();
-  sel.innerHTML = '<option value="todos">Todos</option>';
-  anos.forEach(a => sel.innerHTML += `<option value="${a}">${a}</option>`);
-}
-
-function renderFestivos() {
-  const cont = document.getElementById('listaFestivos');
-  const filtro = document.getElementById('filtroAnoFestivo').value;
-  let lista = festivos;
-  if (filtro !== 'todos') lista = festivos.filter(f => new Date(f.fecha).getFullYear().toString() === filtro);
-  lista.sort((a,b) => new Date(a.fecha)-new Date(b.fecha));
-  if (lista.length === 0) { cont.innerHTML = '<div class="empty">Sin festivos</div>'; return; }
-  cont.innerHTML = '<div class="festivos-grid">' + lista.map(f => {
-    const dia = fechaStrToDate(f.fecha).toLocaleDateString('es-ES',{weekday:'long'});
-    return `<div class="festivo-card"><div class="festivo-info"><div class="festivo-nombre">${f.nombre}</div><div class="festivo-fecha">${formatearFechaCorta(f.fecha)}</div><div class="festivo-dia">${dia}</div></div><button class="danger" onclick="eliminarFestivo(${f.id})">🗑️</button></div>`;
-  }).join('') + '</div>';
-}
-
-function calcularDiasPorEstado(empId, tipo) {
-  const hoy = getHoy();
-  const dias = registros.filter(r => r.empId === empId && r.tipo === tipo);
-  const consumidos = dias.filter(r => fechaStrToDate(r.fecha) <= hoy).reduce((s,r) => s+r.cantidad, 0);
-  const solicitados = dias.filter(r => fechaStrToDate(r.fecha) > hoy).reduce((s,r) => s+r.cantidad, 0);
-  return { consumidos, solicitados, total: consumidos+solicitados };
-}
-
-function obtenerFechasSolicitadas(empId, tipo) { return registros.filter(r => r.empId===empId && r.tipo===tipo && fechaStrToDate(r.fecha)>getHoy()).sort((a,b)=>fechaStrToDate(a.fecha)-fechaStrToDate(b.fecha)); }
-function obtenerFechasConsumidas(empId, tipo) { return registros.filter(r => r.empId===empId && r.tipo===tipo && fechaStrToDate(r.fecha)<=getHoy()).sort((a,b)=>fechaStrToDate(a.fecha)-fechaStrToDate(b.fecha)); }
-
-function calcularVentanas(empId) {
-  const dias = registros.filter(r => r.empId===empId && r.tipo==='vacaciones').map(r=>fechaStrToDate(r.fecha)).sort((a,b)=>a-b);
-  if (dias.length===0) return 0;
-  let v=1;
-  for(let i=1;i<dias.length;i++) if ((dias[i]-dias[i-1])/86400000>7) v++;
-  return v;
-}
-
-function verificarVentanas() {
-  const empId = parseInt(document.getElementById('regEmpleado').value);
-  const fecha = document.getElementById('regFecha').value;
-  const tipo = document.getElementById('regTipo').value;
-  const div = document.getElementById('alertaVentanas');
-  if (!empId || !fecha || tipo!=='vacaciones') { div.innerHTML=''; return; }
-  const act = calcularVentanas(empId);
-  const emp = empleados.find(e => e.id===empId);
-  const dias = registros.filter(r => r.empId===empId && r.tipo==='vacaciones').map(r=>fechaStrToDate(r.fecha));
-  dias.push(fechaStrToDate(fecha)); dias.sort((a,b)=>a-b);
-  let sim=1;
-  for(let i=1;i<dias.length;i++) if ((dias[i]-dias[i-1])/86400000>7) sim++;
-  if (sim>MAX_VENTANAS) div.innerHTML = `<div class="warning-box">⚠️ ${emp.nombre} tiene ${act} ventana(s). Crearía la nº ${sim} (máx ${MAX_VENTANAS}).</div>`;
-  else if (sim>act) div.innerHTML = `<div class="info-box">ℹ️ Nueva ventana. Llevará ${sim} de ${MAX_VENTANAS}.</div>`;
-  else div.innerHTML = `<div class="info-box">✅ Ventana existente. Lleva ${act} de ${MAX_VENTANAS}.</div>`;
-}
-
-function calcularReincorporacion() {
-  const empId = parseInt(document.getElementById('regEmpleado').value);
-  const fechaInicio = document.getElementById('regFecha').value;
-  const cantidad = parseFloat(document.getElementById('regCantidad').value) || 0;
-  const tipo = document.getElementById('regTipo').value;
-  const div = document.getElementById('reincorporacionResultado');
-  if (!empId || !fechaInicio || cantidad<=0) { div.innerHTML='<div class="warning-box">⚠️ Selecciona empleado, fecha y cantidad</div>'; return; }
-  const emp = empleados.find(e => e.id===empId);
-  let fi = fechaStrToDate(fechaInicio);
-  while (!esDiaHabil(fi)) fi.setDate(fi.getDate()+1);
-  const fr = sumarDiasHabiles(fi, cantidad);
-  const tipoTxt = {vacaciones:'vacaciones',ap:'asuntos propios',sabados:'sábados',conciliacion1:'conciliación 1er grado',conciliacion2:'conciliación 2º grado',reposo:'reposo domiciliario',sinSueldo:'permiso sin sueldo'}[tipo];
-  const festivosMedio = festivos.filter(f => { const ff=fechaStrToDate(f.fecha); return ff>fi && ff<fr; });
-  div.innerHTML = `<div class="reincorporacion-box"><div style="font-size:14px;margin-bottom:8px"><strong>Reincorporación</strong> para ${emp.nombre}</div><div style="margin:6px 0">📌 <strong>Inicio:</strong> ${formatearFecha(dateToFechaStr(fi))}</div><div style="margin:6px 0">⏱️ <strong>Duración:</strong> ${cantidad} día(s) de ${tipoTxt}</div>${festivosMedio.length?`<div style="margin:6px 0">🎉 <strong>Festivos:</strong> ${festivosMedio.map(f=>f.nombre).join(', ')}</div>`:''}<div style="margin:6px 0">🔄 <strong>Reincorporación:</strong> <strong>${formatearFecha(dateToFechaStr(fr))}</strong></div></div>`;
-}
-
-function obtenerDiasHabilesDeRegistro(reg) {
-  const dias=[]; let fi=fechaStrToDate(reg.fecha); while(!esDiaHabil(fi)) fi.setDate(fi.getDate()+1);
-  let count=0; while(count<reg.cantidad) { if(esDiaHabil(fi)) { dias.push(dateToFechaStr(fi)); count++; } fi.setDate(fi.getDate()+1); }
   return dias;
 }
 
-function obtenerPeriodoPermiso(empId, fechaConsulta, tipo) {
-  const fcStr = dateToFechaStr(fechaConsulta);
-  const todos=[];
-  registros.filter(r=>r.empId===empId&&r.tipo===tipo).forEach(reg=>obtenerDiasHabilesDeRegistro(reg).forEach(d=>todos.push(d)));
-  if(todos.length===0) return null;
-  const unicos=[...new Set(todos)].sort();
-  const periodos=[]; let actual=[unicos[0]];
-  for(let i=1;i<unicos.length;i++) {
-    const ant=fechaStrToDate(unicos[i-1]), act=fechaStrToDate(unicos[i]);
-    let t=new Date(ant), entre=0; while(t<act) { t.setDate(t.getDate()+1); if(esDiaHabil(t)) entre++; }
-    if(entre<=1) actual.push(unicos[i]); else { periodos.push(actual); actual=[unicos[i]]; }
+function getDiasTrabajador(trabajador, año) {
+  const años = añosAntiguedad(trabajador.fecha, año);
+  return {
+    antiguedad: años,
+    vacaciones: diasVacacionesPorAntiguedad(años),
+    asuntosPropios: diasAPPorAntiguedad(años)
+  };
+}
+
+// ============ FECHAS Y FESTIVOS ============
+function esLaboral(date) {
+  const d = date.getDay();
+  if (d === 0 || d === 6) return false;
+  const dateStr = date.toISOString().split('T')[0];
+  const anio = date.getFullYear().toString();
+  if (festivos[anio] && festivos[anio].some(f => f.fecha === dateStr)) return false;
+  return true;
+}
+
+function contarLaborales(inicio, fin) {
+  let count = 0;
+  const d = new Date(inicio + 'T00:00:00');
+  const f = new Date(fin + 'T00:00:00');
+  while (d <= f) {
+    if (esLaboral(d)) count++;
+    d.setDate(d.getDate() + 1);
   }
-  periodos.push(actual);
-  for(const p of periodos) if(p.includes(fcStr)) return {inicio:p[0],fin:p[p.length-1],dias:p.length};
-  return null;
+  return count;
 }
 
-function obtenerPeriodoVacaciones(empId, fechaConsulta) {
-  return obtenerPeriodoPermiso(empId, fechaConsulta, 'vacaciones');
+function contarNaturales(inicio, fin) {
+  const d1 = new Date(inicio + 'T00:00:00'), d2 = new Date(fin + 'T00:00:00');
+  return Math.floor((d2 - d1) / 86400000) + 1;
 }
 
-function contarAusentesEnFecha(fechaStr) {
-  const fecha = fechaStrToDate(fechaStr);
-  const ausentes = {eo:[], limpieza:[]};
-  empleados.forEach(emp => {
-    if (emp.enBaja && emp.fechaBaja && fechaStrToDate(emp.fechaBaja) <= fecha) {
-      if (emp.categoria==='encargado'||emp.categoria==='ordenanza') ausentes.eo.push(emp.nombre);
-      if (emp.categoria==='limpiador') ausentes.limpieza.push(emp.nombre);
-      return;
-    }
-    const tipos = ['vacaciones','ap','sabados','conciliacion1','conciliacion2','reposo','sinSueldo'];
-    for (const tipo of tipos) {
-      const periodo = obtenerPeriodoPermiso(emp.id, fecha, tipo);
-      if (periodo) {
-        if (emp.categoria==='encargado'||emp.categoria==='ordenanza') {
-          if (!ausentes.eo.includes(emp.nombre)) ausentes.eo.push(emp.nombre);
-        }
-        if (emp.categoria==='limpiador') {
-          if (!ausentes.limpieza.includes(emp.nombre)) ausentes.limpieza.push(emp.nombre);
-        }
-        break;
-      }
-    }
-  });
-  return ausentes;
+function fmtDate(s) {
+  if (!s) return '';
+  const [y,m,d] = s.split('-');
+  return `${d}/${m}/${y}`;
 }
 
-function verificarSolapamiento(fechaStr, empIdExcluir) {
-  const ausentes = contarAusentesEnFecha(fechaStr);
-  const totalEO = empleados.filter(e=>e.categoria==='encargado'||e.categoria==='ordenanza').length;
-  const totalLimp = empleados.filter(e=>e.categoria==='limpiador').length;
-  const eoFiltrado = ausentes.eo.filter(n=>{const emp=empleados.find(e=>e.nombre===n); return !emp||emp.id!==empIdExcluir});
-  const limpFiltrado = ausentes.limpieza.filter(n=>{const emp=empleados.find(e=>e.nombre===n); return !emp||emp.id!==empIdExcluir});
-  const presentesEO = totalEO - eoFiltrado.length;
-  const presentesLimp = totalLimp - limpFiltrado.length;
-  const alertas = [];
-  if (presentesEO<2) alertas.push(`⚠️ Encargados/Ordenanzas: quedarían ${presentesEO} de ${totalEO} (mínimo 2). Ausentes: ${eoFiltrado.join(', ')}`);
-  if (presentesLimp<3) alertas.push(`⚠️ Limpieza: quedarían ${presentesLimp} de ${totalLimp} (mínimo 3). Ausentes: ${limpFiltrado.join(', ')}`);
-  return alertas;
+function fmtDateLong(s) {
+  if (!s) return '';
+  const d = new Date(s + 'T00:00:00');
+  return d.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
 }
 
-function renderPlantilla() {
-  const cont = document.getElementById('plantillaContenido');
-  const fc = document.getElementById('plantillaFecha').value;
-  if (!fc) { cont.innerHTML='<div class="empty">Selecciona fecha</div>'; return; }
-  const fcd = fechaStrToDate(fc);
-  const esFinde = fcd.getDay()===0||fcd.getDay()===6;
-  const esFestivo = festivos.some(f=>f.fecha===fc);
-  const trab={encargado:[],ordenanza:[],limpiador:[],reserva:[]};
-  const vac={encargado:[],ordenanza:[],limpiador:[],reserva:[]};
-  const otros={encargado:[],ordenanza:[],limpiador:[],reserva:[]};
-  const baja={encargado:[],ordenanza:[],limpiador:[],reserva:[]};
-  empleados.forEach(emp => {
-    if (emp.enBaja) {
-      baja[emp.categoria].push(emp);
+function diasEnMes(año, mes) { return new Date(año, mes + 1, 0).getDate(); }
+function nombreMes(m) { return ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'][m]; }
+function nombreDiaCorto(d) { return ['D','L','M','X','J','V','S'][d]; }
+
+// ============ INICIO ============
+function renderInicio() {
+  const ord = trabajadores.filter(t => t.categoria === 'ordenanza').length;
+  const limp = trabajadores.filter(t => t.categoria === 'limpiador').length;
+  const enc = trabajadores.filter(t => t.categoria === 'encargado').length;
+  const total = trabajadores.length;
+
+  document.getElementById('statsGeneral').innerHTML = `
+    <div class="stat"><div class="num">${total}</div><div class="lbl">Total plantilla</div></div>
+    <div class="stat" style="background:linear-gradient(135deg,#8e44ad,#9b59b6)"><div class="num">${enc}</div><div class="lbl">Encargados (previsto: 1)</div></div>
+    <div class="stat" style="background:linear-gradient(135deg,#3498db,#5dade2)"><div class="num">${ord}</div><div class="lbl">Ordenanzas (previsto: 4)</div></div>
+    <div class="stat" style="background:linear-gradient(135deg,#e67e22,#f39c12)"><div class="num">${limp}</div><div class="lbl">Limpiadores (previsto: 7)</div></div>
+  `;
+
+  const hoy = new Date().toISOString().split('T')[0];
+  let html = '<table><tr><th>Nombre</th><th>Categoría</th><th>Antigüedad</th><th>Estado hoy</th></tr>';
+  const anioActual = new Date().getFullYear().toString();
+  trabajadores.forEach(t => {
+    const ausHoy = ausencias.find(a => a.trabajadorId === t.id && a.inicio <= hoy && a.fin >= hoy);
+    let estado;
+    if (ausHoy) {
+      const tipos = {vacaciones:'🏖️ Vacaciones', asuntos_propios:'📝 Asuntos propios', compensacion:'🔄 Compensación', baja:' Baja'};
+      const cls = {vacaciones:'b-vac', asuntos_propios:'b-ap', compensacion:'b-comp', baja:'b-baja'};
+      estado = `<span class="badge ${cls[ausHoy.tipo]}">${tipos[ausHoy.tipo]}</span>`;
     } else {
-      const pVac = obtenerPeriodoVacaciones(emp.id, fcd);
-      if (pVac) {
-        vac[emp.categoria].push({emp, p: pVac, tipo: 'vacaciones'});
-      } else {
-        const pAP = obtenerPeriodoPermiso(emp.id, fcd, 'ap');
-        const pSab = obtenerPeriodoPermiso(emp.id, fcd, 'sabados');
-        const pC1 = obtenerPeriodoPermiso(emp.id, fcd, 'conciliacion1');
-        const pC2 = obtenerPeriodoPermiso(emp.id, fcd, 'conciliacion2');
-        const pReposo = obtenerPeriodoPermiso(emp.id, fcd, 'reposo');
-        const pSinSueldo = obtenerPeriodoPermiso(emp.id, fcd, 'sinSueldo');
-        if (pAP||pSab||pC1||pC2||pReposo||pSinSueldo) {
-          let periodoActivo = pAP||pSab||pC1||pC2||pReposo||pSinSueldo;
-          let tipoActivo = pAP?'ap':pSab?'sabados':pC1?'conciliacion1':pC2?'conciliacion2':pReposo?'reposo':'sinSueldo';
-          otros[emp.categoria].push({emp, p: periodoActivo, tipo: tipoActivo});
-        } else {
-          trab[emp.categoria].push(emp);
-        }
-      }
+      estado = '<span class="badge b-trab">✓ Trabajando</span>';
     }
+    const catBadge = {encargado:'b-enc', ordenanza:'b-ord', limpiador:'b-limp'}[t.categoria];
+    const catNombre = {encargado:'Encargado', ordenanza:'Ordenanza', limpiador:'Limpiador/a'}[t.categoria];
+    const años = añosAntiguedad(t.fecha, anioActual);
+    html += `<tr><td>${t.nombre} ${t.apellidos}</td><td><span class="badge ${catBadge}">${catNombre}</span></td><td>${años} años</td><td>${estado}</td></tr>`;
   });
-  let html='';
-  if(esFinde||esFestivo) html+=`<div class="info-box" style="margin-bottom:20px">ℹ️ ${formatearFechaLarga(fc)} es ${esFestivo?'festivo':'fin de semana'}. Sin jornada.</div>`;
-  const ausentes = contarAusentesEnFecha(fc);
-  const totalEO = empleados.filter(e=>e.categoria==='encargado'||e.categoria==='ordenanza').length;
-  const totalLimp = empleados.filter(e=>e.categoria==='limpiador').length;
-  const presentesEO = totalEO-ausentes.eo.length;
-  const presentesLimp = totalLimp-ausentes.limpieza.length;
-  if(presentesEO<2||presentesLimp<3) {
-    html+='<div class="warning-box" style="margin-bottom:20px"><strong>⚠️ Alerta de cobertura:</strong><br>';
-    if(presentesEO<2) html+=`• Encargados/Ordenanzas: ${presentesEO} presentes de ${totalEO} (mín. 2)<br>`;
-    if(presentesLimp<3) html+=`• Limpieza: ${presentesLimp} presentes de ${totalLimp} (mín. 3)`;
-    html+='</div>';
-  } else {
-    html+=`<div class="success-box" style="margin-bottom:20px"><strong>✅ Cobertura correcta:</strong> E/O: ${presentesEO}/${totalEO} | Limpieza: ${presentesLimp}/${totalLimp}</div>`;
+  html += '</table>';
+  document.getElementById('estadoPlantilla').innerHTML = html || '<p>No hay trabajadores registrados.</p>';
+}
+
+// ============ TRABAJADORES ============
+async function guardarTrabajador() {
+  const nombre = document.getElementById('tNombre').value.trim();
+  const apellidos = document.getElementById('tApellidos').value.trim();
+  const categoria = document.getElementById('tCategoria').value;
+  const fecha = document.getElementById('tFecha').value;
+  const dni = document.getElementById('tDni').value.trim();
+  const id = document.getElementById('tId').value;
+
+  if (!nombre || !apellidos || !fecha) {
+    await showAlert('Datos incompletos', 'Nombre, apellidos y fecha de incorporación son obligatorios.', 'warning');
+    return;
   }
-  html+='<div class="plantilla-grid"><div class="plantilla-columna"><h3>✅ Trabajando</h3>';
-  ['encargado','ordenanza','limpiador','reserva'].forEach(cat=>{
-    const icon={encargado:'',ordenanza:'👔',limpiador:'🧹',reserva:'🔄'}[cat];
-    const nom={encargado:'Encargado',ordenanza:'Ordenanzas',limpiador:'Limpieza',reserva:'Reserva'}[cat];
-    if(cat==='reserva'&&trab[cat].length===0) return;
-    html+=`<div class="categoria-seccion"><div class="categoria-header"><span>${icon} ${nom}</span><span class="categoria-contador">${trab[cat].length}</span></div>`;
-    if(trab[cat].length===0) html+='<div class="empty" style="padding:15px;font-size:13px">Ninguno</div>';
-    else trab[cat].forEach(e=>html+=`<div class="trabajador-item trabajando"><div class="trabajador-info"><div class="trabajador-nombre">${e.nombre}</div></div></div>`);
-    html+='</div>';
-  });
-  html+='</div><div class="plantilla-columna"><h3>🏖️ Permisos</h3>';
-  ['encargado','ordenanza','limpiador','reserva'].forEach(cat=>{
-    const icon={encargado:'🏢',ordenanza:'',limpiador:'🧹',reserva:'🔄'}[cat];
-    const nom={encargado:'Encargado',ordenanza:'Ordenanzas',limpiador:'Limpieza',reserva:'Reserva'}[cat];
-    const totalPermisos = vac[cat].length+otros[cat].length;
-    if(cat==='reserva'&&totalPermisos===0) return;
-    html+=`<div class="categoria-seccion"><div class="categoria-header"><span>${icon} ${nom}</span><span class="categoria-contador">${totalPermisos}</span></div>`;
-    if(totalPermisos===0) html+='<div class="empty" style="padding:15px;font-size:13px">Ninguno</div>';
-    else {
-      vac[cat].forEach(({emp,p})=>html+=`<div class="trabajador-item vacaciones"><div class="trabajador-info"><div class="trabajador-nombre">${emp.nombre}</div><div class="trabajador-periodo"> ${formatearFechaCorta(p.inicio)} - ${formatearFechaCorta(p.fin)} (${p.dias} días)</div></div></div>`);
-      otros[cat].forEach(({emp,p,tipo})=>{
-        const tipoLabel={ap:'📋 Asuntos propios',sabados:'🗓️ Sábados',conciliacion1:'👨‍👩‍ Conciliación 1er',conciliacion2:'👨‍👩‍👧‍👦 Conciliación 2º',reposo:'🏥 Reposo dom.',sinSueldo:'💼 Sin sueldo'}[tipo];
-        html+=`<div class="trabajador-item vacaciones"><div class="trabajador-info"><div class="trabajador-nombre">${emp.nombre}</div><div class="trabajador-periodo">${tipoLabel} ${formatearFechaCorta(p.inicio)} - ${formatearFechaCorta(p.fin)} (${p.dias} días)</div></div></div>`;
-      });
+
+  if (!id) {
+    const counts = {encargado: 0, ordenanza: 0, limpiador: 0};
+    trabajadores.forEach(t => counts[t.categoria]++);
+    const limites = {encargado: 1, ordenanza: 4, limpiador: 7};
+    if (counts[categoria] >= limites[categoria]) {
+      const ok = await showConfirm('Límite de plantilla superado',
+        `Ya hay ${counts[categoria]} ${categoria}(s). El límite previsto es ${limites[categoria]}.\n\n¿Desea añadirlo de todos modos?`, 'warning');
+      if (!ok) return;
     }
-    html+='</div>';
-  });
-  html+='</div><div class="plantilla-columna"><h3>🚑 Baja Médica</h3>';
-  let totalBaja=0;
-  ['encargado','ordenanza','limpiador','reserva'].forEach(cat=>{totalBaja+=baja[cat].length});
-  if(totalBaja===0) {
-    html+='<div class="empty" style="padding:40px 15px;font-size:14px;color:#a0aec0">Ningún empleado de baja</div>';
+  }
+
+  const nuevoId = id || 'T' + Date.now();
+  const data = {nombre, apellidos, categoria, fecha, dni};
+
+  if (id) {
+    const idx = trabajadores.findIndex(x => x.id === id);
+    if (idx >= 0) trabajadores[idx] = {id, ...data};
+    await fsSet('trabajadores', id, data);
+    toast('Trabajador actualizado', `${nombre} ${apellidos} modificado correctamente`, 'success');
   } else {
-    ['encargado','ordenanza','limpiador','reserva'].forEach(cat=>{
-      if(baja[cat].length===0) return;
-      const icon={encargado:'🏢',ordenanza:'',limpiador:'🧹',reserva:'🔄'}[cat];
-      const nom={encargado:'Encargado',ordenanza:'Ordenanzas',limpiador:'Limpieza',reserva:'Reserva'}[cat];
-      html+=`<div class="categoria-seccion"><div class="categoria-header" style="border-left-color:#e53e3e"><span>${icon} ${nom}</span><span class="categoria-contador" style="background:#e53e3e">${baja[cat].length}</span></div>`;
-      baja[cat].forEach(e=>html+=`<div class="trabajador-item baja-medica"><div class="trabajador-info"><div class="trabajador-nombre">${e.nombre}</div><div class="trabajador-periodo" style="color:#c53030">📅 Desde: ${formatearFechaCorta(e.fechaBaja)}</div></div></div>`);
-      html+='</div>';
+    trabajadores.push({id: nuevoId, ...data});
+    await fsSet('trabajadores', nuevoId, data);
+    toast('Trabajador añadido', `${nombre} ${apellidos} se ha incorporado a la plantilla`, 'success');
+  }
+  guardarLocal();
+  limpiarFormTrabajador();
+  renderTrabajadores();
+}
+
+function limpiarFormTrabajador() {
+  ['tNombre','tApellidos','tFecha','tDni','tId'].forEach(i => document.getElementById(i).value = '');
+  document.getElementById('tCategoria').value = 'ordenanza';
+}
+
+function editarTrabajador(id) {
+  const t = trabajadores.find(x => x.id === id);
+  document.getElementById('tNombre').value = t.nombre;
+  document.getElementById('tApellidos').value = t.apellidos;
+  document.getElementById('tCategoria').value = t.categoria;
+  document.getElementById('tFecha').value = t.fecha;
+  document.getElementById('tDni').value = t.dni || '';
+  document.getElementById('tId').value = t.id;
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+async function eliminarTrabajador(id) {
+  const t = trabajadores.find(x => x.id === id);
+  const ok = await showConfirm('Eliminar trabajador',
+    `¿Seguro que desea eliminar a ${t.nombre} ${t.apellidos}?\n\nSus ausencias registradas se conservarán.`, 'error');
+  if (!ok) return;
+  trabajadores = trabajadores.filter(t => t.id !== id);
+  await fsDelete('trabajadores', id);
+  guardarLocal();
+  renderTrabajadores();
+  toast('Trabajador eliminado', `${t.nombre} ${t.apellidos} ha sido dado de baja`, 'info');
+}
+
+function renderTrabajadores() {
+  const grupos = {encargado: [], ordenanza: [], limpiador: []};
+  trabajadores.forEach(t => grupos[t.categoria].push(t));
+  const nombres = {encargado: 'Encargado/a', ordenanza: 'Ordenanzas', limpiador: 'Limpiadores/as'};
+  const limites = {encargado: 1, ordenanza: 4, limpiador: 7};
+  const anioActual = new Date().getFullYear().toString();
+
+  let html = '';
+  for (const cat of ['encargado','ordenanza','limpiador']) {
+    html += `<h3>${nombres[cat]} (${grupos[cat].length}/${limites[cat]})</h3>`;
+    if (grupos[cat].length === 0) {
+      html += '<p style="color:#888;font-style:italic;">Sin trabajadores en esta categoría.</p>';
+      continue;
+    }
+    html += '<table><tr><th>Nombre</th><th>Apellidos</th><th>Incorporación</th><th>Antigüedad</th><th>Vac. ' + anioActual + '</th><th>AP ' + anioActual + '</th><th>Acciones</th></tr>';
+    grupos[cat].forEach(t => {
+      const d = getDiasTrabajador(t, anioActual);
+      html += `<tr>
+        <td>${t.nombre}</td>
+        <td>${t.apellidos}</td>
+        <td>${fmtDate(t.fecha)}</td>
+        <td>${d.antiguedad} años</td>
+        <td><strong>${d.vacaciones}</strong> días</td>
+        <td><strong>${d.asuntosPropios}</strong> días</td>
+        <td>
+          <button class="small" onclick="editarTrabajador('${t.id}')">✏️</button>
+          <button class="small danger" onclick="eliminarTrabajador('${t.id}')">🗑️</button>
+        </td>
+      </tr>`;
     });
+    html += '</table>';
   }
-  html+='</div></div>';
-  cont.innerHTML=html;
+  document.getElementById('listaTrabajadores').innerHTML = html;
 }
 
-function irACalendarioDesdePlantilla() {
-  const fc = document.getElementById('plantillaFecha').value;
-  if (fc) {
-    const f = fechaStrToDate(fc);
-    calendarioMesActual = f.getMonth();
-    calendarioAnoActual = f.getFullYear();
+// ============ CONFIG ============
+async function guardarConfig() {
+  const anio = document.getElementById('cAnio').value;
+  const comp = parseInt(document.getElementById('cCompensacion').value);
+  if (!anio || isNaN(comp)) {
+    await showAlert('Datos incompletos', 'Complete año y días de compensación.', 'warning');
+    return;
   }
-  showPanel('calendario', document.querySelectorAll('.tab')[4]);
+  const data = {
+    anio: parseInt(anio),
+    compensacion: comp,
+    vacaciones: 22,
+    asuntosPropios: 6,
+    maxPeriodos: 4,
+    minDias: 7
+  };
+  configs[anio] = data;
+  await fsSet('configs', anio, data);
+  guardarLocal();
+  renderConfig();
+  toast('Configuración guardada', `Parámetros del año ${anio} actualizados`, 'success');
 }
 
-function inicializarCalendario() {
-  const mesSel = document.getElementById('calendarioMesSelect');
-  mesSel.innerHTML = MESES.map((m,i)=>`<option value="${i}" ${i===calendarioMesActual?'selected':''}>${m}</option>`).join('');
-  const anoSel = document.getElementById('calendarioAnoSelect');
-  const anoActual = new Date().getFullYear();
-  let anosHtml = '';
-  for(let a=anoActual-5;a<=anoActual+5;a++) anosHtml+=`<option value="${a}" ${a===calendarioAnoActual?'selected':''}>${a}</option>`;
-  anoSel.innerHTML = anosHtml;
-  document.getElementById('calendarioFiltroGrupo').value = calendarioGrupoFiltro;
+function renderConfig() {
+  if (!document.getElementById('cAnio').value) document.getElementById('cAnio').value = new Date().getFullYear();
+  if (!document.getElementById('fAnio').value) document.getElementById('fAnio').value = new Date().getFullYear();
+  const anio = document.getElementById('cAnio').value;
+  if (configs[anio]) document.getElementById('cCompensacion').value = configs[anio].compensacion;
+
+  const anioVerSel = document.getElementById('fVerAnio');
+  const actual = anioVerSel.value || new Date().getFullYear().toString();
+  const anios = new Set();
+  Object.keys(festivos).forEach(a => anios.add(a));
+  Object.keys(configs).forEach(a => anios.add(a));
+  anios.add(new Date().getFullYear().toString());
+  anioVerSel.innerHTML = '';
+  [...anios].sort().reverse().forEach(a => {
+    anioVerSel.innerHTML += `<option value="${a}">${a}</option>`;
+  });
+  anioVerSel.value = actual;
+  renderFestivos();
+
+  let html = '<table><tr><th>Año</th><th>Vac. base</th><th>AP base</th><th>Compensación</th><th>Máx periodos</th><th>Mín días/periodo</th></tr>';
+  Object.values(configs).sort((a,b) => b.anio - a.anio).forEach(c => {
+    html += `<tr><td><strong>${c.anio}</strong></td><td>${c.vacaciones} días</td><td>${c.asuntosPropios} días</td><td>${c.compensacion} días</td><td>${c.maxPeriodos}</td><td>${c.minDias} naturales</td></tr>`;
+  });
+  html += '</table>';
+  document.getElementById('listaConfig').innerHTML = html || '<p>No hay configuraciones guardadas.</p>';
 }
 
-function cambiarMesCalendario(delta) {
-  calendarioMesActual += delta;
-  if (calendarioMesActual<0) { calendarioMesActual=11; calendarioAnoActual--; }
-  if (calendarioMesActual>11) { calendarioMesActual=0; calendarioAnoActual++; }
-  inicializarCalendario();
-  renderCalendario();
+// ============ FESTIVOS ============
+async function añadirFestivo() {
+  const anio = document.getElementById('fAnio').value;
+  const fecha = document.getElementById('fFecha').value;
+  const nombre = document.getElementById('fNombre').value.trim();
+  if (!anio || !fecha) {
+    await showAlert('Datos incompletos', 'Indique año y fecha del festivo.', 'warning');
+    return;
+  }
+
+  if (!festivos[anio]) festivos[anio] = [];
+  if (festivos[anio].some(f => f.fecha === fecha)) {
+    await showAlert('Festivo duplicado', 'Ese festivo ya existe para este año.', 'warning');
+    return;
+  }
+  const data = {fecha, nombre: nombre || 'Festivo', anio};
+  festivos[anio].push(data);
+  festivos[anio].sort((a,b) => a.fecha.localeCompare(b.fecha));
+  const docId = `${anio}_${fecha}`;
+  await fsSet('festivos', docId, data);
+  guardarLocal();
+  document.getElementById('fFecha').value = '';
+  document.getElementById('fNombre').value = '';
+  document.getElementById('fVerAnio').value = anio;
+  renderFestivos();
+  toast('Festivo añadido', `${fmtDate(fecha)} - ${nombre || 'Festivo'}`, 'success');
 }
 
-function irAMesActual() {
+async function eliminarFestivo(anio, fecha) {
+  const f = festivos[anio].find(x => x.fecha === fecha);
+  const ok = await showConfirm('Eliminar festivo', `¿Eliminar el festivo del ${fmtDate(fecha)} (${f.nombre})?`, 'warning');
+  if (!ok) return;
+  festivos[anio] = festivos[anio].filter(f => f.fecha !== fecha);
+  if (festivos[anio].length === 0) delete festivos[anio];
+  await fsDelete('festivos', `${anio}_${fecha}`);
+  guardarLocal();
+  renderFestivos();
+  toast('Festivo eliminado', `Se ha quitado el festivo del ${fmtDate(fecha)}`, 'info');
+}
+
+async function copiarFestivos() {
+  const anioDestino = document.getElementById('fAnio').value;
+  if (!anioDestino) {
+    await showAlert('Año no seleccionado', 'Seleccione primero el año de destino.', 'warning');
+    return;
+  }
+  const anios = Object.keys(festivos).filter(a => a !== anioDestino);
+  if (anios.length === 0) {
+    await showAlert('Sin festivos', 'No hay festivos en otros años para copiar.', 'info');
+    return;
+  }
+  const anioOrigen = await showPrompt('Copiar festivos',
+    `Años disponibles: ${anios.sort().join(', ')}\n\nIndique el año de origen:`, anios[0]);
+  if (!anioOrigen || !festivos[anioOrigen]) {
+    await showAlert('Año no válido', 'No se ha indicado un año con festivos.', 'warning');
+    return;
+  }
+  if (festivos[anioDestino] && festivos[anioDestino].length > 0) {
+    const ok = await showConfirm('Sustituir festivos',
+      `Ya hay ${festivos[anioDestino].length} festivos en ${anioDestino}. ¿Sustituirlos por los de ${anioOrigen}?`, 'warning');
+    if (!ok) return;
+    for (const f of festivos[anioDestino]) {
+      await fsDelete('festivos', `${anioDestino}_${f.fecha}`);
+    }
+  }
+  festivos[anioDestino] = JSON.parse(JSON.stringify(festivos[anioOrigen]));
+  for (const f of festivos[anioDestino]) {
+    await fsSet('festivos', `${anioDestino}_${f.fecha}`, {...f, anio: anioDestino});
+  }
+  guardarLocal();
+  document.getElementById('fVerAnio').value = anioDestino;
+  renderFestivos();
+  toast('Festivos copiados', `${festivos[anioDestino].length} festivos de ${anioOrigen} → ${anioDestino}`, 'success');
+}
+
+async function borrarFestivosAnio() {
+  const anio = document.getElementById('fVerAnio').value || document.getElementById('fAnio').value;
+  if (!anio) return;
+  const ok = await showConfirm('Borrar todos los festivos', `¿Borrar TODOS los festivos de ${anio}?`, 'error');
+  if (!ok) return;
+  if (festivos[anio]) {
+    for (const f of festivos[anio]) {
+      await fsDelete('festivos', `${anio}_${f.fecha}`);
+    }
+  }
+  delete festivos[anio];
+  guardarLocal();
+  renderFestivos();
+  toast('Festivos borrados', `Se han eliminado todos los festivos de ${anio}`, 'info');
+}
+
+function renderFestivos() {
+  const anio = document.getElementById('fVerAnio').value;
+  const cont = document.getElementById('listaFestivos');
+  if (!anio || !festivos[anio] || festivos[anio].length === 0) {
+    cont.innerHTML = `<p style="color:#888;">No hay festivos registrados para ${anio || 'el año seleccionado'}.</p>`;
+    return;
+  }
+  let html = `<p><strong>${festivos[anio].length} festivos en ${anio}:</strong></p><div>`;
+  festivos[anio].forEach(f => {
+    html += `<span class="festivo-chip">${fmtDate(f.fecha)} - ${f.nombre}<button onclick="eliminarFestivo('${anio}','${f.fecha}')">✕</button></span>`;
+  });
+  html += '</div>';
+  cont.innerHTML = html;
+}
+
+// ============ CALENDARIO ============
+function renderCalendarioTab() {
   const hoy = new Date();
-  calendarioMesActual = hoy.getMonth();
-  calendarioAnoActual = hoy.getFullYear();
-  inicializarCalendario();
+  const mesSel = document.getElementById('calMes');
+  if (mesSel.options.length === 0) {
+    for (let i = 0; i < 12; i++) mesSel.innerHTML += `<option value="${i}">${nombreMes(i)}</option>`;
+  }
+  if (!document.getElementById('calAnio').value) document.getElementById('calAnio').value = hoy.getFullYear();
+  if (!mesSel.value && mesSel.value !== 0) mesSel.value = hoy.getMonth();
   renderCalendario();
 }
 
-function actualizarCalendarioDesdeSelect() {
-  calendarioMesActual = parseInt(document.getElementById('calendarioMesSelect').value);
-  calendarioAnoActual = parseInt(document.getElementById('calendarioAnoSelect').value);
+function cambiarMes(delta) {
+  let mes = parseInt(document.getElementById('calMes').value);
+  let anio = parseInt(document.getElementById('calAnio').value);
+  mes += delta;
+  if (mes < 0) { mes = 11; anio--; }
+  if (mes > 11) { mes = 0; anio++; }
+  document.getElementById('calMes').value = mes;
+  document.getElementById('calAnio').value = anio;
   renderCalendario();
 }
 
-function filtrarEmpleadosPorGrupo(grupo) {
-  if (grupo==='todos') return empleados;
-  if (grupo==='limpieza') return empleados.filter(e=>e.categoria==='limpiador');
-  if (grupo==='resto') return empleados.filter(e=>e.categoria==='encargado'||e.categoria==='ordenanza');
-  return empleados;
+function irHoy() {
+  const hoy = new Date();
+  document.getElementById('calMes').value = hoy.getMonth();
+  document.getElementById('calAnio').value = hoy.getFullYear();
+  renderCalendario();
+}
+
+function getAusenciaEnFecha(trabajadorId, fechaStr) {
+  return ausencias.find(a => a.trabajadorId === trabajadorId && a.inicio <= fechaStr && a.fin >= fechaStr);
 }
 
 function renderCalendario() {
-  calendarioGrupoFiltro = document.getElementById('calendarioFiltroGrupo').value;
-  document.getElementById('calendarioMesTitulo').textContent = `${MESES[calendarioMesActual]} ${calendarioAnoActual}`;
-  const grid = document.getElementById('calendarioGrid');
-  const hoy = getHoy();
-  const hoyStr = dateToFechaStr(hoy);
-  const primerDia = new Date(calendarioAnoActual, calendarioMesActual, 1);
-  const ultimoDia = new Date(calendarioAnoActual, calendarioMesActual+1, 0);
-  const diasEnMes = ultimoDia.getDate();
-  let diaSemanaInicio = primerDia.getDay()-1;
-  if (diaSemanaInicio<0) diaSemanaInicio=6;
-  const diasPrevios = [];
-  for(let i=diaSemanaInicio-1;i>=0;i--) {
-    const d = new Date(calendarioAnoActual, calendarioMesActual, -i);
-    if (d.getDay()!==0&&d.getDay()!==6) diasPrevios.push(d);
-  }
-  const diasSiguientes = [];
-  const celdasRestantes = 25-(diasPrevios.length+diasEnMes);
-  for(let i=1;i<=celdasRestantes;i++) {
-    const d = new Date(calendarioAnoActual, calendarioMesActual+1, i);
-    if (d.getDay()!==0&&d.getDay()!==6) diasSiguientes.push(d);
-  }
-  let html = '';
-  DIAS_SEMANA.forEach(d=>{html+=`<div class="calendario-dia-header">${d}</div>`});
-  diasPrevios.forEach(d=>{html+=renderCeldaCalendario(d,true,hoyStr)});
-  for(let dia=1;dia<=diasEnMes;dia++) {
-    const d = new Date(calendarioAnoActual, calendarioMesActual, dia);
-    if (d.getDay()!==0&&d.getDay()!==6) html+=renderCeldaCalendario(d,false,hoyStr);
-  }
-  diasSiguientes.forEach(d=>{html+=renderCeldaCalendario(d,true,hoyStr)});
-  grid.innerHTML = html;
-  document.getElementById('calendarioDetalle').classList.remove('activo');
-}
+  const mes = parseInt(document.getElementById('calMes').value);
+  const anio = parseInt(document.getElementById('calAnio').value);
+  const categoria = document.getElementById('calCategoria').value;
+  const tabla = document.getElementById('tablaCalendario');
+  const resumen = document.getElementById('resumenDiario');
 
-function renderCeldaCalendario(fecha, esOtroMes, hoyStr) {
-  const fechaStr = dateToFechaStr(fecha);
-  const esHoy = fechaStr===hoyStr;
-  const festivo = festivos.find(f=>f.fecha===fechaStr);
-  const esFestivo = !!festivo;
-  let clases = 'calendario-dia';
-  if (esOtroMes) clases+=' otro-mes';
-  if (esHoy) clases+=' hoy';
-  if (esFestivo) clases+=' festivo';
-  const permisos = obtenerPermisosDelDia(fechaStr);
-  if (permisos.length>0) clases+=' resaltado';
-  let html = `<div class="${clases}" onclick="mostrarDetalleDia('${fechaStr}')"><div class="dia-numero">${fecha.getDate()}</div>`;
-  if (esFestivo) html+=`<div class="dia-festivo-nombre" title="${festivo.nombre}">🎉 ${festivo.nombre}</div>`;
-  if (permisos.length>0) {
-    html+='<div class="dia-permisos">';
-    const maxVisibles=5;
-    permisos.slice(0,maxVisibles).forEach(p=>{html+=`<div class="dia-permiso ${p.tipoClase}" title="${p.empNombre} - ${p.tipoNombre}">${p.empNombreCorto}</div>`});
-    if (permisos.length>maxVisibles) html+=`<div class="dia-mas">+${permisos.length-maxVisibles} más</div>`;
-    html+='</div>';
-  }
-  html+='</div>';
-  return html;
-}
+  if (isNaN(mes) || isNaN(anio)) { tabla.innerHTML = ''; resumen.innerHTML = ''; return; }
 
-function obtenerPermisosDelDia(fechaStr) {
-  const permisos = [];
-  const fecha = fechaStrToDate(fechaStr);
-  const empleadosFiltrados = filtrarEmpleadosPorGrupo(calendarioGrupoFiltro);
-  empleadosFiltrados.forEach(emp => {
-    if (emp.enBaja&&emp.fechaBaja&&fechaStrToDate(emp.fechaBaja)<=fecha) {
-      permisos.push({empId:emp.id,empNombre:emp.nombre,empNombreCorto:emp.nombre.split(' ')[0],tipo:'baja',tipoClase:'baja',tipoNombre:'Baja médica'});
-      return;
-    }
-    const tipos=['vacaciones','ap','sabados','conciliacion1','conciliacion2','reposo','sinSueldo'];
-    const tipoClases={vacaciones:'vac',ap:'ap',sabados:'sab',conciliacion1:'c1',conciliacion2:'c2',reposo:'reposo',sinSueldo:'sinSueldo'};
-    const tipoNombres={vacaciones:'Vacaciones',ap:'Asuntos',sabados:'Sábados',conciliacion1:'Conc. 1er',conciliacion2:'Conc. 2º',reposo:'Reposo',sinSueldo:'Sin sueldo'};
-    tipos.forEach(tipo=>{
-      const periodo = obtenerPeriodoPermiso(emp.id, fecha, tipo);
-      if (periodo) permisos.push({empId:emp.id,empNombre:emp.nombre,empNombreCorto:emp.nombre.split(' ')[0],tipo,tipoClase:tipoClases[tipo],tipoNombre:tipoNombres[tipo]});
-    });
+  const diasMes = diasEnMes(anio, mes);
+  const hoyStr = new Date().toISOString().split('T')[0];
+
+  let listaTrab = trabajadores;
+  if (categoria) listaTrab = trabajadores.filter(t => t.categoria === categoria);
+
+  const ordenCat = {encargado: 1, ordenanza: 2, limpiador: 3};
+  listaTrab = [...listaTrab].sort((a,b) => {
+    if (ordenCat[a.categoria] !== ordenCat[b.categoria]) return ordenCat[a.categoria] - ordenCat[b.categoria];
+    return (a.apellidos + a.nombre).localeCompare(b.apellidos + b.nombre);
   });
-  return permisos;
-}
 
-function mostrarDetalleDia(fechaStr) {
-  const festivo = festivos.find(f=>f.fecha===fechaStr);
-  const permisos = obtenerPermisosDelDia(fechaStr);
-  const detalle = document.getElementById('calendarioDetalle');
-  const titulo = document.getElementById('calendarioDetalleTitulo');
-  const contenido = document.getElementById('calendarioDetalleContenido');
-  let fechaTexto = formatearFecha(fechaStr);
-  if (festivo) fechaTexto+=` - 🎉 ${festivo.nombre}`;
-  titulo.textContent = `📅 ${fechaTexto}`;
-  if (permisos.length===0) {
-    contenido.innerHTML = '<div class="empty" style="padding:30px;font-size:16px">✅ No hay permisos registrados para este día</div>';
+  let html = '<thead>';
+  html += '<tr class="nombres"><th class="nombre">Trabajador</th>';
+  for (let d = 1; d <= diasMes; d++) {
+    const fecha = new Date(anio, mes, d);
+    const dow = fecha.getDay();
+    const fechaStr = fecha.toISOString().split('T')[0];
+    const esFest = festivos[anio.toString()] && festivos[anio.toString()].some(f => f.fecha === fechaStr);
+    let clase = '';
+    if (esFest) clase = 'festivo-col';
+    else if (dow === 0 || dow === 6) clase = 'finsemana-col';
+    html += `<th class="${clase}" title="${fmtDateLong(fechaStr)}">${d}</th>`;
+  }
+  html += '<th title="Total días trabajando este mes">✓</th>';
+  html += '<th title="Total días de ausencia este mes">✗</th>';
+  html += '</tr>';
+  html += '<tr class="dias"><th class="nombre"></th>';
+  for (let d = 1; d <= diasMes; d++) {
+    const fecha = new Date(anio, mes, d);
+    const dow = fecha.getDay();
+    const fechaStr = fecha.toISOString().split('T')[0];
+    const esFest = festivos[anio.toString()] && festivos[anio.toString()].some(f => f.fecha === fechaStr);
+    let clase = '';
+    if (esFest) clase = 'festivo-col';
+    else if (dow === 0 || dow === 6) clase = 'finsemana-col';
+    html += `<th class="${clase}">${nombreDiaCorto(dow)}</th>`;
+  }
+  html += '<th></th><th></th></tr>';
+  html += '</thead><tbody>';
+
+  const resumenDia = [];
+  for (let d = 1; d <= diasMes; d++) resumenDia[d] = {trabajan: 0, ausentes: 0};
+
+  if (listaTrab.length === 0) {
+    html += `<tr><td colspan="${diasMes + 3}" style="text-align:center;padding:20px;color:#888;">No hay trabajadores para mostrar.</td></tr>`;
   } else {
-    let html = `<div style="margin-bottom:15px;padding:12px;background:#ebf8ff;border-radius:8px;border-left:4px solid #3182ce"><strong>👥 Total:</strong> ${permisos.length} empleado(s)</div>`;
-    const agrupados = {};
-    permisos.forEach(p=>{if(!agrupados[p.tipo])agrupados[p.tipo]=[];agrupados[p.tipo].push(p)});
-    const ordenTipos=['vacaciones','ap','sabados','conciliacion1','conciliacion2','reposo','sinSueldo','baja'];
-    const nombresTipos={vacaciones:'🏖️ Vacaciones',ap:'📋 Asuntos propios',sabados:'🗓️ Sábados',conciliacion1:'👨‍👩‍ Conciliación 1er',conciliacion2:'👨‍👩‍👧‍👦 Conciliación 2º',reposo:'🏥 Reposo dom.',sinSueldo:'💼 Permiso sin sueldo',baja:'🚑 Baja médica'};
-    ordenTipos.forEach(tipo=>{
-      if(agrupados[tipo]&&agrupados[tipo].length>0) {
-        html+=`<div style="margin-bottom:15px"><div style="font-size:16px;font-weight:bold;color:#2c5282;margin-bottom:8px;padding-bottom:6px;border-bottom:2px solid #e2e8f0">${nombresTipos[tipo]} (${agrupados[tipo].length})</div>`;
-        agrupados[tipo].forEach(p=>{html+=`<div class="detalle-empleado-item ${p.tipoClase}"><div><strong>${p.empNombre}</strong></div><button class="edit" onclick="mostrarDetalleEmpleado(${p.empId})">🔍 Ver ficha</button></div>`});
-        html+='</div>';
-      }
-    });
-    contenido.innerHTML = html;
-  }
-  detalle.classList.add('activo');
-  detalle.scrollIntoView({behavior:'smooth',block:'nearest'});
-}
+    listaTrab.forEach(t => {
+      const catBadge = {encargado:'b-enc', ordenanza:'b-ord', limpiador:'b-limp'}[t.categoria];
+      const catNombre = {encargado:'Enc.', ordenanza:'Ord.', limpiador:'Limp.'}[t.categoria];
+      html += `<tr><td class="nombre">${t.nombre} ${t.apellidos.substring(0,1)}. <span class="badge ${catBadge}" style="font-size:9px;padding:1px 5px;">${catNombre}</span></td>`;
+      let diasTrab = 0, diasAus = 0;
+      for (let d = 1; d <= diasMes; d++) {
+        const fecha = new Date(anio, mes, d);
+        const fechaStr = fecha.toISOString().split('T')[0];
+        const dow = fecha.getDay();
+        const esFest = festivos[anio.toString()] && festivos[anio.toString()].some(f => f.fecha === fechaStr);
+        const aus = getAusenciaEnFecha(t.id, fechaStr);
 
-function mostrarDetalleEmpleado(empId) {
-  showPanel('consulta', document.querySelectorAll('.tab')[6]);
-  cargarSelectConsulta();
-  document.getElementById('consultaEmpleado').value = empId;
-  renderConsulta();
-  subirArriba();
-}
+        let clase = 'fuera';
+        let contenido = '';
+        let title = '';
 
-function cargarSelectConsulta() {
-  const sel = document.getElementById('consultaEmpleado'), val = sel.value;
-  sel.innerHTML = '<option value="">-- Selecciona --</option>';
-  [...empleados].sort((a,b)=>a.nombre.localeCompare(b.nombre)).forEach(e=>{
-    const cat = {encargado:'Encargado',ordenanza:'Ordenanza',limpiador:'Limpiador/a',reserva:'Reserva'}[e.categoria];
-    sel.innerHTML+=`<option value="${e.id}">${e.nombre} (${cat})</option>`;
-  });
-  if(val&&empleados.find(e=>e.id==val)) sel.value=val;
-}
-
-function renderConsulta() {
-  const cont = document.getElementById('consultaContenido');
-  const empId = parseInt(document.getElementById('consultaEmpleado').value);
-  if(!empId) { cont.innerHTML='<div class="empty" style="padding:60px 20px">👆 Selecciona empleado</div>'; return; }
-  const emp = empleados.find(e=>e.id===empId);
-  if(!emp) { cont.innerHTML='<div class="empty">No encontrado</div>'; return; }
-  const cat = {encargado:'Encargado',ordenanza:'Ordenanza',limpiador:'Limpiador/a',reserva:'Reserva'}[emp.categoria];
-  const hoy = getHoy();
-  const v = calcularDiasPorEstado(emp.id,'vacaciones'), a = calcularDiasPorEstado(emp.id,'ap'), s = calcularDiasPorEstado(emp.id,'sabados');
-  const c1 = calcularDiasPorEstado(emp.id,'conciliacion1'), c2 = calcularDiasPorEstado(emp.id,'conciliacion2');
-  const r = calcularDiasPorEstado(emp.id,'reposo'), ss = calcularDiasPorEstado(emp.id,'sinSueldo');
-  const vr = emp.vac-v.total, ar = emp.ap-a.total, sr = emp.sab-s.total;
-  const ven = calcularVentanas(emp.id);
-  const fVS = obtenerFechasSolicitadas(emp.id,'vacaciones'), fAS = obtenerFechasSolicitadas(emp.id,'ap'), fSS = obtenerFechasSolicitadas(emp.id,'sabados');
-  const fC1S = obtenerFechasSolicitadas(emp.id,'conciliacion1'), fC2S = obtenerFechasSolicitadas(emp.id,'conciliacion2');
-  const fRS = obtenerFechasSolicitadas(emp.id,'reposo'), fSSS = obtenerFechasSolicitadas(emp.id,'sinSueldo');
-  const fVC = obtenerFechasConsumidas(emp.id,'vacaciones'), fAC = obtenerFechasConsumidas(emp.id,'ap'), fSC = obtenerFechasConsumidas(emp.id,'sabados');
-  const fC1C = obtenerFechasConsumidas(emp.id,'conciliacion1'), fC2C = obtenerFechasConsumidas(emp.id,'conciliacion2');
-  const fRC = obtenerFechasConsumidas(emp.id,'reposo'), fSSC = obtenerFechasConsumidas(emp.id,'sinSueldo');
-  const pVacHoy = obtenerPeriodoVacaciones(emp.id,hoy);
-  const pAPHoy = obtenerPeriodoPermiso(emp.id,hoy,'ap');
-  const pSabHoy = obtenerPeriodoPermiso(emp.id,hoy,'sabados');
-  const pC1Hoy = obtenerPeriodoPermiso(emp.id,hoy,'conciliacion1');
-  const pC2Hoy = obtenerPeriodoPermiso(emp.id,hoy,'conciliacion2');
-  const pReposoHoy = obtenerPeriodoPermiso(emp.id,hoy,'reposo');
-  const pSinSueldoHoy = obtenerPeriodoPermiso(emp.id,hoy,'sinSueldo');
-  let estado='✅ TRABAJANDO', color='#38a169', extraEstado='';
-  if(emp.enBaja) { estado='🚑 DE BAJA MÉDICA'; color='#e53e3e'; extraEstado=`<div class="info-box" style="margin-top:15px;background:#fff5f5;color:#c53030;border-color:#e53e3e"><strong>📅 Inicio de baja:</strong> ${formatearFecha(emp.fechaBaja)}</div>`; }
-  else if(pVacHoy) { estado='🏖️ DE VACACIONES'; color='#ed8936'; extraEstado=`<div class="info-box" style="margin-top:15px"><strong>📅 Periodo:</strong> ${formatearFechaCorta(pVacHoy.inicio)} - ${formatearFechaCorta(pVacHoy.fin)} (${pVacHoy.dias} días)</div>`; }
-  else if(pAPHoy) { estado='📋 ASUNTOS PROPIOS'; color='#805ad5'; }
-  else if(pSabHoy) { estado='🗓️ SÁBADOS'; color='#3182ce'; }
-  else if(pC1Hoy) { estado='👨‍👩‍ CONCILIACIÓN 1er'; color='#d69e2e'; }
-  else if(pC2Hoy) { estado='‍👩‍👧‍👦 CONCILIACIÓN 2º'; color='#38a169'; }
-  else if(pReposoHoy) { estado='🏥 REPOSO DOMICILIARIO'; color='#9f7aea'; }
-  else if(pSinSueldoHoy) { estado='💼 PERMISO SIN SUELDO'; color='#718096'; }
-  const todos = registros.filter(r=>r.empId===emp.id).sort((a,b)=>fechaStrToDate(a.fecha)-fechaStrToDate(b.fecha));
-  const tipoTxt = t=>({vacaciones:'🏖️ Vacaciones',ap:'📋 Asuntos',sabados:'🗓️ Sábados',conciliacion1:'Conc. 1er',conciliacion2:'Conc. 2º',reposo:' Reposo',sinSueldo:'💼 Sin sueldo'}[t]);
-  let html=`<div class="ficha-empleado"><div class="ficha-encabezado"><div><div class="ficha-nombre">${emp.nombre}</div><span class="badge ${emp.categoria}" style="margin-top:8px;font-size:13px;padding:6px 14px">${cat}</span></div><div style="background:${color};color:white;padding:12px 20px;border-radius:8px;font-weight:bold;font-size:16px">${estado}</div></div><div class="ficha-datos"><div class="ficha-dato"><div class="ficha-dato-label">🏖️ Vacaciones</div><div class="ficha-dato-valor">${vr}/${emp.vac}</div><div style="font-size:11px;color:#718096;margin-top:4px">Gastadas:${v.consumidos}|Pend:${v.solicitados}</div></div><div class="ficha-dato"><div class="ficha-dato-label">📋 Asuntos</div><div class="ficha-dato-valor">${ar}/${emp.ap}</div><div style="font-size:11px;color:#718096;margin-top:4px">Gastados:${a.consumidos}|Pend:${a.solicitados}</div></div><div class="ficha-dato"><div class="ficha-dato-label">🗓️ Sábados</div><div class="ficha-dato-valor">${sr}/${emp.sab}</div><div style="font-size:11px;color:#718096;margin-top:4px">Gastados:${s.consumidos}|Pend:${s.solicitados}</div></div><div class="ficha-dato"><div class="ficha-dato-label">Conc. 1er</div><div class="ficha-dato-valor">${c1.total} días</div><div style="font-size:11px;color:#718096;margin-top:4px">Cons:${c1.consumidos}|Pend:${c1.solicitados}</div></div><div class="ficha-dato"><div class="ficha-dato-label">Conc. 2º</div><div class="ficha-dato-valor">${c2.total} días</div><div style="font-size:11px;color:#718096;margin-top:4px">Cons:${c2.consumidos}|Pend:${c2.solicitados}</div></div><div class="ficha-dato"><div class="ficha-dato-label">🏥 Reposo</div><div class="ficha-dato-valor">${r.total} días</div><div style="font-size:11px;color:#718096;margin-top:4px">Cons:${r.consumidos}|Pend:${r.solicitados}</div></div><div class="ficha-dato"><div class="ficha-dato-label">💼 Sin sueldo</div><div class="ficha-dato-valor">${ss.total} días</div><div style="font-size:11px;color:#718096;margin-top:4px">Cons:${ss.consumidos}|Pend:${ss.solicitados}</div></div><div class="ficha-dato"><div class="ficha-dato-label">📆 Ventanas</div><div class="ficha-dato-valor">${ven}/${MAX_VENTANAS}</div></div></div>${extraEstado}${vr<0||ar<0||sr<0?'<div class="alerta-negativa">⚠️ Días negativos</div>':''}${ven>MAX_VENTANAS?'<div class="alerta-ventanas">️ +4 ventanas</div>':''}</div>`;
-  if(fVC.length||fAC.length||fSC.length||fC1C.length||fC2C.length||fRC.length||fSSC.length) {
-    html+=`<div class="ficha-empleado"><div class="seccion-ficha"><h3>✅ Consumidos (${v.consumidos+a.consumidos+s.consumidos+c1.consumidos+c2.consumidos+r.consumidos+ss.consumidos} días)</h3><div class="lista-fechas">`;
-    if(fVC.length) { html+=`<div style="font-size:12px;font-weight:600;color:#718096;margin:8px 0 4px">🏖️ VACACIONES (${v.consumidos})</div>`; fVC.forEach(f=>html+=`<div class="fila-fecha consumida"><span class="fila-fecha-fecha">${formatearFechaLarga(f.fecha)}</span><span class="fila-fecha-cantidad">${f.cantidad}d</span><div class="fila-fecha-acciones"><button class="reformar" onclick="reformarRegistro(${f.id})">✏️</button><button class="danger" onclick="borrarRegistro(${f.id})">🗑️</button></div></div>`); }
-    if(fAC.length) { html+=`<div style="font-size:12px;font-weight:600;color:#718096;margin:8px 0 4px">📋 ASUNTOS (${a.consumidos})</div>`; fAC.forEach(f=>html+=`<div class="fila-fecha consumida"><span class="fila-fecha-fecha">${formatearFechaLarga(f.fecha)}</span><span class="fila-fecha-cantidad">${f.cantidad}d</span><div class="fila-fecha-acciones"><button class="reformar" onclick="reformarRegistro(${f.id})">✏️</button><button class="danger" onclick="borrarRegistro(${f.id})">️</button></div></div>`); }
-    if(fSC.length) { html+=`<div style="font-size:12px;font-weight:600;color:#718096;margin:8px 0 4px">🗓️ SÁBADOS (${s.consumidos})</div>`; fSC.forEach(f=>html+=`<div class="fila-fecha consumida"><span class="fila-fecha-fecha">${formatearFechaLarga(f.fecha)}</span><span class="fila-fecha-cantidad">${f.cantidad}d</span><div class="fila-fecha-acciones"><button class="reformar" onclick="reformarRegistro(${f.id})">️</button><button class="danger" onclick="borrarRegistro(${f.id})">🗑️</button></div></div>`); }
-    if(fC1C.length) { html+=`<div style="font-size:12px;font-weight:600;color:#718096;margin:8px 0 4px">CONC. 1er (${c1.consumidos})</div>`; fC1C.forEach(f=>html+=`<div class="fila-fecha consumida"><span class="fila-fecha-fecha">${formatearFechaLarga(f.fecha)}</span><span class="fila-fecha-cantidad">${f.cantidad}d</span><div class="fila-fecha-acciones"><button class="reformar" onclick="reformarRegistro(${f.id})">️</button><button class="danger" onclick="borrarRegistro(${f.id})">🗑️</button></div></div>`); }
-    if(fC2C.length) { html+=`<div style="font-size:12px;font-weight:600;color:#718096;margin:8px 0 4px">CONC. 2º (${c2.consumidos})</div>`; fC2C.forEach(f=>html+=`<div class="fila-fecha consumida"><span class="fila-fecha-fecha">${formatearFechaLarga(f.fecha)}</span><span class="fila-fecha-cantidad">${f.cantidad}d</span><div class="fila-fecha-acciones"><button class="reformar" onclick="reformarRegistro(${f.id})">✏️</button><button class="danger" onclick="borrarRegistro(${f.id})">🗑️</button></div></div>`); }
-    if(fRC.length) { html+=`<div style="font-size:12px;font-weight:600;color:#718096;margin:8px 0 4px">🏥 REPOSO (${r.consumidos})</div>`; fRC.forEach(f=>html+=`<div class="fila-fecha consumida"><span class="fila-fecha-fecha">${formatearFechaLarga(f.fecha)}</span><span class="fila-fecha-cantidad">${f.cantidad}d</span><div class="fila-fecha-acciones"><button class="reformar" onclick="reformarRegistro(${f.id})">✏️</button><button class="danger" onclick="borrarRegistro(${f.id})">🗑️</button></div></div>`); }
-    if(fSSC.length) { html+=`<div style="font-size:12px;font-weight:600;color:#718096;margin:8px 0 4px">💼 SIN SUELDO (${ss.consumidos})</div>`; fSSC.forEach(f=>html+=`<div class="fila-fecha consumida"><span class="fila-fecha-fecha">${formatearFechaLarga(f.fecha)}</span><span class="fila-fecha-cantidad">${f.cantidad}d</span><div class="fila-fecha-acciones"><button class="reformar" onclick="reformarRegistro(${f.id})">✏️</button><button class="danger" onclick="borrarRegistro(${f.id})">🗑️</button></div></div>`); }
-    html+='</div></div></div>';
-  }
-  if(fVS.length||fAS.length||fSS.length||fC1S.length||fC2S.length||fRS.length||fSSS.length) {
-    html+=`<div class="ficha-empleado"><div class="seccion-ficha"><h3>📅 Pendientes (${v.solicitados+a.solicitados+s.solicitados+c1.solicitados+c2.solicitados+r.solicitados+ss.solicitados} días)</h3><div class="lista-fechas">`;
-    if(fVS.length) { html+=`<div style="font-size:12px;font-weight:600;color:#718096;margin:8px 0 4px">🏖️ VACACIONES (${v.solicitados})</div>`; fVS.forEach(f=>html+=`<div class="fila-fecha pendiente"><span class="fila-fecha-fecha">${formatearFechaLarga(f.fecha)}</span><span class="fila-fecha-cantidad">${f.cantidad}d</span><div class="fila-fecha-acciones"><button class="reformar" onclick="reformarRegistro(${f.id})">✏️</button><button class="danger" onclick="borrarRegistro(${f.id})">🗑️</button></div></div>`); }
-    if(fAS.length) { html+=`<div style="font-size:12px;font-weight:600;color:#718096;margin:8px 0 4px">📋 ASUNTOS (${a.solicitados})</div>`; fAS.forEach(f=>html+=`<div class="fila-fecha pendiente"><span class="fila-fecha-fecha">${formatearFechaLarga(f.fecha)}</span><span class="fila-fecha-cantidad">${f.cantidad}d</span><div class="fila-fecha-acciones"><button class="reformar" onclick="reformarRegistro(${f.id})">✏️</button><button class="danger" onclick="borrarRegistro(${f.id})">🗑️</button></div></div>`); }
-    if(fSS.length) { html+=`<div style="font-size:12px;font-weight:600;color:#718096;margin:8px 0 4px">🗓️ SÁBADOS (${s.solicitados})</div>`; fSS.forEach(f=>html+=`<div class="fila-fecha pendiente"><span class="fila-fecha-fecha">${formatearFechaLarga(f.fecha)}</span><span class="fila-fecha-cantidad">${f.cantidad}d</span><div class="fila-fecha-acciones"><button class="reformar" onclick="reformarRegistro(${f.id})">✏️</button><button class="danger" onclick="borrarRegistro(${f.id})">🗑️</button></div></div>`); }
-    if(fC1S.length) { html+=`<div style="font-size:12px;font-weight:600;color:#718096;margin:8px 0 4px">CONC. 1er (${c1.solicitados})</div>`; fC1S.forEach(f=>html+=`<div class="fila-fecha pendiente"><span class="fila-fecha-fecha">${formatearFechaLarga(f.fecha)}</span><span class="fila-fecha-cantidad">${f.cantidad}d</span><div class="fila-fecha-acciones"><button class="reformar" onclick="reformarRegistro(${f.id})">✏️</button><button class="danger" onclick="borrarRegistro(${f.id})">🗑️</button></div></div>`); }
-    if(fC2S.length) { html+=`<div style="font-size:12px;font-weight:600;color:#718096;margin:8px 0 4px">CONC. 2º (${c2.solicitados})</div>`; fC2S.forEach(f=>html+=`<div class="fila-fecha pendiente"><span class="fila-fecha-fecha">${formatearFechaLarga(f.fecha)}</span><span class="fila-fecha-cantidad">${f.cantidad}d</span><div class="fila-fecha-acciones"><button class="reformar" onclick="reformarRegistro(${f.id})">✏️</button><button class="danger" onclick="borrarRegistro(${f.id})">🗑️</button></div></div>`); }
-    if(fRS.length) { html+=`<div style="font-size:12px;font-weight:600;color:#718096;margin:8px 0 4px"> REPOSO (${r.solicitados})</div>`; fRS.forEach(f=>html+=`<div class="fila-fecha pendiente"><span class="fila-fecha-fecha">${formatearFechaLarga(f.fecha)}</span><span class="fila-fecha-cantidad">${f.cantidad}d</span><div class="fila-fecha-acciones"><button class="reformar" onclick="reformarRegistro(${f.id})">✏️</button><button class="danger" onclick="borrarRegistro(${f.id})">🗑️</button></div></div>`); }
-    if(fSSS.length) { html+=`<div style="font-size:12px;font-weight:600;color:#718096;margin:8px 0 4px">💼 SIN SUELDO (${ss.solicitados})</div>`; fSSS.forEach(f=>html+=`<div class="fila-fecha pendiente"><span class="fila-fecha-fecha">${formatearFechaLarga(f.fecha)}</span><span class="fila-fecha-cantidad">${f.cantidad}d</span><div class="fila-fecha-acciones"><button class="reformar" onclick="reformarRegistro(${f.id})">✏️</button><button class="danger" onclick="borrarRegistro(${f.id})">🗑️</button></div></div>`); }
-    html+='</div></div></div>';
-  }
-  if(todos.length>0) {
-    html+=`<div class="ficha-empleado"><div class="seccion-ficha"><h3>📜 Historial (${todos.length} registros)</h3><table><thead><tr><th>Fecha</th><th>Tipo</th><th>Días</th><th>Estado</th><th>Notas</th><th>Acciones</th></tr></thead><tbody>`;
-    todos.forEach(r=>{const est=fechaStrToDate(r.fecha)<=hoy?'<span class="badge-estado badge-consumido">Consumido</span>':'<span class="badge-estado badge-pendiente">Pendiente</span>';html+=`<tr><td>${formatearFechaCorta(r.fecha)}</td><td>${tipoTxt(r.tipo)}</td><td><strong>${r.cantidad}</strong></td><td>${est}</td><td>${r.notas||'-'}</td><td><button class="reformar" onclick="reformarRegistro(${r.id})">✏️</button><button class="danger" onclick="borrarRegistro(${r.id})">🗑️</button></td></tr>`});
-    html+='</tbody></table></div></div>';
-  }
-  if(!fVC.length&&!fAC.length&&!fSC.length&&!fVS.length&&!fAS.length&&!fSS.length&&!fC1C.length&&!fC2C.length&&!fC1S.length&&!fC2S.length&&!fRC.length&&!fRS.length&&!fSSC.length&&!fSSS.length) html+=`<div class="ficha-empleado"><div class="empty" style="padding:40px">📭 ${emp.nombre} sin registros</div></div>`;
-  cont.innerHTML=html;
-}
-
-function cargarSelectEmpleados() {
-  const sel=document.getElementById('regEmpleado'), val=sel.value;
-  sel.innerHTML='<option value="">-- Selecciona --</option>';
-  empleados.forEach(e=>{const cat={encargado:'Encargado',ordenanza:'Ordenanza',limpiador:'Limpiador/a',reserva:'Reserva'}[e.categoria];sel.innerHTML+=`<option value="${e.id}">${e.nombre} (${cat})</option>`});
-  if(val) sel.value=val;
-}
-
-function reformarRegistro(id) {
-  const reg=registros.find(r=>r.id===id);
-  if(!reg) return;
-  registroEditando=reg;
-  document.getElementById('regEmpleado').value=reg.empId;
-  document.getElementById('regFecha').value=reg.fecha;
-  document.getElementById('regTipo').value=reg.tipo;
-  document.getElementById('regCantidad').value=reg.cantidad;
-  document.getElementById('regNotas').value=reg.notas||'';
-  const emp=empleados.find(e=>e.id===reg.empId);
-  document.getElementById('regFormTitle').textContent='✏️ Reformar permiso';
-  document.getElementById('btnGuardarRegistro').textContent='💾 Guardar cambios';
-  document.getElementById('btnCancelarEdicionReg').style.display='inline-block';
-  document.getElementById('editModeBannerReg').style.display='flex';
-  document.getElementById('editModeBannerReg').classList.add('reformando');
-  document.getElementById('editModeBannerText').innerHTML=`🔄 <strong>Reformando:</strong> <span id="editRegistroInfo">${emp?emp.nombre:'?'} - ${formatearFechaCorta(reg.fecha)} (${reg.cantidad} días)</span>`;
-  showPanel('registro', document.querySelectorAll('.tab')[2]);
-  cargarSelectEmpleados();
-  verificarVentanas();
-  calcularReincorporacion();
-  subirArriba();
-}
-
-function cancelarEdicionRegistro() {
-  registroEditando=null;
-  document.getElementById('regFormTitle').textContent='Registrar permiso';
-  document.getElementById('btnGuardarRegistro').textContent='✅ Registrar';
-  document.getElementById('btnCancelarEdicionReg').style.display='none';
-  document.getElementById('editModeBannerReg').style.display='none';
-  document.getElementById('editModeBannerReg').classList.remove('reformando');
-  document.getElementById('regNotas').value='';
-  document.getElementById('regCantidad').value='1';
-  document.getElementById('regTipo').value='vacaciones';
-  document.getElementById('regFecha').valueAsDate=new Date();
-  document.getElementById('regEmpleado').value='';
-  document.getElementById('reincorporacionResultado').innerHTML='';
-  document.getElementById('alertaVentanas').innerHTML='';
-}
-
-function guardarRegistro() {
-  const empId=parseInt(document.getElementById('regEmpleado').value);
-  const fecha=document.getElementById('regFecha').value;
-  const tipo=document.getElementById('regTipo').value;
-  const cantidadRaw=document.getElementById('regCantidad').value;
-  const notas=document.getElementById('regNotas').value.trim();
-  const cantidad=parseFloat(cantidadRaw);
-  if(!empId||!fecha||!cantidad||cantidad<1) { alert('Rellena todos los campos. Mínimo 1 día'); return; }
-  if(!Number.isInteger(cantidad)) { alert('⚠️ Solo días completos (enteros)'); return; }
-  if(tipo==='reposo'&&cantidad>2) { alert('️ El reposo domiciliario tiene un máximo de 2 días'); return; }
-  if(tipo==='sinSueldo'&&cantidad<15) { alert('⚠️ El permiso sin sueldo requiere mínimo 15 días'); return; }
-  const emp=empleados.find(e=>e.id===empId);
-  if(!emp) { alert('Empleado no encontrado'); return; }
-  if(tipo!=='conciliacion1'&&tipo!=='conciliacion2'&&tipo!=='reposo'&&tipo!=='sinSueldo') {
-    const{total:gastado}=calcularDiasPorEstado(empId,tipo);
-    const gastadoAjust=registroEditando&&registroEditando.tipo===tipo?gastado-registroEditando.cantidad:gastado;
-    const disp=emp[tipo==='ap'?'ap':tipo==='sabados'?'sab':'vac']-gastadoAjust;
-    if(cantidad>disp&&!confirm(`⚠️ ${emp.nombre} tiene ${disp} días disponibles. ¿Guardar?`)) return;
-  }
-  if(tipo==='vacaciones') {
-    const dias=registros.filter(r=>r.empId===empId&&r.tipo==='vacaciones'&&r.id!==(registroEditando?registroEditando.id:null)).map(r=>fechaStrToDate(r.fecha));
-    dias.push(fechaStrToDate(fecha)); dias.sort((a,b)=>a-b);
-    let sim=1; for(let i=1;i<dias.length;i++) if((dias[i]-dias[i-1])/86400000>7) sim++;
-    if(sim>MAX_VENTANAS&&!confirm(`⚠️ Superaría ${MAX_VENTANAS} ventanas. ¿Guardar?`)) return;
-  }
-  const alertasSolapamiento=verificarSolapamiento(fecha,empId);
-  if(alertasSolapamiento.length>0) {
-    const msg=alertasSolapamiento.join('\n\n')+'\n\n¿Deseas guardar de todos modos?';
-    if(!confirm(msg)) return;
-  }
-  const msg=document.getElementById('mensajeRegistro');
-  if(registroEditando) {
-    Object.assign(registroEditando,{empId,fecha,tipo,cantidad,notas});
-    db.ref('registros/' + registroEditando.id).set(registroEditando);
-    msg.innerHTML='<div class="success-box">✅ Permiso actualizado correctamente</div>';
-  } else {
-    const nuevoReg = {id:Date.now(),empId,fecha,tipo,cantidad,notas};
-    db.ref('registros/' + nuevoReg.id).set(nuevoReg);
-    msg.innerHTML=`<div class="info-box">✅ Registrado: ${cantidad} día(s) para ${emp.nombre} (${formatearFechaCorta(fecha)})</div>`;
-  }
-  setTimeout(()=>{cancelarEdicionRegistro();msg.innerHTML='';},2500);
-}
-
-function borrarRegistro(id) {
-  if(!confirm('¿Borrar registro?')) return;
-  if(registroEditando&&registroEditando.id===id) cancelarEdicionRegistro();
-  db.ref('registros/' + id).remove();
-  renderDashboard();
-  renderHistorial();
-  if(document.getElementById('consulta').classList.contains('active')) renderConsulta();
-}
-
-// MODIFICADA: Ahora muestra fechas de inicio y reincorporación en las tarjetas de vacaciones
-function renderDashboard() {
-  const hoy = getHoy();
-  const hoyStr = dateToFechaStr(hoy);
-  const ausentes = contarAusentesEnFecha(hoyStr);
-  const totalEO = empleados.filter(e=>e.categoria==='encargado'||e.categoria==='ordenanza').length;
-  const totalLimp = empleados.filter(e=>e.categoria==='limpiador').length;
-  const presentesEO = totalEO-ausentes.eo.length;
-  const presentesLimp = totalLimp-ausentes.limpieza.length;
-  const coberturaOK = presentesEO>=2&&presentesLimp>=3;
-  
-  // Tarjeta de cobertura centrada
-  const kpis = document.getElementById('dashboardKPIs');
-  kpis.innerHTML = `
-    <div style="display:flex;justify-content:center;width:100%;grid-column:1/-1;">
-      <div class="dashboard-card ${coberturaOK?'verde':'rojo'}" style="max-width:400px;width:100%;text-align:center;">
-        <h3 style="text-align:center;">👷 Cobertura hoy</h3>
-        <div class="valor" style="text-align:center;">${coberturaOK?'✅ OK':'️ Baja'}</div>
-        <div class="sub" style="text-align:center;">E/O: ${presentesEO}/${totalEO} | Limp: ${presentesLimp}/${totalLimp}</div>
-      </div>
-    </div>
-  `;
-  
-  const staffDiv = document.getElementById('dashboardStaff');
-  if (staffDiv) {
-    const trabajando = [];
-    const vacaciones = [];
-    const baja = [];
-    const otrosPermisos = [];
-    
-    empleados.forEach(emp => {
-      if (estaEnBaja(emp.id, hoy)) {
-        baja.push({ ...emp, tipo: 'baja', label: '🚑 Baja médica' });
-      } else {
-        const permiso = obtenerPermisoActivo(emp.id, hoy);
-        if (permiso) {
-          const tipos = {
-            'vacaciones': { label: '️ Vacaciones' },
-            'ap': { label: '📋 Asuntos propios' },
-            'sabados': { label: '️ Sábados' },
-            'conciliacion1': { label: '‍👩‍👧 Conciliación 1er' },
-            'conciliacion2': { label: '👨‍👩‍👧‍ Conciliación 2º' },
-            'reposo': { label: '🏥 Reposo' },
-            'sinSueldo': { label: '💼 Sin sueldo' }
-          };
-          const tipo = tipos[permiso.tipo] || { label: ' Permiso' };
-          // Añadir fechas de inicio y reincorporación para vacaciones
-          if (permiso.tipo === 'vacaciones') {
-            vacaciones.push({ 
-              ...emp, 
-              tipo: permiso.tipo, 
-              label: tipo.label,
-              fechaInicio: permiso.inicio,
-              fechaReincorporacion: permiso.reincorporacion
-            });
-          } else {
-            otrosPermisos.push({ ...emp, tipo: permiso.tipo, label: tipo.label });
-          }
+        if (esFest) {
+          const festivoInfo = festivos[anio.toString()].find(f => f.fecha === fechaStr);
+          clase = 'festivo';
+          contenido = 'F';
+          title = `Festivo: ${festivoInfo.nombre}`;
+        } else if (dow === 0 || dow === 6) {
+          clase = 'finsemana';
+          contenido = nombreDiaCorto(dow);
+          title = dow === 0 ? 'Domingo' : 'Sábado';
+        } else if (aus) {
+          const tipos = {vacaciones: {c:'vac', l:'V', n:'Vacaciones'}, asuntos_propios: {c:'ap', l:'AP', n:'Asuntos propios'}, compensacion: {c:'comp', l:'C', n:'Compensación'}, baja: {c:'baja', l:'B', n:'Baja'}};
+          const info = tipos[aus.tipo];
+          clase = info.c;
+          contenido = info.l;
+          title = `${info.n}${aus.obs ? ' - ' + aus.obs : ''}`;
+          diasAus++;
         } else {
-          trabajando.push(emp);
+          clase = 'trab';
+          contenido = '✓';
+          title = 'Trabajando';
+          diasTrab++;
         }
+
+        if (fechaStr === hoyStr) clase += ' hoy';
+
+        html += `<td><span class="cal-cell ${clase}" title="${fmtDate(fechaStr)} - ${title}">${contenido}</span></td>`;
+      }
+      html += `<td style="background:#d5f5e3;font-weight:bold;">${diasTrab}</td>`;
+      html += `<td style="background:#fadbd8;font-weight:bold;">${diasAus}</td>`;
+      html += '</tr>';
+
+      for (let d = 1; d <= diasMes; d++) {
+        const fecha = new Date(anio, mes, d);
+        const fechaStr = fecha.toISOString().split('T')[0];
+        const aus = getAusenciaEnFecha(t.id, fechaStr);
+        if (aus) resumenDia[d].ausentes++;
+        else resumenDia[d].trabajan++;
       }
     });
-    
-    function renderGrupo(titulo, color, lista, esBaja = false) {
-      if (lista.length === 0) return '';
-      const encargados = lista.filter(e => e.categoria === 'encargado');
-      const ordenanzas = lista.filter(e => e.categoria === 'ordenanza');
-      const limpieza = lista.filter(e => e.categoria === 'limpiador');
-      const reserva = lista.filter(e => e.categoria === 'reserva');
-      
-      let html = `<div style="grid-column:1/-1;color:${color};font-weight:bold;font-size:16px;margin-top:10px">${titulo} (${lista.length})</div>`;
-      
-      function renderSubgrupo(nombre, items) {
-        if (items.length === 0) return '';
-        let sub = `<div style="grid-column:1/-1;margin-top:8px;margin-bottom:4px;">
-          <div style="background:${esBaja?'#fff5f5':'#f7fafc'};border-left:4px solid ${color};padding:10px 15px;border-radius:8px;">
-            <strong style="color:${color};font-size:13px;text-transform:uppercase;">${nombre} (${items.length})</strong>
-          </div>
-          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;margin-top:8px;">`;
-        items.forEach(emp => {
-          const label = emp.label ? `<br><span style="font-size:11px;color:#718096">${emp.label}</span>` : '';
-          // Mostrar fechas de inicio y reincorporación para vacaciones
-          let fechasInfo = '';
-          if (emp.fechaInicio && emp.fechaReincorporacion) {
-            fechasInfo = `<br><span style="font-size:11px;color:#ed8936;font-weight:500;">📅 Desde: ${formatearFechaCorta(emp.fechaInicio)} | Reincorporación: ${formatearFechaCorta(emp.fechaReincorporacion)}</span>`;
-          }
-          sub += `<div style="background:white;border:1px solid #e2e8f0;padding:10px 12px;border-radius:6px;">
-            <strong>${emp.nombre}</strong>${label}${fechasInfo}
-          </div>`;
-        });
-        sub += '</div></div>';
-        return sub;
-      }
-      
-      html += renderSubgrupo('🏢 Encargados', encargados);
-      html += renderSubgrupo('👔 Ordenanzas', ordenanzas);
-      html += renderSubgrupo('🧹 Limpieza', limpieza);
-      html += renderSubgrupo('🔄 Reserva', reserva);
-      
-      return html;
-    }
-    
-    let html = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;margin-top:15px">';
-    html += renderGrupo('✅ Trabajando', '#38a169', trabajando);
-    html += renderGrupo('🏖️ Vacaciones', '#ed8936', vacaciones);
-    html += renderGrupo('🚑 Baja Médica', '#e53e3e', baja, true);
-    html += renderGrupo('📋 Otros Permisos', '#4299e1', otrosPermisos);
-    
-    if (empleados.length === 0) {
-      html += '<div class="empty" style="grid-column:1/-1">No hay empleados registrados</div>';
-    }
-    
-    html += '</div>';
-    staffDiv.innerHTML = html;
   }
+  html += '</tbody>';
+  tabla.innerHTML = html;
+
+  let resumenHtml = '';
+  for (let d = 1; d <= diasMes; d++) {
+    const fecha = new Date(anio, mes, d);
+    const fechaStr = fecha.toISOString().split('T')[0];
+    const dow = fecha.getDay();
+    const esFest = festivos[anio.toString()] && festivos[anio.toString()].some(f => f.fecha === fechaStr);
+    const r = resumenDia[d];
+    let claseExtra = '';
+    if (esFest) claseExtra = 'es-festivo';
+    else if (dow === 0 || dow === 6) claseExtra = 'es-finsemana';
+    resumenHtml += `<div class="resumen-dia-item ${claseExtra}">
+      <div class="dia-num">${d}</div>
+      <div>${nombreDiaCorto(dow)} · ${nombreMes(mes).substring(0,3)}</div>
+      <div class="trabajan">✓ ${r.trabajan}</div>
+      <div class="ausentes"> ${r.ausentes}</div>
+    </div>`;
+  }
+  resumen.innerHTML = resumenHtml;
 }
 
-function inicializarCalendarioIndividual() {
-  const sel = document.getElementById('calendarioIndEmpleado');
-  sel.innerHTML = '<option value="">-- Selecciona empleado --</option>';
-  [...empleados].sort((a,b)=>a.nombre.localeCompare(b.nombre)).forEach(e=>{
-    const cat = {encargado:'Encargado',ordenanza:'Ordenanza',limpiador:'Limpiador/a',reserva:'Reserva'}[e.categoria];
-    sel.innerHTML+=`<option value="${e.id}">${e.nombre} (${cat})</option>`;
+// ============ AUSENCIAS ============
+function cargarSelectTrabajadores() {
+  const sel = document.getElementById('aTrabajador');
+  const actual = sel.value;
+  sel.innerHTML = '<option value="">-- Seleccionar --</option>';
+  trabajadores.forEach(t => {
+    const cat = {encargado:'Enc.', ordenanza:'Ord.', limpiador:'Limp.'}[t.categoria];
+    sel.innerHTML += `<option value="${t.id}">${t.nombre} ${t.apellidos} [${cat}]</option>`;
   });
+  sel.value = actual;
 }
 
-function cambiarMesIndividual(delta) {
-  calendarioIndMesActual += delta;
-  if (calendarioIndMesActual<0) { calendarioIndMesActual=11; calendarioIndAnoActual--; }
-  if (calendarioIndMesActual>11) { calendarioIndMesActual=0; calendarioIndAnoActual++; }
-  renderCalendarioIndividual();
-}
-
-function irAMesActualIndividual() {
-  const hoy = new Date();
-  calendarioIndMesActual = hoy.getMonth();
-  calendarioIndAnoActual = hoy.getFullYear();
-  renderCalendarioIndividual();
-}
-
-function renderCalendarioIndividual() {
-  const empId = parseInt(document.getElementById('calendarioIndEmpleado').value);
-  if (!empId) { document.getElementById('calendarioIndividualContenido').innerHTML = '<div class="empty" style="padding:40px">👆 Selecciona un empleado</div>'; return; }
-  const emp = empleados.find(e=>e.id===empId);
-  const cont = document.getElementById('calendarioIndividualContenido');
-  let html = `<div style="background:white;padding:20px;border-radius:12px;margin-bottom:20px;box-shadow:0 4px 12px rgba(0,0,0,.08)"><h3 style="color:#2c5282;margin-bottom:10px">👤 ${emp.nombre}</h3><div style="display:flex;gap:10px;flex-wrap:wrap"><span class="badge ${emp.categoria}">${{encargado:'Encargado',ordenanza:'Ordenanza',limpiador:'Limpiador/a',reserva:'Reserva'}[emp.categoria]}</span><span style="background:#bee3f8;color:#2c5282;padding:4px 10px;border-radius:12px;font-size:11px;font-weight:600">📅 ${MESES[calendarioIndMesActual]} ${calendarioIndAnoActual}</span></div></div>`;
-  html += '<div class="calendario-individual-grid">';
-  DIAS_SEMANA.forEach(d=>{html+=`<div class="calendario-individual-dia-header">${d}</div>`});
-  const primerDia = new Date(calendarioIndAnoActual, calendarioIndMesActual, 1);
-  const ultimoDia = new Date(calendarioIndAnoActual, calendarioIndMesActual+1, 0);
-  const diasEnMes = ultimoDia.getDate();
-  let diaSemanaInicio = primerDia.getDay()-1;
-  if (diaSemanaInicio<0) diaSemanaInicio=6;
-  const diasPrevios = [];
-  for(let i=diaSemanaInicio-1;i>=0;i--) {
-    const d = new Date(calendarioIndAnoActual, calendarioIndMesActual, -i);
-    if (d.getDay()!==0&&d.getDay()!==6) diasPrevios.push(d);
-  }
-  const diasSiguientes = [];
-  const celdasRestantes = 25-(diasPrevios.length+diasEnMes);
-  for(let i=1;i<=celdasRestantes;i++) {
-    const d = new Date(calendarioIndAnoActual, calendarioIndMesActual+1, i);
-    if (d.getDay()!==0&&d.getDay()!==6) diasSiguientes.push(d);
-  }
-  const hoy = getHoy();
-  const hoyStr = dateToFechaStr(hoy);
-  diasPrevios.forEach(d=>{html+=renderCeldaIndividual(empId,d,true,hoyStr)});
-  for(let dia=1;dia<=diasEnMes;dia++) {
-    const d = new Date(calendarioIndAnoActual, calendarioIndMesActual, dia);
-    if (d.getDay()!==0&&d.getDay()!==6) html+=renderCeldaIndividual(empId,d,false,hoyStr);
-  }
-  diasSiguientes.forEach(d=>{html+=renderCeldaIndividual(empId,d,true,hoyStr)});
-  html += '</div>';
-  cont.innerHTML = html;
-}
-
-function renderCeldaIndividual(empId, fecha, esOtroMes, hoyStr) {
-  const fechaStr = dateToFechaStr(fecha);
-  const esHoy = fechaStr===hoyStr;
-  const festivo = festivos.find(f=>f.fecha===fechaStr);
-  const esFestivo = !!festivo;
-  let clases = 'calendario-individual-dia';
-  if (esOtroMes) clases+=' otro-mes';
-  if (esHoy) clases+=' hoy';
-  if (esFestivo) clases+=' festivo';
-  const permisos = obtenerPermisosDelDiaIndividual(empId, fechaStr);
-  if (permisos.length>0) clases+=` ${permisos[0].tipo}`;
-  let html = `<div class="${clases}"><div class="ind-dia-numero">${fecha.getDate()}</div>`;
-  if (esFestivo) html+=`<div style="font-size:9px;color:#c53030;font-weight:600"> ${festivo.nombre}</div>`;
-  if (permisos.length>0) {
-    const tipoClases = {vacaciones:'vac',ap:'ap',sabados:'sab',conciliacion1:'c1',conciliacion2:'c2',reposo:'reposo',sinSueldo:'sinSueldo',baja:'baja'};
-    const tipoNombres = {vacaciones:'Vacaciones',ap:'Asuntos',sabados:'Sábados',conciliacion1:'Conc.1',conciliacion2:'Conc.2',reposo:'Reposo',sinSueldo:'Sin sueldo',baja:'Baja'};
-    permisos.forEach(p=>{html+=`<div class="ind-dia-tipo ${tipoClases[p.tipo]}">${tipoNombres[p.tipo]}</div>`});
-  }
-  html += '</div>';
-  return html;
-}
-
-function obtenerPermisosDelDiaIndividual(empId, fechaStr) {
-  const permisos = [];
-  const fecha = fechaStrToDate(fechaStr);
-  const emp = empleados.find(e=>e.id===empId);
-  if (!emp) return permisos;
-  if (emp.enBaja&&emp.fechaBaja&&fechaStrToDate(emp.fechaBaja)<=fecha) { permisos.push({tipo:'baja'}); return permisos; }
-  const tipos = ['vacaciones','ap','sabados','conciliacion1','conciliacion2','reposo','sinSueldo'];
-  tipos.forEach(tipo=>{const periodo=obtenerPeriodoPermiso(empId,fecha,tipo);if(periodo)permisos.push({tipo})});
-  return permisos;
-}
-
-function renderResumen() {
-  const cont = document.getElementById('resumenContenido');
-  const filtro = (document.getElementById('buscarResumen').value||'').toLowerCase();
-  const lista = empleados.filter(e=>e.nombre.toLowerCase().includes(filtro)).sort((a,b)=>a.nombre.localeCompare(b.nombre));
-  if (lista.length===0) { cont.innerHTML='<div class="empty">Sin empleados</div>'; return; }
-  let html = '<h3 style="color:#2c5282;margin-bottom:15px">📋 Resumen de permisos</h3>';
-  html += '<div class="resumen-tabla-wrapper"><div class="resumen-tabla-container"><div class="resumen-tabla-header"><div>Nombre</div><div>Vacaciones</div><div>Asuntos</div><div>Sábados</div><div>Bajas</div><div>Sin sueldo</div></div>';
-  lista.forEach(emp=>{
-    const v=calcularDiasPorEstado(emp.id,'vacaciones');
-    const a=calcularDiasPorEstado(emp.id,'ap');
-    const s=calcularDiasPorEstado(emp.id,'sabados');
-    const b=calcularDiasPorEstado(emp.id,'baja');
-    const ss=calcularDiasPorEstado(emp.id,'sinSueldo');
-    const vr=emp.vac-v.total, ar=emp.ap-a.total, sr=emp.sab-s.total;
-    const claseVr=vr<0?'negativo':vr===0?'cero':'positivo';
-    const claseAr=ar<0?'negativo':ar===0?'cero':'positivo';
-    const claseSr=sr<0?'negativo':sr===0?'cero':'positivo';
-    html += '<div class="resumen-tabla-fila">';
-    html += `<div class="resumen-tabla-celda nombre">${emp.nombre}</div>`;
-    html += `<div class="resumen-tabla-celda"><span class="resumen-subtitulo">Otorgados</span><span class="valor-otorgado">${emp.vac}</span><span class="resumen-subtitulo">Consumidos</span><span class="valor-consumido">${v.consumidos}</span><span class="resumen-subtitulo">Restantes</span><span class="valor-restante ${claseVr}">${vr}</span></div>`;
-    html += `<div class="resumen-tabla-celda"><span class="resumen-subtitulo">Otorgados</span><span class="valor-otorgado">${emp.ap}</span><span class="resumen-subtitulo">Consumidos</span><span class="valor-consumido">${a.consumidos}</span><span class="resumen-subtitulo">Restantes</span><span class="valor-restante ${claseAr}">${ar}</span></div>`;
-    html += `<div class="resumen-tabla-celda"><span class="resumen-subtitulo">Otorgados</span><span class="valor-otorgado">${emp.sab}</span><span class="resumen-subtitulo">Consumidos</span><span class="valor-consumido">${s.consumidos}</span><span class="resumen-subtitulo">Restantes</span><span class="valor-restante ${claseSr}">${sr}</span></div>`;
-    html += `<div class="resumen-tabla-celda"><span class="resumen-subtitulo">Disfrutadas</span><span class="valor-consumido">${b.consumidos}</span><span class="resumen-subtitulo">Pendientes</span><span class="valor-consumido">${b.solicitados}</span><span class="resumen-subtitulo">Total</span><span class="valor-otorgado">${b.total}</span></div>`;
-    html += `<div class="resumen-tabla-celda"><span class="resumen-subtitulo">Disfrutados</span><span class="valor-consumido">${ss.consumidos}</span><span class="resumen-subtitulo">Pendientes</span><span class="valor-consumido">${ss.solicitados}</span><span class="resumen-subtitulo">Total</span><span class="valor-otorgado">${ss.total}</span></div>`;
-    html += '</div>';
+function cargarSelectAniosAusencia() {
+  const sel = document.getElementById('aAnio');
+  const actual = sel.value || new Date().getFullYear().toString();
+  sel.innerHTML = '';
+  const anios = new Set();
+  Object.keys(configs).forEach(a => anios.add(a));
+  ausencias.forEach(a => anios.add(a.inicio.split('-')[0]));
+  anios.add(new Date().getFullYear().toString());
+  [...anios].sort().reverse().forEach(a => {
+    sel.innerHTML += `<option value="${a}">${a}</option>`;
   });
-  html += '</div></div>';
-  html += '<div style="background:white;padding:15px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.06);margin-top:20px"><h4 style="color:#2c5282;margin-bottom:10px">📖 Leyenda</h4><div style="display:flex;gap:20px;flex-wrap:wrap;font-size:13px"><div><span style="color:#2c5282;font-weight:bold">Azul</span> = Otorgados</div><div><span style="color:#ed8936;font-weight:bold">Naranja</span> = Consumidos</div><div><span style="color:#38a169;font-weight:bold">Verde</span> = Restantes positivos</div><div><span style="color:#e53e3e;font-weight:bold">Rojo</span> = Negativos</div><div><span style="color:#a0aec0;font-weight:bold">Gris</span> = Cero</div></div></div>';
-  cont.innerHTML = html;
+  sel.value = actual;
 }
 
-function renderHistorial() {
-  const cont = document.getElementById('historialContenido');
-  const filtro = (document.getElementById('buscarHist').value||'').toLowerCase();
-  const hoy = getHoy();
-  const lista = [...registros].sort((a,b)=>fechaStrToDate(a.fecha)-fechaStrToDate(b.fecha));
-  const pend = lista.filter(r=>{const e=empleados.find(x=>x.id===r.empId);return e&&fechaStrToDate(r.fecha)>hoy&&(e.nombre.toLowerCase().includes(filtro)||(r.notas||'').toLowerCase().includes(filtro))});
-  const cons = lista.filter(r=>{const e=empleados.find(x=>x.id===r.empId);return e&&fechaStrToDate(r.fecha)<=hoy&&(e.nombre.toLowerCase().includes(filtro)||(r.notas||'').toLowerCase().includes(filtro))});
-  if (pend.length===0&&cons.length===0) { cont.innerHTML='<div class="empty">Sin registros</div>'; return; }
-  let html = '';
-  const tipoTxt = t=>({vacaciones:'Vacaciones',ap:'Asuntos propios',sabados:'Sábados',conciliacion1:'Conciliación 1er',conciliacion2:'Conciliación 2º',reposo:'Reposo dom.',sinSueldo:'Permiso sin sueldo'}[t]);
-  if (pend.length) {
-    html += `<div class="seccion-historial"><h3>📅 Pendientes (${pend.length})</h3><table><thead><tr><th>Fecha</th><th>Empleado</th><th>Tipo</th><th>Días</th><th>Notas</th><th>Acciones</th></tr></thead><tbody>`;
-    pend.forEach(r=>{const e=empleados.find(x=>x.id===r.empId);html+=`<tr><td>${formatearFechaCorta(r.fecha)}</td><td><strong>${e.nombre}</strong></td><td><span class="badge-estado badge-pendiente">${tipoTxt(r.tipo)}</span></td><td>${r.cantidad}</td><td>${r.notas||'-'}</td><td><button class="reformar" onclick="reformarRegistro(${r.id})">✏️</button><button class="danger" onclick="borrarRegistro(${r.id})">🗑️</button></td></tr>`});
-    html += '</tbody></table></div>';
-  }
-  if (cons.length) {
-    html += `<div class="seccion-historial"><h3>✅ Consumidos (${cons.length})</h3><table><thead><tr><th>Fecha</th><th>Empleado</th><th>Tipo</th><th>Días</th><th>Notas</th><th>Acciones</th></tr></thead><tbody>`;
-    cons.forEach(r=>{const e=empleados.find(x=>x.id===r.empId);html+=`<tr><td>${formatearFechaCorta(r.fecha)}</td><td><strong>${e.nombre}</strong></td><td><span class="badge-estado badge-consumido">${tipoTxt(r.tipo)}</span></td><td>${r.cantidad}</td><td>${r.notas||'-'}</td><td><button class="reformar" onclick="reformarRegistro(${r.id})">✏️</button><button class="danger" onclick="borrarRegistro(${r.id})">🗑️</button></td></tr>`});
-    html += '</tbody></table></div>';
-  }
-  cont.innerHTML = html;
+function mostrarDisponibles() {
+  const tId = document.getElementById('aTrabajador').value;
+  const anio = document.getElementById('aAnio').value;
+  const div = document.getElementById('disponibles');
+  if (!tId || !anio) { div.innerHTML = 'Seleccione trabajador y año para ver sus días disponibles.'; return; }
+  const t = trabajadores.find(x => x.id === tId);
+  const d = getDiasTrabajador(t, anio);
+  const cfg = configs[anio];
+
+  const vConsumidos = ausencias.filter(a => a.trabajadorId === tId && a.tipo === 'vacaciones' && a.inicio.startsWith(anio)).reduce((s,a) => s + a.diasConsumidos, 0);
+  const apConsumidos = ausencias.filter(a => a.trabajadorId === tId && a.tipo === 'asuntos_propios' && a.inicio.startsWith(anio)).reduce((s,a) => s + a.diasConsumidos, 0);
+  const cConsumidos = ausencias.filter(a => a.trabajadorId === tId && a.tipo === 'compensacion' && a.inicio.startsWith(anio)).reduce((s,a) => s + a.diasConsumidos, 0);
+
+  const vRestantes = d.vacaciones - vConsumidos;
+  const apRestantes = d.asuntosPropios - apConsumidos;
+  const cTotal = cfg ? cfg.compensacion : 0;
+  const cRestantes = cTotal - cConsumidos;
+
+  div.innerHTML = `
+    👤 <strong>${t.nombre} ${t.apellidos}</strong> · Año <strong>${anio}</strong> · Antigüedad: <strong>${d.antiguedad} años</strong><br>
+    🏖️ Vacaciones: <strong>${vConsumidos}/${d.vacaciones}</strong> días hábiles consumidos · <strong style="color:${vRestantes<0?'#c0392b':'#27ae60'}">${vRestantes} restantes</strong><br>
+    📝 Asuntos propios: <strong>${apConsumidos}/${d.asuntosPropios}</strong> días consumidos · <strong style="color:${apRestantes<0?'#c0392b':'#27ae60'}">${apRestantes} restantes</strong><br>
+    🔄 Compensación: <strong>${cConsumidos}/${cTotal}</strong> días consumidos · <strong style="color:${cRestantes<0?'#c0392b':'#27ae60'}">${cRestantes} restantes</strong>
+  `;
 }
 
-function exportarDatos() {
-  const data = {empleados,registros,festivos,fecha:new Date().toISOString()};
-  const blob = new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href=url; a.download=`personal_${new Date().toISOString().split('T')[0]}.json`; a.click();
-}
-
-function importarDatos(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    try {
-      const data = JSON.parse(e.target.result);
-      if (data.empleados&&data.registros) {
-        if (confirm('¿Reemplazar datos actuales?')) {
-          empleados = data.empleados.map(emp=>({enBaja:false,fechaBaja:null,fechaAntiguedad:null,...emp}));
-          registros = data.registros;
-          festivos = data.festivos||[];
-          db.ref('empleados').set(empleados);
-          db.ref('registros').set(registros);
-          db.ref('festivos').set(festivos);
-          renderEmpleados();
-          alert('✅ Importado');
-        }
-      } else alert('Archivo inválido');
-    } catch(err) { alert('Error al leer'); }
+function actualizarInfoTipo() {
+  const tipo = document.getElementById('aTipo').value;
+  const info = {
+    vacaciones: '🏖️ <strong>Vacaciones:</strong> días hábiles según antigüedad (22-26). <strong>No cuentan sábados, domingos ni festivos.</strong> Máximo 4 periodos, mínimo 7 días naturales por periodo.',
+    asuntos_propios: ' <strong>Asuntos propios:</strong> días hábiles según antigüedad. <strong>No cuentan sábados, domingos ni festivos.</strong>',
+    compensacion: '🔄 <strong>Compensación sábados festivos:</strong> días hábiles según configuración anual. <strong>No cuentan sábados, domingos ni festivos.</strong>',
+    baja: '🏥 <strong>Baja médica:</strong> se cuentan días naturales (incluye fines de semana y festivos). No consume vacaciones ni asuntos propios.'
   };
-  reader.readAsText(file);
+  document.getElementById('infoTipo').innerHTML = info[tipo];
+  calcularDias();
 }
 
-cargarDatosFirebase();
+function calcularDias() {
+  const inicio = document.getElementById('aInicio').value;
+  const fin = document.getElementById('aFin').value;
+  const tipo = document.getElementById('aTipo').value;
+  const div = document.getElementById('diasCalculo');
+  if (!inicio || !fin) { div.innerHTML = ''; return null; }
+  if (inicio > fin) { div.innerHTML = '<span style="color:#c0392b">️ La fecha de inicio es posterior al fin.</span>'; return null; }
+
+  const naturales = contarNaturales(inicio, fin);
+  const laborales = contarLaborales(inicio, fin);
+  const dias = (tipo === 'vacaciones' || tipo === 'asuntos_propios' || tipo === 'compensacion') ? laborales : naturales;
+  const tipoDias = (tipo === 'baja') ? 'naturales (incluye fines de semana y festivos)' : 'laborables (excluye sábados, domingos y festivos)';
+  div.innerHTML = ` <strong>${naturales}</strong> días naturales · <strong>${dias}</strong> días ${tipoDias} consumidos`;
+  return {naturales, laborales, dias};
+}
+
+async function guardarAusencia() {
+  const trabajadorId = document.getElementById('aTrabajador').value;
+  const tipo = document.getElementById('aTipo').value;
+  const inicio = document.getElementById('aInicio').value;
+  const fin = document.getElementById('aFin').value;
+  const anioSel = document.getElementById('aAnio').value;
+  const obs = document.getElementById('aObs').value.trim();
+
+  if (!trabajadorId || !inicio || !fin) {
+    await showAlert('Datos incompletos', 'Complete trabajador, fecha inicio y fin.', 'warning');
+    return;
+  }
+  if (inicio > fin) {
+    await showAlert('Fechas incorrectas', 'La fecha de inicio no puede ser posterior al fin.', 'warning');
+    return;
+  }
+
+  const anio = inicio.split('-')[0];
+  if (anio !== anioSel) {
+    const ok = await showConfirm('Año diferente',
+      `La fecha de inicio es del año ${anio} pero ha seleccionado el año ${anioSel}.\n\n¿Continuar?`, 'warning');
+    if (!ok) return;
+  }
+
+  const cfg = configs[anio];
+  if (!cfg && tipo === 'compensacion') {
+    const ok = await showConfirm('Sin configuración',
+      `No hay configuración de compensación para ${anio}.\n\n¿Continuar?`, 'warning');
+    if (!ok) return;
+  }
+
+  const calc = calcularDias();
+  if (!calc) return;
+
+  const t = trabajadores.find(x => x.id === trabajadorId);
+  const d = getDiasTrabajador(t, anio);
+
+  if (tipo === 'vacaciones') {
+    if (calc.naturales < 7) {
+      const ok = await showConfirm('Periodo corto',
+        `El periodo tiene solo ${calc.naturales} días naturales. El mínimo es 7.\n\n¿Continuar?`, 'warning');
+      if (!ok) return;
+    }
+    const periodosActuales = ausencias.filter(a => a.trabajadorId === trabajadorId && a.tipo === 'vacaciones' && a.inicio.startsWith(anio));
+    if (cfg && periodosActuales.length >= cfg.maxPeriodos) {
+      const ok = await showConfirm('Máximo de periodos',
+        `Este trabajador ya tiene ${periodosActuales.length} periodos de vacaciones en ${anio} (máximo ${cfg.maxPeriodos}).\n\n¿Continuar?`, 'warning');
+      if (!ok) return;
+    }
+    const vConsumidos = periodosActuales.reduce((s,a) => s + a.diasConsumidos, 0);
+    if (vConsumidos + calc.dias > d.vacaciones) {
+      const ok = await showConfirm('Supera vacaciones disponibles',
+        `Este trabajador se quedaría con ${vConsumidos + calc.dias}/${d.vacaciones} días de vacaciones consumidos (supera los ${d.vacaciones} que le corresponden por antigüedad).\n\n¿Continuar?`, 'warning');
+      if (!ok) return;
+    }
+  }
+
+  if (tipo === 'asuntos_propios') {
+    const apConsumidos = ausencias.filter(a => a.trabajadorId === trabajadorId && a.tipo === 'asuntos_propios' && a.inicio.startsWith(anio)).reduce((s,a) => s + a.diasConsumidos, 0);
+    if (apConsumidos + calc.dias > d.asuntosPropios) {
+      const ok = await showConfirm('Supera asuntos propios',
+        `Este trabajador se quedaría con ${apConsumidos + calc.dias}/${d.asuntosPropios} días de asuntos propios (supera los ${d.asuntosPropios} que le corresponden).\n\n¿Continuar?`, 'warning');
+      if (!ok) return;
+    }
+  }
+
+  if (tipo === 'compensacion') {
+    const cConsumidos = ausencias.filter(a => a.trabajadorId === trabajadorId && a.tipo === 'compensacion' && a.inicio.startsWith(anio)).reduce((s,a) => s + a.diasConsumidos, 0);
+    const cTotal = cfg ? cfg.compensacion : 0;
+    if (cTotal > 0 && cConsumidos + calc.dias > cTotal) {
+      const ok = await showConfirm('Supera compensación',
+        `Supera la compensación disponible (${cConsumidos + calc.dias}/${cTotal}).\n\n¿Continuar?`, 'warning');
+      if (!ok) return;
+    }
+  }
+
+  const solape = ausencias.find(a => a.trabajadorId === trabajadorId && a.inicio <= fin && a.fin >= inicio);
+  if (solape) {
+    await showAlert('Fechas solapadas',
+      `Ya existe una ausencia registrada para este trabajador en esas fechas:\n${fmtDate(solape.inicio)} - ${fmtDate(solape.fin)}`, 'error');
+    return;
+  }
+
+  const nuevoId = 'A' + Date.now();
+  const data = {
+    trabajadorId, tipo, inicio, fin, obs,
+    diasConsumidos: calc.dias,
+    diasNaturales: calc.naturales,
+    anio
+  };
+  ausencias.push({id: nuevoId, ...data});
+  await fsSet('ausencias', nuevoId, data);
+  guardarLocal();
+  document.getElementById('aObs').value = '';
+  renderAusencias();
+  mostrarDisponibles();
+  const nombres = {vacaciones:'Vacaciones', asuntos_propios:'Asuntos propios', compensacion:'Compensación', baja:'Baja médica'};
+  toast('Ausencia registrada', `${t.nombre} · ${nombres[tipo]} · ${calc.dias} días`, 'success');
+}
+
+async function eliminarAusencia(id) {
+  const a = ausencias.find(x => x.id === id);
+  const t = trabajadores.find(x => x.id === a.trabajadorId);
+  const ok = await showConfirm('Eliminar ausencia',
+    `¿Eliminar la ausencia de ${t ? t.nombre + ' ' + t.apellidos : '?'} del ${fmtDate(a.inicio)} al ${fmtDate(a.fin)}?`, 'warning');
+  if (!ok) return;
+  ausencias = ausencias.filter(a => a.id !== id);
+  await fsDelete('ausencias', id);
+  guardarLocal();
+  renderAusencias();
+  mostrarDisponibles();
+  toast('Ausencia eliminada', 'Se ha borrado el registro', 'info');
+}
+
+function renderAusencias() {
+  if (ausencias.length === 0) {
+    document.getElementById('listaAusencias').innerHTML = '<p style="color:#888;">No hay ausencias registradas.</p>';
+    return;
+  }
+  const ordenadas = [...ausencias].sort((a,b) => b.inicio.localeCompare(a.inicio));
+  let html = '';
+  const nombres = {vacaciones:'️ Vacaciones', asuntos_propios:'📝 Asuntos propios', compensacion:'🔄 Compensación', baja:'🏥 Baja médica'};
+  const clases = {vacaciones:'b-vac', asuntos_propios:'b-ap', compensacion:'b-comp', baja:'b-baja'};
+  ordenadas.forEach(a => {
+    const t = trabajadores.find(x => x.id === a.trabajadorId);
+    if (!t) return;
+    html += `<div class="ausencia-item">
+      <div class="ausencia-info">
+        <strong>${t.nombre} ${t.apellidos}</strong> · <span class="badge ${clases[a.tipo]}">${nombres[a.tipo]}</span><br>
+        📅 ${fmtDate(a.inicio)} → ${fmtDate(a.fin)} · <strong>${a.diasConsumidos}</strong> días consumidos (${a.diasNaturales} naturales)
+        ${a.obs ? '<br><em>' + a.obs + '</em>' : ''}
+      </div>
+      <button class="small danger" onclick="eliminarAusencia('${a.id}')">️</button>
+    </div>`;
+  });
+  document.getElementById('listaAusencias').innerHTML = html;
+}
+
+// ============ HISTORIAL ============
+function cargarSelectHistorial() {
+  const sel = document.getElementById('hTrabajador');
+  const actual = sel.value;
+  sel.innerHTML = '<option value="">-- Todos --</option>';
+  trabajadores.forEach(t => {
+    sel.innerHTML += `<option value="${t.id}">${t.nombre} ${t.apellidos}</option>`;
+  });
+  sel.value = actual;
+
+  const anioSel = document.getElementById('hAnio');
+  const anioActual = anioSel.value || new Date().getFullYear();
+  anioSel.innerHTML = '';
+  const anios = new Set();
+  Object.keys(configs).forEach(a => anios.add(a));
+  ausencias.forEach(a => anios.add(a.inicio.split('-')[0]));
+  anios.add(new Date().getFullYear().toString());
+  [...anios].sort().reverse().forEach(a => {
+    anioSel.innerHTML += `<option value="${a}">${a}</option>`;
+  });
+  anioSel.value = anioActual;
+}
+
+function mostrarHistorial() {
+  const tId = document.getElementById('hTrabajador').value;
+  const anio = document.getElementById('hAnio').value;
+  const tipo = document.getElementById('hTipo').value;
+
+  let lista = ausencias.filter(a => a.inicio.startsWith(anio));
+  if (tId) lista = lista.filter(a => a.trabajadorId === tId);
+  if (tipo) lista = lista.filter(a => a.tipo === tipo);
+  lista.sort((a,b) => a.inicio.localeCompare(b.inicio));
+
+  let html = '';
+
+  if (tId) {
+    const t = trabajadores.find(x => x.id === tId);
+    const cfg = configs[anio];
+    const d = getDiasTrabajador(t, anio);
+    const vacaciones = ausencias.filter(a => a.trabajadorId === tId && a.tipo === 'vacaciones' && a.inicio.startsWith(anio));
+    const ap = ausencias.filter(a => a.trabajadorId === tId && a.tipo === 'asuntos_propios' && a.inicio.startsWith(anio));
+    const comp = ausencias.filter(a => a.trabajadorId === tId && a.tipo === 'compensacion' && a.inicio.startsWith(anio));
+    const bajas = ausencias.filter(a => a.trabajadorId === tId && a.tipo === 'baja' && a.inicio.startsWith(anio));
+
+    const vC = vacaciones.reduce((s,a) => s + a.diasConsumidos, 0);
+    const apC = ap.reduce((s,a) => s + a.diasConsumidos, 0);
+    const cC = comp.reduce((s,a) => s + a.diasConsumidos, 0);
+    const bD = bajas.reduce((s,a) => s + a.diasNaturales, 0);
+    const cTotal = cfg ? cfg.compensacion : 0;
+
+    html += `<div class="card"><h3>Resumen de ${t.nombre} ${t.apellidos} - ${anio}</h3>
+    <p>Antigüedad al 1 de enero de ${anio}: <strong>${d.antiguedad} años</strong></p>
+    <div class="stats">
+      <div class="stat" style="background:linear-gradient(135deg,#27ae60,#2ecc71)"><div class="num">${vC}/${d.vacaciones}</div><div class="lbl">Vacaciones (hábiles)</div></div>
+      <div class="stat" style="background:linear-gradient(135deg,#f39c12,#f1c40f)"><div class="num">${apC}/${d.asuntosPropios}</div><div class="lbl">Asuntos propios</div></div>
+      <div class="stat" style="background:linear-gradient(135deg,#16a085,#1abc9c)"><div class="num">${cC}/${cTotal}</div><div class="lbl">Compensación</div></div>
+      <div class="stat" style="background:linear-gradient(135deg,#c0392b,#e74c3c)"><div class="num">${bD}</div><div class="lbl">Baja (naturales)</div></div>
+    </div>`;
+
+    if (vacaciones.length > 0) {
+      const periodos = vacaciones.length;
+      let warns = '';
+      if (cfg && periodos > cfg.maxPeriodos) warns += `<div class="err">⚠️ Tiene ${periodos} periodos de vacaciones (máximo ${cfg.maxPeriodos}).</div>`;
+      if (vacaciones.some(v => v.diasNaturales < 7)) warns += `<div class="warn">️ Algún periodo tiene menos de 7 días naturales.</div>`;
+      html += warns || '<div class="ok">✓ Cumple normas de periodos de vacaciones.</div>';
+    }
+    html += '</div>';
+  }
+
+  if (lista.length === 0) {
+    html += '<p style="color:#888;">No hay registros para los filtros seleccionados.</p>';
+  } else {
+    html += '<table><tr><th>Trabajador</th><th>Tipo</th><th>Inicio</th><th>Fin</th><th>Días</th><th>Obs</th></tr>';
+    const nombres = {vacaciones:'🏖️ Vacaciones', asuntos_propios:'📝 Asuntos propios', compensacion:'🔄 Compensación', baja:'🏥 Baja'};
+    lista.forEach(a => {
+      const t = trabajadores.find(x => x.id === a.trabajadorId);
+      html += `<tr>
+        <td>${t ? t.nombre + ' ' + t.apellidos : '?'}</td>
+        <td>${nombres[a.tipo]}</td>
+        <td>${fmtDateLong(a.inicio)}</td>
+        <td>${fmtDateLong(a.fin)}</td>
+        <td>${a.diasConsumidos}</td>
+        <td>${a.obs || '-'}</td>
+      </tr>`;
+    });
+    html += '</table>';
+  }
+  document.getElementById('resultadoHistorial').innerHTML = html;
+}
+
+// ============ INIT ============
+document.getElementById('cAnio').value = new Date().getFullYear();
+document.getElementById('fAnio').value = new Date().getFullYear();
+document.getElementById('aInicio').addEventListener('change', calcularDias);
+document.getElementById('aFin').addEventListener('change', calcularDias);
+document.getElementById('cAnio').addEventListener('change', () => {
+  const anio = document.getElementById('cAnio').value;
+  if (configs[anio]) document.getElementById('cCompensacion').value = configs[anio].compensacion;
+  else document.getElementById('cCompensacion').value = '';
+});
+
+initFirebase();
 </script>
 </body>
 </html>
