@@ -49,7 +49,6 @@
   .b-fam1 { background: #9b59b6; }
   .b-fam2 { background: #8e44ad; }
   .b-licencia { background: #7f8c8d; }
-  .b-pendiente { background: #3498db; }
   .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 15px; }
   .stat { background: linear-gradient(135deg, #1a4d7a, #2c6fa8); color: white; padding: 15px; border-radius: 8px; text-align: center; }
   .stat .num { font-size: 28px; font-weight: bold; }
@@ -202,10 +201,10 @@
       <div class="grid-2">
         <div><label>Tipo de permiso</label>
           <select id="aTipo" onchange="actualizarInfoTipo()">
-            <option value="vacaciones">🏖️ Vacaciones</option>
+            <option value="vacaciones">️ Vacaciones</option>
             <option value="asuntos_propios">📝 Asuntos propios</option>
             <option value="compensacion">🔄 Compensación sábados festivos</option>
-            <option value="familiar_primer">👨‍👩‍👧 Familiar 1er grado (máx. 5 días)</option>
+            <option value="familiar_primer">👨‍👩‍ Familiar 1er grado (máx. 5 días)</option>
             <option value="familiar_segundo">👥 Familiar 2º grado (máx. 4 días)</option>
             <option value="licencia">📄 Licencia sin sueldo</option>
             <option value="baja">🏥 Baja médica</option>
@@ -220,7 +219,7 @@
       <div id="infoTipo" class="info"></div>
       <div id="diasCalculo" style="margin-bottom:10px;font-weight:600;"></div>
       <div><label>Observaciones (opcional)</label><input type="text" id="aObs" placeholder="Notas..."></div>
-      <button class="success" onclick="guardarAusencia()">💾 Registrar permiso</button>
+      <button class="success" onclick="guardarAusencia()"> Registrar permiso</button>
       <button onclick="calcularDias()">🔢 Calcular días</button>
     </div>
 
@@ -289,14 +288,14 @@
     </div>
 
     <div class="card">
-      <h3> Festivos del año</h3>
+      <h3>📆 Festivos del año</h3>
       <div class="info">Introduce los festivos (nacionales, autonómicos y locales). <strong>No se contarán</strong> al calcular vacaciones, asuntos propios ni compensaciones. Los festivos dentro de un periodo de vacaciones cuentan para el mínimo de 7 días naturales pero no consumen días.</div>
       <div class="grid-2">
         <div><label>Fecha del festivo</label><input type="date" id="fFecha"></div>
         <div><label>Descripción</label><input type="text" id="fNombre" placeholder="Ej: Año Nuevo"></div>
       </div>
       <button class="success" onclick="añadirFestivo()">➕ Añadir festivo</button>
-      <button onclick="copiarFestivos()"> Copiar de otro año</button>
+      <button onclick="copiarFestivos()">📋 Copiar de otro año</button>
       <button class="danger" onclick="borrarFestivosAnio()">🗑️ Borrar todos del año</button>
       <div style="margin-top:15px;"><label>Ver/editar festivos del año:</label><select id="fVerAnio" onchange="renderFestivos()"></select></div>
       <div id="listaFestivos" style="margin-top:10px;"></div>
@@ -463,7 +462,7 @@ function showPrompt(titulo, mensaje, valorInicial = '') {
 }
 
 function toast(titulo, mensaje, tipo = 'info', duracion = 3500) {
-  const iconos = { info: 'ℹ️', success: '✅', warning: '⚠️', error: '❌' };
+  const iconos = { info: 'ℹ️', success: '✅', warning: '⚠️', error: '' };
   const cont = document.getElementById('toastContainer');
   const el = document.createElement('div');
   el.className = `toast ${tipo}`;
@@ -528,42 +527,32 @@ function contarNaturales(inicio, fin) {
   return Math.floor((d2 - d1) / 86400000) + 1;
 }
 
-// NUEVA LÓGICA: Vacaciones con extensión de fines de semana adyacentes
-// Si empieza en lunes → incluye sábado y domingo anteriores
-// Si termina en viernes → incluye sábado y domingo siguientes
-// Los festivos dentro del periodo NO consumen días pero SÍ cuentan para el mínimo de 7 días naturales
+// ✅ FUNCIÓN CORREGIDA: Cuenta días naturales del periodo descontando SOLO festivos oficiales
+// Los días consumidos NUNCA serán mayores que los días naturales
 function contarDiasVacaciones(inicio, fin) {
-  let fechaInicio = new Date(inicio + 'T00:00:00');
-  let fechaFin = new Date(fin + 'T00:00:00');
-  const anioInicio = fechaInicio.getFullYear().toString();
-  const anioFin = fechaFin.getFullYear().toString();
-  
-  // Extender si empieza en lunes (1) → incluir sábado y domingo anteriores
-  if (fechaInicio.getDay() === 1) {
-    fechaInicio.setDate(fechaInicio.getDate() - 2);
-  }
-  // Extender si termina en viernes (5) → incluir sábado y domingo siguientes
-  if (fechaFin.getDay() === 5) {
-    fechaFin.setDate(fechaFin.getDate() + 2);
-  }
-  
   let count = 0;
-  let d = new Date(fechaInicio);
-  while (d <= fechaFin) {
+  const d = new Date(inicio + 'T00:00:00');
+  const f = new Date(fin + 'T00:00:00');
+  
+  while (d <= f) {
     const dateStr = d.toISOString().split('T')[0];
     const anio = d.getFullYear().toString();
     const esFestivo = festivos[anio] && festivos[anio].some(f => f.fecha === dateStr);
-    // Todos los días cuentan EXCEPTO festivos oficiales
-    if (!esFestivo) count++;
+    
+    // Se cuentan todos los días EXCEPTO los festivos oficiales
+    // Sábados y domingos SÍ se consumen como días de vacaciones
+    if (!esFestivo) {
+      count++;
+    }
     d.setDate(d.getDate() + 1);
   }
   
+  const diasNaturales = contarNaturales(inicio, fin);
+  
   return {
     diasConsumidos: count,
-    diasNaturalesPeriodo: contarNaturales(inicio, fin),
-    periodoExtendidoInicio: fechaInicio.toISOString().split('T')[0],
-    periodoExtendidoFin: fechaFin.toISOString().split('T')[0],
-    fueExtendido: fechaInicio.toISOString().split('T')[0] !== inicio || fechaFin.toISOString().split('T')[0] !== fin
+    diasNaturalesPeriodo: diasNaturales,
+    festivosEnPeriodo: diasNaturales - count
   };
 }
 
@@ -597,7 +586,7 @@ function renderInicio() {
     const ausHoy = ausencias.find(a => a.trabajadorId === t.id && a.inicio <= hoy && a.fin >= hoy);
     let estado;
     if (ausHoy) {
-      const tipos = {vacaciones:'🏖️ Vacaciones', asuntos_propios:'📝 Asuntos propios', compensacion:'🔄 Compensación', familiar_primer:'👨‍👩‍ Familiar 1º', familiar_segundo:' Familiar 2º', licencia:' Licencia s/s', baja:'🏥 Baja'};
+      const tipos = {vacaciones:'🏖️ Vacaciones', asuntos_propios:'📝 Asuntos propios', compensacion:'🔄 Compensación', familiar_primer:'👨👩‍👧 Familiar 1º', familiar_segundo:'👥 Familiar 2º', licencia:'📄 Licencia s/s', baja:'🏥 Baja'};
       const cls = {vacaciones:'b-vac', asuntos_propios:'b-ap', compensacion:'b-comp', familiar_primer:'b-fam1', familiar_segundo:'b-fam2', licencia:'b-licencia', baja:'b-baja'};
       estado = `<span class="badge ${cls[ausHoy.tipo]}">${tipos[ausHoy.tipo]}</span>`;
     } else { estado = '<span class="badge b-trab">✓ Trabajando</span>'; }
@@ -940,24 +929,24 @@ function mostrarDisponibles() {
   const vR = d.vacaciones - vC, apR = d.asuntosPropios - apC;
   const cTotal = cfg ? cfg.compensacion : 0, cR = cTotal - cC;
   div.innerHTML = `👤 <strong>${t.nombre} ${t.apellidos}</strong> · Año <strong>${anio}</strong> · Antigüedad: <strong>${d.antiguedad} años</strong><br>
-    🏖️ Vacaciones: <strong>${vC}/${d.vacaciones}</strong> días · <strong style="color:${vR<0?'#c0392b':'#27ae60'}">${vR} restantes</strong><br>
-     Asuntos propios: <strong>${apC}/${d.asuntosPropios}</strong> días · <strong style="color:${apR<0?'#c0392b':'#27ae60'}">${apR} restantes</strong><br>
-     Compensación: <strong>${cC}/${cTotal}</strong> días · <strong style="color:${cR<0?'#c0392b':'#27ae60'}">${cR} restantes</strong><br>
-    👨👩‍👧 Familiar 1º grado: <strong>${f1C}/5</strong> días · <strong style="color:${5-f1C<0?'#c0392b':'#27ae60'}">${5-f1C} restantes</strong><br>
-     Familiar 2º grado: <strong>${f2C}/4</strong> días · <strong style="color:${4-f2C<0?'#c0392b':'#27ae60'}">${4-f2C} restantes</strong><br>
+    🏖️ Vacaciones: <strong>${vC}/${d.vacaciones}</strong> días naturales · <strong style="color:${vR<0?'#c0392b':'#27ae60'}">${vR} restantes</strong><br>
+    📝 Asuntos propios: <strong>${apC}/${d.asuntosPropios}</strong> días laborables · <strong style="color:${apR<0?'#c0392b':'#27ae60'}">${apR} restantes</strong><br>
+    🔄 Compensación: <strong>${cC}/${cTotal}</strong> días laborables · <strong style="color:${cR<0?'#c0392b':'#27ae60'}">${cR} restantes</strong><br>
+    👨👩‍👧 Familiar 1º grado: <strong>${f1C}/5</strong> días laborables · <strong style="color:${5-f1C<0?'#c0392b':'#27ae60'}">${5-f1C} restantes</strong><br>
+    👥 Familiar 2º grado: <strong>${f2C}/4</strong> días laborables · <strong style="color:${4-f2C<0?'#c0392b':'#27ae60'}">${4-f2C} restantes</strong><br>
     📄 Licencia sin sueldo y 🏥 Baja: sin límite`;
 }
 
 function actualizarInfoTipo() {
   const tipo = document.getElementById('aTipo').value;
   const info = {
-    vacaciones: '🏖️ <strong>Vacaciones:</strong> días naturales según antigüedad (22-26). Si empieza en lunes se incluye el fin de semana anterior; si termina en viernes se incluye el siguiente. Los festivos dentro del periodo cuentan para el mínimo de 7 días naturales pero NO consumen días. Máximo 4 periodos al año.',
-    asuntos_propios: '📝 <strong>Asuntos propios:</strong> días laborables según antigüedad. No cuentan sábados, domingos ni festivos.',
+    vacaciones: '🏖️ <strong>Vacaciones:</strong> días naturales según antigüedad (22-26). Se cuentan todos los días del periodo (incluidos sábados y domingos) excepto festivos oficiales. Mínimo 7 días naturales por periodo, máximo 4 periodos al año.',
+    asuntos_propios: ' <strong>Asuntos propios:</strong> días laborables según antigüedad. No cuentan sábados, domingos ni festivos.',
     compensacion: '🔄 <strong>Compensación sábados festivos:</strong> días laborables según configuración anual. No cuentan sábados, domingos ni festivos.',
-    familiar_primer: '👨‍👩‍ <strong>Familiar 1er grado:</strong> máximo 5 días laborables por año. Por fallecimiento, accidente o enfermedad grave de cónyuge, pareja de hecho, ascendientes, descendientes o hermanos.',
+    familiar_primer: '👨‍👩‍👧 <strong>Familiar 1er grado:</strong> máximo 5 días laborables por año. Por fallecimiento, accidente o enfermedad grave de cónyuge, pareja de hecho, ascendientes, descendientes o hermanos.',
     familiar_segundo: '👥 <strong>Familiar 2º grado:</strong> máximo 4 días laborables por año. Por fallecimiento, accidente o enfermedad grave de familiares de segundo grado.',
     licencia: '📄 <strong>Licencia sin sueldo:</strong> sin límite de días. Periodo de excedencia voluntaria sin remuneración.',
-    baja: '🏥 <strong>Baja médica:</strong> sin límite. Se cuentan días naturales (incluye fines de semana y festivos).'
+    baja: ' <strong>Baja médica:</strong> sin límite. Se cuentan días naturales (incluye fines de semana y festivos).'
   };
   document.getElementById('infoTipo').innerHTML = info[tipo];
   calcularDias();
@@ -976,8 +965,10 @@ function calcularDias() {
   if (tipo === 'vacaciones') {
     const calc = contarDiasVacaciones(inicio, fin);
     dias = calc.diasConsumidos;
-    tipoDias = 'de vacaciones';
-    detalle = ` · Periodo real: ${fmtDate(calc.periodoExtendidoInicio)} a ${fmtDate(calc.periodoExtendidoFin)} (${calc.diasNaturalesPeriodo} días naturales${calc.fueExtendido ? ' (extendido por fin de semana)' : ''})`;
+    tipoDias = 'de vacaciones (naturales menos festivos)';
+    if (calc.festivosEnPeriodo > 0) {
+      detalle = ` · Incluye ${calc.festivosEnPeriodo} festivo(s) que no consumen días`;
+    }
   } else if (tipo === 'asuntos_propios' || tipo === 'compensacion' || tipo === 'familiar_primer' || tipo === 'familiar_segundo') {
     dias = laborales;
     tipoDias = 'laborables (excluye sábados, domingos y festivos)';
@@ -1014,8 +1005,8 @@ async function guardarAusencia() {
   const d = getDiasTrabajador(t, anio);
   
   if (tipo === 'vacaciones') {
-    if (calc.vacaciones.diasNaturalesPeriodo < 7) {
-      const ok = await showConfirm('Periodo corto', `El periodo tiene ${calc.vacaciones.diasNaturalesPeriodo} días naturales. Mínimo 7. ¿Continuar?`, 'warning');
+    if (calc.naturales < 7) {
+      const ok = await showConfirm('Periodo corto', `El periodo tiene ${calc.naturales} días naturales. Mínimo 7. ¿Continuar?`, 'warning');
       if (!ok) return;
     }
     const periodosActuales = ausencias.filter(a => a.trabajadorId === trabajadorId && a.tipo === 'vacaciones' && a.inicio.startsWith(anio));
@@ -1091,7 +1082,7 @@ function renderAusencias() {
   
   const ordenadas = [...ausencias].sort((a,b) => a.inicio.localeCompare(b.inicio));
   let html = '';
-  const nombres = {vacaciones:'🏖️ Vacaciones', asuntos_propios:'📝 Asuntos propios', compensacion:'🔄 Compensación', familiar_primer:'👨‍👩‍ Familiar 1º', familiar_segundo:' Familiar 2º', licencia:'📄 Licencia s/s', baja:'🏥 Baja'};
+  const nombres = {vacaciones:'🏖️ Vacaciones', asuntos_propios:'📝 Asuntos propios', compensacion:'🔄 Compensación', familiar_primer:'‍👩‍👧 Familiar 1º', familiar_segundo:' Familiar 2º', licencia:'📄 Licencia s/s', baja:'🏥 Baja'};
   const clases = {vacaciones:'b-vac', asuntos_propios:'b-ap', compensacion:'b-comp', familiar_primer:'b-fam1', familiar_segundo:'b-fam2', licencia:'b-licencia', baja:'b-baja'};
   
   ordenadas.forEach(a => {
@@ -1109,7 +1100,7 @@ function renderAusencias() {
         📅 ${fmtDate(a.inicio)} → ${fmtDate(a.fin)} · <strong>${a.diasConsumidos}</strong> días consumidos (${a.diasNaturales} naturales)
         ${a.obs ? '<br><em>' + a.obs + '</em>' : ''}
       </div>
-      <button class="small danger" onclick="eliminarAusencia('${a.id}')">️</button>
+      <button class="small danger" onclick="eliminarAusencia('${a.id}')">🗑️</button>
     </div>`;
   });
   cont.innerHTML = html || '<p style="color:#888;">No hay permisos con los filtros seleccionados.</p>';
