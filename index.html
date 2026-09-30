@@ -49,10 +49,13 @@
   .b-fam1 { background: #9b59b6; }
   .b-fam2 { background: #8e44ad; }
   .b-licencia { background: #7f8c8d; }
-  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 15px; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; margin-bottom: 15px; }
   .stat { background: linear-gradient(135deg, #1a4d7a, #2c6fa8); color: white; padding: 15px; border-radius: 8px; text-align: center; }
   .stat .num { font-size: 28px; font-weight: bold; }
   .stat .lbl { font-size: 12px; opacity: 0.9; }
+  .stat .detalle { margin-top: 10px; font-size: 11px; display: flex; flex-direction: column; gap: 3px; }
+  .stat .detalle-item { display: flex; justify-content: space-between; padding: 2px 0; border-bottom: 1px solid rgba(255,255,255,0.2); }
+  .stat .detalle-item:last-child { border-bottom: none; }
   .info { background: #e8f4fd; border-left: 4px solid #1a4d7a; padding: 10px; margin: 10px 0; font-size: 13px; border-radius: 4px; }
   .warn { background: #fef5e7; border-left: 4px solid #f39c12; padding: 10px; margin: 10px 0; font-size: 13px; border-radius: 4px; }
   .err { background: #fdecea; border-left: 4px solid #c0392b; padding: 10px; margin: 10px 0; font-size: 13px; border-radius: 4px; }
@@ -147,8 +150,8 @@
 
   <div class="tabs">
     <button class="tab active" onclick="showTab('inicio', this)">📊 Inicio</button>
-    <button class="tab" onclick="showTab('trabajadores', this)">👥 Trabajadores</button>
-    <button class="tab" onclick="showTab('permisos', this)"> Permisos</button>
+    <button class="tab" onclick="showTab('trabajadores', this)"> Trabajadores</button>
+    <button class="tab" onclick="showTab('permisos', this)">📝 Permisos</button>
     <button class="tab" onclick="showTab('calendario', this)">📅 Calendario</button>
     <button class="tab" onclick="showTab('config', this)">⚙️ Configuración</button>
   </div>
@@ -201,10 +204,10 @@
         <div><label>Tipo de permiso</label>
           <select id="aTipo" onchange="actualizarInfoTipo()">
             <option value="vacaciones">🏖️ Vacaciones</option>
-            <option value="asuntos_propios"> Asuntos propios</option>
+            <option value="asuntos_propios">📝 Asuntos propios</option>
             <option value="compensacion">🔄 Compensación sábados festivos</option>
-            <option value="familiar_primer">👨‍‍👧 Familiar 1er grado (máx. 5 días por solicitud)</option>
-            <option value="familiar_segundo"> Familiar 2º grado (máx. 4 días por solicitud)</option>
+            <option value="familiar_primer">👨‍👩‍👧 Familiar 1er grado (máx. 5 días por solicitud)</option>
+            <option value="familiar_segundo">👥 Familiar 2º grado (máx. 4 días por solicitud)</option>
             <option value="licencia">📄 Licencia sin sueldo</option>
             <option value="baja">🏥 Baja médica</option>
           </select>
@@ -236,7 +239,7 @@
     <div class="cal-controls">
       <div class="cal-nav">
         <button onclick="cambiarMes(-1)">◀ Anterior</button>
-        <button onclick="irHoy()"> Hoy</button>
+        <button onclick="irHoy()">📍 Hoy</button>
         <button onclick="cambiarMes(1)">Siguiente ▶</button>
       </div>
       <div><label style="margin:0;">Mes</label><select id="calMes" onchange="renderCalendario()" style="margin-bottom:0;"></select></div>
@@ -246,7 +249,7 @@
           <option value="">-- Todas --</option>
           <option value="encargado">Encargados</option>
           <option value="ordenanza">Ordenanzas</option>
-          <option value="limpiador">Limpiadores</option>
+          <option value="limpiador">Limpiadores/as</option>
         </select>
       </div>
     </div>
@@ -294,8 +297,8 @@
         <div><label>Descripción</label><input type="text" id="fNombre" placeholder="Ej: Año Nuevo"></div>
       </div>
       <button class="success" onclick="añadirFestivo()">➕ Añadir festivo</button>
-      <button onclick="copiarFestivos()"> Copiar de otro año</button>
-      <button class="danger" onclick="borrarFestivosAnio()">🗑️ Borrar todos del año</button>
+      <button onclick="copiarFestivos()">📋 Copiar de otro año</button>
+      <button class="danger" onclick="borrarFestivosAnio()">️ Borrar todos del año</button>
       <div style="margin-top:15px;"><label>Ver/editar festivos del año:</label><select id="fVerAnio" onchange="renderFestivos()"></select></div>
       <div id="listaFestivos" style="margin-top:10px;"></div>
     </div>
@@ -303,7 +306,7 @@
     <div class="card">
       <h3>📊 Tabla de antigüedad</h3>
       <div class="grid-2">
-        <div><strong>🏖️ Vacaciones (días laborables)</strong>
+        <div><strong>️ Vacaciones (días laborables)</strong>
           <table><tr><th>Antigüedad</th><th>Días</th></tr>
           <tr><td>Menos de 15 años</td><td>22</td></tr><tr><td>15 años o más</td><td>23</td></tr>
           <tr><td>20 años o más</td><td>24</td></tr><tr><td>25 años o más</td><td>25</td></tr>
@@ -568,49 +571,70 @@ function getEstadoPermiso(ausencia) {
   return { texto: 'En curso', clase: 'estado-curso' };
 }
 
-// ✅ INICIO ACTUALIZADO: quitada plantilla prevista, añadidos indicadores de trabajando y vacaciones
+// ✅ INICIO ACTUALIZADO: indicadores por categoría con desglose detallado
 function renderInicio() {
   const hoy = new Date().toISOString().split('T')[0];
-  const ord = trabajadores.filter(t => t.categoria === 'ordenanza').length;
-  const limp = trabajadores.filter(t => t.categoria === 'limpiador').length;
-  const enc = trabajadores.filter(t => t.categoria === 'encargado').length;
-  const total = trabajadores.length;
+  
+  // Calcular por categoría
+  const categorias = {
+    encargado: { total: 0, trabajando: 0, vacaciones: 0, asuntosPropios: 0, baja: 0 },
+    ordenanza: { total: 0, trabajando: 0, vacaciones: 0, asuntosPropios: 0, baja: 0 },
+    limpiador: { total: 0, trabajando: 0, vacaciones: 0, asuntosPropios: 0, baja: 0 }
+  };
 
-  // Calcular trabajando y de vacaciones HOY
-  let trabajando = 0, deVacaciones = 0;
   trabajadores.forEach(t => {
+    categorias[t.categoria].total++;
     const ausHoy = ausencias.find(a => a.trabajadorId === t.id && a.inicio <= hoy && a.fin >= hoy);
     if (ausHoy) {
-      if (ausHoy.tipo === 'vacaciones') deVacaciones++;
+      if (ausHoy.tipo === 'vacaciones') categorias[t.categoria].vacaciones++;
+      else if (ausHoy.tipo === 'asuntos_propios') categorias[t.categoria].asuntosPropios++;
+      else if (ausHoy.tipo === 'baja') categorias[t.categoria].baja++;
+      else categorias[t.categoria].trabajando++; // otros tipos cuentan como trabajando
     } else {
-      trabajando++;
+      categorias[t.categoria].trabajando++;
     }
   });
 
-  document.getElementById('statsGeneral').innerHTML = `
-    <div class="stat"><div class="num">${total}</div><div class="lbl">Total plantilla</div></div>
-    <div class="stat" style="background:linear-gradient(135deg,#8e44ad,#9b59b6)"><div class="num">${enc}</div><div class="lbl">Encargados</div></div>
-    <div class="stat" style="background:linear-gradient(135deg,#3498db,#5dade2)"><div class="num">${ord}</div><div class="lbl">Ordenanzas</div></div>
-    <div class="stat" style="background:linear-gradient(135deg,#e67e22,#f39c12)"><div class="num">${limp}</div><div class="lbl">Limpiadores</div></div>
-    <div class="stat" style="background:linear-gradient(135deg,#27ae60,#2ecc71)"><div class="num">${trabajando}</div><div class="lbl">Trabajando hoy</div></div>
-    <div class="stat" style="background:linear-gradient(135deg,#2980b9,#3498db)"><div class="num">${deVacaciones}</div><div class="lbl">De vacaciones</div></div>
-  `;
+  const nombresCat = { encargado: 'Encargados', ordenanza: 'Ordenanzas', limpiador: 'Limpiadores/as' };
+  const colores = {
+    encargado: 'linear-gradient(135deg, #8e44ad, #9b59b6)',
+    ordenanza: 'linear-gradient(135deg, #3498db, #5dade2)',
+    limpiador: 'linear-gradient(135deg, #e67e22, #f39c12)'
+  };
 
-  let html = '<table><tr><th>Nombre</th><th>Categoría</th><th>Antigüedad</th><th>Estado hoy</th></tr>';
+  let html = '';
+  for (const [cat, datos] of Object.entries(categorias)) {
+    html += `
+      <div class="stat" style="background:${colores[cat]}">
+        <div class="num">${datos.total}</div>
+        <div class="lbl">${nombresCat[cat]}</div>
+        <div class="detalle">
+          <div class="detalle-item"><span>✓ Trabajando:</span><strong>${datos.trabajando}</strong></div>
+          <div class="detalle-item"><span>🏖️ Vacaciones:</span><strong>${datos.vacaciones}</strong></div>
+          <div class="detalle-item"><span>📝 Asuntos propios:</span><strong>${datos.asuntosPropios}</strong></div>
+          <div class="detalle-item"><span>🏥 Baja:</span><strong>${datos.baja}</strong></div>
+        </div>
+      </div>
+    `;
+  }
+  document.getElementById('statsGeneral').innerHTML = html;
+
+  // Tabla de estado actual
+  let htmlTabla = '<table><tr><th>Nombre</th><th>Categoría</th><th>Antigüedad</th><th>Estado hoy</th></tr>';
   const anioActual = new Date().getFullYear().toString();
   trabajadores.forEach(t => {
     const ausHoy = ausencias.find(a => a.trabajadorId === t.id && a.inicio <= hoy && a.fin >= hoy);
     let estado;
     if (ausHoy) {
-      const tipos = {vacaciones:'🏖️ Vacaciones', asuntos_propios:'📝 Asuntos propios', compensacion:'🔄 Compensación', familiar_primer:'👨‍👩‍ Familiar 1º', familiar_segundo:' Familiar 2º', licencia:'📄 Licencia s/s', baja:'🏥 Baja'};
+      const tipos = {vacaciones:'🏖️ Vacaciones', asuntos_propios:' Asuntos propios', compensacion:'🔄 Compensación', familiar_primer:'👨‍👩‍👧 Familiar 1º', familiar_segundo:'👥 Familiar 2º', licencia:'📄 Licencia s/s', baja:'🏥 Baja'};
       const cls = {vacaciones:'b-vac', asuntos_propios:'b-ap', compensacion:'b-comp', familiar_primer:'b-fam1', familiar_segundo:'b-fam2', licencia:'b-licencia', baja:'b-baja'};
       estado = `<span class="badge ${cls[ausHoy.tipo]}">${tipos[ausHoy.tipo]}</span>`;
     } else { estado = '<span class="badge b-trab">✓ Trabajando</span>'; }
     const catBadge = {encargado:'b-enc', ordenanza:'b-ord', limpiador:'b-limp'}[t.categoria];
     const catNombre = {encargado:'Encargado', ordenanza:'Ordenanza', limpiador:'Limpiador/a'}[t.categoria];
-    html += `<tr><td>${t.nombre} ${t.apellidos}</td><td><span class="badge ${catBadge}">${catNombre}</span></td><td>${añosAntiguedad(t.fecha, anioActual)} años</td><td>${estado}</td></tr>`;
+    htmlTabla += `<tr><td>${t.nombre} ${t.apellidos}</td><td><span class="badge ${catBadge}">${catNombre}</span></td><td>${añosAntiguedad(t.fecha, anioActual)} años</td><td>${estado}</td></tr>`;
   });
-  document.getElementById('estadoPlantilla').innerHTML = html || '<p>No hay trabajadores registrados.</p>';
+  document.getElementById('estadoPlantilla').innerHTML = htmlTabla || '<p>No hay trabajadores registrados.</p>';
 }
 
 async function guardarTrabajador() {
@@ -936,21 +960,21 @@ function mostrarDisponibles() {
     🏖️ Vacaciones: <strong>${vC}/${d.vacaciones}</strong> días laborables consumidos · <strong style="color:${vR<0?'#c0392b':'#27ae60'}">${vR} restantes</strong><br>
     📝 Asuntos propios: <strong>${apC}/${d.asuntosPropios}</strong> días laborables consumidos · <strong style="color:${apR<0?'#c0392b':'#27ae60'}">${apR} restantes</strong><br>
     🔄 Compensación: <strong>${cC}/${cTotal}</strong> días laborables consumidos · <strong style="color:${cR<0?'#c0392b':'#27ae60'}">${cR} restantes</strong><br>
-    ‍👩‍👧 Familiar 1º grado: <strong>sin límite anual</strong> · máximo 5 días laborables por solicitud<br>
-    👥 Familiar 2º grado: <strong>sin límite anual</strong> · máximo 4 días laborables por solicitud<br>
-     Licencia sin sueldo y 🏥 Baja: sin límite`;
+    👨‍👩‍👧 Familiar 1º grado: <strong>sin límite anual</strong> · máximo 5 días laborables por solicitud<br>
+     Familiar 2º grado: <strong>sin límite anual</strong> · máximo 4 días laborables por solicitud<br>
+    📄 Licencia sin sueldo y 🏥 Baja: sin límite`;
 }
 
 function actualizarInfoTipo() {
   const tipo = document.getElementById('aTipo').value;
   const info = {
-    vacaciones: '🏖️ <strong>Vacaciones:</strong> días laborables según antigüedad (22-26). Solo se consumen días de lunes a viernes no festivos. Si el periodo empieza en lunes se incluye el fin de semana anterior; si termina en viernes se incluye el siguiente. El periodo total (extendido) debe tener mínimo 7 días naturales. Máximo 4 periodos al año.',
-    asuntos_propios: ' <strong>Asuntos propios:</strong> días laborables según antigüedad. No cuentan sábados, domingos ni festivos.',
+    vacaciones: '️ <strong>Vacaciones:</strong> días laborables según antigüedad (22-26). Solo se consumen días de lunes a viernes no festivos. Si el periodo empieza en lunes se incluye el fin de semana anterior; si termina en viernes se incluye el siguiente. El periodo total (extendido) debe tener mínimo 7 días naturales. Máximo 4 periodos al año.',
+    asuntos_propios: '📝 <strong>Asuntos propios:</strong> días laborables según antigüedad. No cuentan sábados, domingos ni festivos.',
     compensacion: '🔄 <strong>Compensación sábados festivos:</strong> días laborables según configuración anual. No cuentan sábados, domingos ni festivos.',
-    familiar_primer: '👨‍👩‍ <strong>Familiar 1er grado:</strong> máximo 5 días laborables por solicitud. Sin límite anual: puede solicitarse cuantas veces sea necesario.',
+    familiar_primer: '👨👩‍👧 <strong>Familiar 1er grado:</strong> máximo 5 días laborables por solicitud. Sin límite anual: puede solicitarse cuantas veces sea necesario.',
     familiar_segundo: '👥 <strong>Familiar 2º grado:</strong> máximo 4 días laborables por solicitud. Sin límite anual: puede solicitarse cuantas veces sea necesario.',
     licencia: '📄 <strong>Licencia sin sueldo:</strong> sin límite de días. Periodo de excedencia voluntaria sin remuneración.',
-    baja: '🏥 <strong>Baja médica:</strong> sin límite. Se cuentan días naturales (incluye fines de semana y festivos).'
+    baja: ' <strong>Baja médica:</strong> sin límite. Se cuentan días naturales (incluye fines de semana y festivos).'
   };
   document.getElementById('infoTipo').innerHTML = info[tipo];
   calcularDias();
@@ -962,7 +986,7 @@ function calcularDias() {
   const tipo = document.getElementById('aTipo').value;
   const div = document.getElementById('diasCalculo');
   if (!inicio || !fin) { div.innerHTML = ''; return null; }
-  if (inicio > fin) { div.innerHTML = '<span style="color:#c0392b">️ La fecha de inicio es posterior al fin.</span>'; return null; }
+  if (inicio > fin) { div.innerHTML = '<span style="color:#c0392b">⚠️ La fecha de inicio es posterior al fin.</span>'; return null; }
   const naturales = contarNaturales(inicio, fin);
   const laborales = contarLaborales(inicio, fin);
   let dias, tipoDias, detalle = '';
@@ -1083,7 +1107,7 @@ function renderAusencias() {
   const mostrarDisfrutados = document.getElementById('filtroDisfrutados').checked;
   const ordenadas = [...ausencias].sort((a,b) => a.inicio.localeCompare(b.inicio));
   let html = '';
-  const nombres = {vacaciones:'🏖️ Vacaciones', asuntos_propios:'📝 Asuntos propios', compensacion:'🔄 Compensación', familiar_primer:'👨👩‍👧 Familiar 1º', familiar_segundo:'👥 Familiar 2º', licencia:'📄 Licencia s/s', baja:'🏥 Baja'};
+  const nombres = {vacaciones:'🏖️ Vacaciones', asuntos_propios:'📝 Asuntos propios', compensacion:'🔄 Compensación', familiar_primer:'👨‍👩‍👧 Familiar 1º', familiar_segundo:'👥 Familiar 2º', licencia:'📄 Licencia s/s', baja:'🏥 Baja'};
   const clases = {vacaciones:'b-vac', asuntos_propios:'b-ap', compensacion:'b-comp', familiar_primer:'b-fam1', familiar_segundo:'b-fam2', licencia:'b-licencia', baja:'b-baja'};
   ordenadas.forEach(a => {
     const t = trabajadores.find(x => x.id === a.trabajadorId);
@@ -1096,7 +1120,7 @@ function renderAusencias() {
       <div class="ausencia-info">
         <strong>${t.nombre} ${t.apellidos}</strong> · <span class="badge ${clases[a.tipo]}">${nombres[a.tipo]}</span>
         <span class="estado-permiso ${estado.clase}">${estado.texto}</span><br>
-         ${fmtDate(a.inicio)} → ${fmtDate(a.fin)} · <strong>${a.diasConsumidos}</strong> días consumidos (${a.diasNaturales} naturales)
+        📅 ${fmtDate(a.inicio)} → ${fmtDate(a.fin)} · <strong>${a.diasConsumidos}</strong> días consumidos (${a.diasNaturales} naturales)
         ${a.obs ? '<br><em>' + a.obs + '</em>' : ''}
       </div>
       <button class="small danger" onclick="eliminarAusencia('${a.id}')">🗑️</button>
