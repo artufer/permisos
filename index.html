@@ -145,9 +145,17 @@
   .filtro-permisos label { margin: 0; display: inline-flex; align-items: center; gap: 5px; font-size: 12px; }
   .filtro-permisos input[type="checkbox"] { width: auto; margin: 0; }
   .seccion-permisos { margin-top: 20px; padding-top: 15px; border-top: 2px solid #e1e4e8; }
-  .grupo-tipo { margin-bottom: 20px; }
-  .grupo-tipo-header { background: #1a4d7a; color: white; padding: 8px 12px; border-radius: 6px 6px 0 0; font-weight: 600; font-size: 14px; display: flex; justify-content: space-between; align-items: center; }
-  .grupo-tipo-body { border: 1px solid #e1e4e8; border-top: none; border-radius: 0 0 6px 6px; padding: 10px; background: #fafbfc; }
+  .resumen-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; }
+  .resumen-table th { background: #1a4d7a; color: white; padding: 10px 8px; text-align: center; font-size: 12px; }
+  .resumen-table td { padding: 8px; text-align: center; border-bottom: 1px solid #e1e4e8; }
+  .resumen-table tr:hover { background: #f5f7fa; }
+  .resumen-table .nombre-cell { text-align: left; font-weight: 600; color: #1a4d7a; }
+  .dias-total { background: #e8f4fd; font-weight: bold; }
+  .dias-disfrutados { background: #e8f8f0; color: #27ae60; font-weight: bold; }
+  .dias-pedidos { background: #fef5e7; color: #f39c12; font-weight: bold; }
+  .dias-por-pedir { background: #fdecea; color: #c0392b; font-weight: bold; }
+  .diferencia-negativa { color: #c0392b; font-weight: bold; }
+  .diferencia-positiva { color: #27ae60; font-weight: bold; }
 </style>
 </head>
 <body>
@@ -156,8 +164,9 @@
   <p style="color:#666;margin-bottom:15px;">Gestión de trabajadores, permisos, festivos y calendario mensual</p>
 
   <div class="tabs">
-    <button class="tab active" onclick="showTab('inicio', this)"> Inicio</button>
+    <button class="tab active" onclick="showTab('inicio', this)">📊 Inicio</button>
     <button class="tab" onclick="showTab('trabajadores', this)">👥 Trabajadores</button>
+    <button class="tab" onclick="showTab('resumen', this)">📈 Resumen</button>
     <button class="tab" onclick="showTab('permisos', this)">📝 Permisos</button>
     <button class="tab" onclick="showTab('calendario', this)">📅 Calendario</button>
     <button class="tab" onclick="showTab('config', this)">⚙️ Configuración</button>
@@ -198,6 +207,17 @@
     <div id="listaTrabajadores"></div>
   </div>
 
+  <div id="resumen" class="panel">
+    <h2>Resumen de Permisos por Trabajador</h2>
+    <div class="card">
+      <div class="grid-2">
+        <div><label>Año</label><select id="resumenAnio" onchange="renderResumen()"></select></div>
+        <div></div>
+      </div>
+    </div>
+    <div id="tablaResumen"></div>
+  </div>
+
   <div id="permisos" class="panel">
     <h2>Registro de Permisos y Ausencias</h2>
     <div class="card">
@@ -214,10 +234,10 @@
         <div><label>Tipo de permiso</label>
           <select id="aTipo" onchange="actualizarInfoTipo()">
             <option value="vacaciones">🏖️ Vacaciones</option>
-            <option value="asuntos_propios">📝 Asuntos propios</option>
+            <option value="asuntos_propios"> Asuntos propios</option>
             <option value="compensacion">🔄 Compensación sábados festivos</option>
-            <option value="familiar_primer">👨‍👩👧 Familiar 1er grado (máx. 5 días por solicitud)</option>
-            <option value="familiar_segundo">👥 Familiar 2º grado (máx. 4 días por solicitud)</option>
+            <option value="familiar_primer">👨‍‍👧 Familiar 1er grado (máx. 5 días por solicitud)</option>
+            <option value="familiar_segundo"> Familiar 2º grado (máx. 4 días por solicitud)</option>
             <option value="reposo">🛏️ Reposo domiciliario (máx. 5 días al año)</option>
             <option value="licencia">📄 Licencia sin sueldo</option>
             <option value="baja">🏥 Baja médica</option>
@@ -245,25 +265,13 @@
       </div>
       <div id="listaPermisosTrabajador"></div>
     </div>
-
-    <div class="seccion-permisos">
-      <h3> Todos los permisos</h3>
-      <div class="filtro-permisos">
-        <label style="margin-right:10px;"><strong>Año:</strong></label>
-        <select id="todosAnio" onchange="renderTodosPermisos()" style="width:auto;margin-bottom:0;"></select>
-        <label style="margin-left:15px;"><input type="checkbox" id="filtroTodosPendientes" checked onchange="renderTodosPermisos()"> Pendientes</label>
-        <label><input type="checkbox" id="filtroTodosCurso" checked onchange="renderTodosPermisos()"> En curso</label>
-        <label><input type="checkbox" id="filtroTodosDisfrutados" checked onchange="renderTodosPermisos()"> Disfrutados</label>
-      </div>
-      <div id="listaTodosPermisos"></div>
-    </div>
   </div>
 
   <div id="calendario" class="panel">
     <h2>Calendario Mensual del Equipo</h2>
     <div class="cal-controls">
       <div class="cal-nav">
-        <button onclick="cambiarMes(-1)"> Anterior</button>
+        <button onclick="cambiarMes(-1)">◀ Anterior</button>
         <button onclick="irHoy()">📍 Hoy</button>
         <button onclick="cambiarMes(1)">Siguiente ▶</button>
       </div>
@@ -323,7 +331,7 @@
         <div><label>Descripción</label><input type="text" id="fNombre" placeholder="Ej: Año Nuevo"></div>
       </div>
       <button class="success" onclick="añadirFestivo()"> Añadir festivo</button>
-      <button onclick="copiarFestivos()">📋 Copiar de otro año</button>
+      <button onclick="copiarFestivos()"> Copiar de otro año</button>
       <button class="danger" onclick="borrarFestivosAnio()">🗑️ Borrar todos del año</button>
       <div style="margin-top:15px;"><label>Ver/editar festivos del año:</label><select id="fVerAnio" onchange="renderFestivos()"></select></div>
       <div id="listaFestivos" style="margin-top:10px;"></div>
@@ -332,13 +340,13 @@
     <div class="card">
       <h3>📊 Tabla de antigüedad</h3>
       <div class="grid-2">
-        <div><strong>🏖️ Vacaciones (días laborables)</strong>
+        <div><strong>️ Vacaciones (días laborables)</strong>
           <table><tr><th>Antigüedad</th><th>Días</th></tr>
           <tr><td>Menos de 15 años</td><td>22</td></tr><tr><td>15 años o más</td><td>23</td></tr>
           <tr><td>20 años o más</td><td>24</td></tr><tr><td>25 años o más</td><td>25</td></tr>
           <tr><td>30 años o más</td><td>26</td></tr></table>
         </div>
-        <div><strong> Asuntos propios</strong>
+        <div><strong>📝 Asuntos propios</strong>
           <table><tr><th>Antigüedad</th><th>Días</th></tr>
           <tr><td>Menos de 19 años</td><td>6</td></tr><tr><td>19 años o más</td><td>8</td></tr>
           <tr><td>25 años o más</td><td>9</td></tr><tr><td>28 años o más</td><td>10</td></tr>
@@ -443,7 +451,8 @@ function refrescarVistaActual() {
   const id = active.id;
   if (id === 'inicio') renderInicio();
   else if (id === 'trabajadores') renderTrabajadores();
-  else if (id === 'permisos') { cargarSelectTrabajadores(); cargarSelectAniosAusencia(); cargarSelectAniosTodos(); renderPermisosTrabajador(); renderTodosPermisos(); mostrarDisponibles(); }
+  else if (id === 'resumen') { cargarSelectAniosResumen(); renderResumen(); }
+  else if (id === 'permisos') { cargarSelectTrabajadores(); cargarSelectAniosAusencia(); renderPermisosTrabajador(); mostrarDisponibles(); }
   else if (id === 'calendario') renderCalendario();
   else if (id === 'config') renderConfig();
 }
@@ -508,7 +517,7 @@ function toast(titulo, mensaje, tipo = 'info', duracion = 3500) {
   const cont = document.getElementById('toastContainer');
   const el = document.createElement('div');
   el.className = `toast ${tipo}`;
-  el.innerHTML = `<span class="toast-icon">${iconos[tipo]||'ℹ️'}</span><div class="toast-content"><div class="toast-title">${titulo}</div><div class="toast-msg">${mensaje}</div></div>`;
+  el.innerHTML = `<span class="toast-icon">${iconos[tipo]||'️'}</span><div class="toast-content"><div class="toast-title">${titulo}</div><div class="toast-msg">${mensaje}</div></div>`;
   cont.appendChild(el);
   requestAnimationFrame(() => el.classList.add('visible'));
   setTimeout(() => { el.classList.remove('visible'); setTimeout(() => el.remove(), 300); }, duracion);
@@ -521,7 +530,8 @@ function showTab(id, btn) {
   btn.classList.add('active');
   if (id === 'inicio') renderInicio();
   else if (id === 'trabajadores') renderTrabajadores();
-  else if (id === 'permisos') { cargarSelectTrabajadores(); cargarSelectAniosAusencia(); cargarSelectAniosTodos(); renderPermisosTrabajador(); renderTodosPermisos(); actualizarInfoTipo(); mostrarDisponibles(); }
+  else if (id === 'resumen') { cargarSelectAniosResumen(); renderResumen(); }
+  else if (id === 'permisos') { cargarSelectTrabajadores(); cargarSelectAniosAusencia(); renderPermisosTrabajador(); actualizarInfoTipo(); mostrarDisponibles(); }
   else if (id === 'calendario') renderCalendarioTab();
   else if (id === 'config') renderConfig();
 }
@@ -656,7 +666,7 @@ function renderInicio() {
     const ausHoy = ausencias.find(a => a.trabajadorId === t.id && a.inicio <= hoy && a.fin >= hoy);
     let estado;
     if (ausHoy) {
-      const tipos = {vacaciones:'️ Vacaciones', asuntos_propios:'📝 Asuntos propios', compensacion:'🔄 Compensación', familiar_primer:'👨‍‍👧 Familiar 1º', familiar_segundo:'👥 Familiar 2º', reposo:'🛏️ Reposo dom.', licencia:'📄 Licencia s/s', baja:'🏥 Baja'};
+      const tipos = {vacaciones:'🏖️ Vacaciones', asuntos_propios:'📝 Asuntos propios', compensacion:' Compensación', familiar_primer:'👨‍👩‍👧 Familiar 1º', familiar_segundo:'👥 Familiar 2º', reposo:'🛏️ Reposo dom.', licencia:'📄 Licencia s/s', baja:'🏥 Baja'};
       const cls = {vacaciones:'b-vac', asuntos_propios:'b-ap', compensacion:'b-comp', familiar_primer:'b-fam1', familiar_segundo:'b-fam2', reposo:'b-reposo', licencia:'b-licencia', baja:'b-baja'};
       estado = `<span class="badge ${cls[ausHoy.tipo]}">${tipos[ausHoy.tipo]}</span>`;
     } else { estado = '<span class="badge b-trab">✓ Trabajando</span>'; }
@@ -723,7 +733,7 @@ function renderTrabajadores() {
     html += '<table><tr><th>Nombre</th><th>Apellidos</th><th>Incorporación</th><th>Antigüedad</th><th>Vac. '+anioActual+'</th><th>AP '+anioActual+'</th><th>Acciones</th></tr>';
     grupos[cat].forEach(t => {
       const d = getDiasTrabajador(t, anioActual);
-      html += `<tr><td>${t.nombre}</td><td>${t.apellidos}</td><td>${fmtDate(t.fecha)}</td><td>${d.antiguedad} años</td><td><strong>${d.vacaciones}</strong> días</td><td><strong>${d.asuntosPropios}</strong> días</td><td><button class="small" onclick="editarTrabajador('${t.id}')">✏️</button><button class="small danger" onclick="eliminarTrabajador('${t.id}')">🗑️</button></td></tr>`;
+      html += `<tr><td>${t.nombre}</td><td>${t.apellidos}</td><td>${fmtDate(t.fecha)}</td><td>${d.antiguedad} años</td><td><strong>${d.vacaciones}</strong> días</td><td><strong>${d.asuntosPropios}</strong> días</td><td><button class="small" onclick="editarTrabajador('${t.id}')">️</button><button class="small danger" onclick="eliminarTrabajador('${t.id}')">️</button></td></tr>`;
     });
     html += '</table>';
   }
@@ -973,8 +983,8 @@ function cargarSelectAniosAusencia() {
   sel.value = actual;
 }
 
-function cargarSelectAniosTodos() {
-  const sel = document.getElementById('todosAnio');
+function cargarSelectAniosResumen() {
+  const sel = document.getElementById('resumenAnio');
   const actual = sel.value || new Date().getFullYear().toString();
   sel.innerHTML = '';
   const anios = new Set();
@@ -1005,7 +1015,7 @@ function mostrarDisponibles() {
     🏖️ Vacaciones: <strong>${vC}/${d.vacaciones}</strong> días laborables consumidos · <strong style="color:${vR<0?'#c0392b':'#27ae60'}">${vR} restantes</strong> <em>(disponibles hasta 31/01/${anioSiguiente})</em><br>
     📝 Asuntos propios: <strong>${apC}/${d.asuntosPropios}</strong> días laborables consumidos · <strong style="color:${apR<0?'#c0392b':'#27ae60'}">${apR} restantes</strong> <em>(disponibles hasta 31/01/${anioSiguiente})</em><br>
     🔄 Compensación: <strong>${cC}/${cTotal}</strong> días laborables consumidos · <strong style="color:${cR<0?'#c0392b':'#27ae60'}">${cR} restantes</strong><br>
-    👨‍👩‍👧 Familiar 1º grado: <strong>sin límite anual</strong> · máximo 5 días laborables por solicitud<br>
+    👨‍👩👧 Familiar 1º grado: <strong>sin límite anual</strong> · máximo 5 días laborables por solicitud<br>
     👥 Familiar 2º grado: <strong>sin límite anual</strong> · máximo 4 días laborables por solicitud<br>
     🛏️ Reposo domiciliario: <strong>${rC}/5</strong> días laborables consumidos · <strong style="color:${rR<0?'#c0392b':'#27ae60'}">${rR} restantes</strong><br>
     📄 Licencia sin sueldo y 🏥 Baja: sin límite`;
@@ -1019,8 +1029,8 @@ function actualizarInfoTipo() {
     vacaciones: `🏖️ <strong>Vacaciones:</strong> días laborables según antigüedad (22-26). Solo se consumen días de lunes a viernes no festivos. Si el periodo empieza en lunes se incluye el fin de semana anterior; si termina en viernes se incluye el siguiente. El periodo total (extendido) debe tener mínimo 7 días naturales. Máximo 4 periodos al año. <strong>Se pueden disfrutar hasta el 31/01/${anioSiguiente}.</strong>`,
     asuntos_propios: `📝 <strong>Asuntos propios:</strong> días laborables según antigüedad. No cuentan sábados, domingos ni festivos. <strong>Se pueden disfrutar hasta el 31/01/${anioSiguiente}.</strong>`,
     compensacion: '🔄 <strong>Compensación sábados festivos:</strong> días laborables según configuración anual. No cuentan sábados, domingos ni festivos.',
-    familiar_primer: '👨‍‍👧 <strong>Familiar 1er grado:</strong> máximo 5 días laborables por solicitud. Sin límite anual: puede solicitarse cuantas veces sea necesario.',
-    familiar_segundo: ' <strong>Familiar 2º grado:</strong> máximo 4 días laborables por solicitud. Sin límite anual: puede solicitarse cuantas veces sea necesario.',
+    familiar_primer: '‍👩‍👧 <strong>Familiar 1er grado:</strong> máximo 5 días laborables por solicitud. Sin límite anual: puede solicitarse cuantas veces sea necesario.',
+    familiar_segundo: '👥 <strong>Familiar 2º grado:</strong> máximo 4 días laborables por solicitud. Sin límite anual: puede solicitarse cuantas veces sea necesario.',
     reposo: '🛏️ <strong>Reposo domiciliario:</strong> máximo 5 días laborables al año (suma de todas las solicitudes). Se cuentan días laborables (lunes a viernes, no festivos). Requiere parte médico.',
     licencia: '📄 <strong>Licencia sin sueldo:</strong> sin límite de días. Periodo de excedencia voluntaria sin remuneración.',
     baja: '🏥 <strong>Baja médica:</strong> sin límite. Se cuentan días naturales (incluye fines de semana y festivos).'
@@ -1131,7 +1141,6 @@ async function guardarAusencia() {
       return;
     }
   }
-  // ✅ NUEVO: Validación de reposo domiciliario - máximo 5 días al año (suma de todas las solicitudes)
   if (tipo === 'reposo') {
     const rC = ausencias.filter(a => a.trabajadorId === trabajadorId && a.tipo === 'reposo' && a.inicio.startsWith(anio)).reduce((s,a) => s + a.diasConsumidos, 0);
     if (rC + calc.dias > 5) {
@@ -1148,7 +1157,6 @@ async function guardarAusencia() {
   guardarLocal();
   document.getElementById('aObs').value = '';
   renderPermisosTrabajador();
-  renderTodosPermisos();
   mostrarDisponibles();
   const nombres = {vacaciones:'Vacaciones', asuntos_propios:'Asuntos propios', compensacion:'Compensación', familiar_primer:'Familiar 1º', familiar_segundo:'Familiar 2º', reposo:'Reposo dom.', licencia:'Licencia s/s', baja:'Baja'};
   toast('Permiso registrado', `${t.nombre} · ${nombres[tipo]} · ${calc.dias} días`, 'success');
@@ -1163,7 +1171,6 @@ async function eliminarAusencia(id) {
   await fsDelete('ausencias', id);
   guardarLocal();
   renderPermisosTrabajador();
-  renderTodosPermisos();
   mostrarDisponibles();
   toast('Permiso eliminado', 'Registro borrado', 'info');
 }
@@ -1189,7 +1196,7 @@ function renderPermisosTrabajador() {
   const mostrarDisfrutados = document.getElementById('filtroDisfrutados').checked;
   const ordenadas = [...permisosTrabajador].sort((a,b) => a.inicio.localeCompare(b.inicio));
   let html = '';
-  const nombres = {vacaciones:'🏖️ Vacaciones', asuntos_propios:'📝 Asuntos propios', compensacion:'🔄 Compensación', familiar_primer:'👨‍👩👧 Familiar 1º', familiar_segundo:'👥 Familiar 2º', reposo:'🛏️ Reposo dom.', licencia:'📄 Licencia s/s', baja:' Baja'};
+  const nombres = {vacaciones:'🏖️ Vacaciones', asuntos_propios:'📝 Asuntos propios', compensacion:'🔄 Compensación', familiar_primer:'👨‍👩‍👧 Familiar 1º', familiar_segundo:'👥 Familiar 2º', reposo:'️ Reposo dom.', licencia:'📄 Licencia s/s', baja:'🏥 Baja'};
   const clases = {vacaciones:'b-vac', asuntos_propios:'b-ap', compensacion:'b-comp', familiar_primer:'b-fam1', familiar_segundo:'b-fam2', reposo:'b-reposo', licencia:'b-licencia', baja:'b-baja'};
   ordenadas.forEach(a => {
     const estado = getEstadoPermiso(a);
@@ -1200,7 +1207,7 @@ function renderPermisosTrabajador() {
       <div class="ausencia-info">
         <span class="badge ${clases[a.tipo]}">${nombres[a.tipo]}</span>
         <span class="estado-permiso ${estado.clase}">${estado.texto}</span><br>
-         ${fmtDate(a.inicio)} → ${fmtDate(a.fin)} · <strong>${a.diasConsumidos}</strong> días consumidos (${a.diasNaturales} naturales)
+        📅 ${fmtDate(a.inicio)} → ${fmtDate(a.fin)} · <strong>${a.diasConsumidos}</strong> días consumidos (${a.diasNaturales} naturales)
         ${a.obs ? '<br><em>' + a.obs + '</em>' : ''}
       </div>
       <button class="small danger" onclick="eliminarAusencia('${a.id}')">🗑️</button>
@@ -1209,56 +1216,83 @@ function renderPermisosTrabajador() {
   cont.innerHTML = html || '<p style="color:#888;">No hay permisos con los filtros seleccionados.</p>';
 }
 
-function renderTodosPermisos() {
-  const anio = document.getElementById('todosAnio').value;
-  const cont = document.getElementById('listaTodosPermisos');
-  if (!anio) { cont.innerHTML = '<p style="color:#888;">Seleccione un año.</p>'; return; }
-  const permisosAnio = ausencias.filter(a => a.inicio.startsWith(anio));
-  if (permisosAnio.length === 0) { cont.innerHTML = '<p style="color:#888;">No hay permisos registrados para este año.</p>'; return; }
-  const mostrarPendientes = document.getElementById('filtroTodosPendientes').checked;
-  const mostrarCurso = document.getElementById('filtroTodosCurso').checked;
-  const mostrarDisfrutados = document.getElementById('filtroTodosDisfrutados').checked;
-  const ordenadas = [...permisosAnio].sort((a,b) => a.inicio.localeCompare(b.inicio));
-  const tiposOrden = ['vacaciones', 'asuntos_propios', 'compensacion', 'familiar_primer', 'familiar_segundo', 'reposo', 'licencia', 'baja'];
-  const nombres = {vacaciones:'️ Vacaciones', asuntos_propios:'📝 Asuntos propios', compensacion:'🔄 Compensación', familiar_primer:'👨‍‍👧 Familiar 1º', familiar_segundo:'👥 Familiar 2º', reposo:'🛏️ Reposo dom.', licencia:'📄 Licencia s/s', baja:'🏥 Baja'};
-  const clases = {vacaciones:'b-vac', asuntos_propios:'b-ap', compensacion:'b-comp', familiar_primer:'b-fam1', familiar_segundo:'b-fam2', reposo:'b-reposo', licencia:'b-licencia', baja:'b-baja'};
-  let html = '';
-  let hayResultados = false;
-  tiposOrden.forEach(tipo => {
-    const permisosTipo = ordenadas.filter(a => a.tipo === tipo);
-    if (permisosTipo.length === 0) return;
-    const permisosFiltrados = permisosTipo.filter(a => {
-      const estado = getEstadoPermiso(a);
-      if (estado.texto === 'Pendiente' && !mostrarPendientes) return false;
-      if (estado.texto === 'En curso' && !mostrarCurso) return false;
-      if (estado.texto === 'Disfrutado' && !mostrarDisfrutados) return false;
-      return true;
-    });
-    if (permisosFiltrados.length === 0) return;
-    hayResultados = true;
-    html += `<div class="grupo-tipo">
-      <div class="grupo-tipo-header">
-        <span>${nombres[tipo]}</span>
-        <span style="font-size:12px;opacity:0.9;">${permisosFiltrados.length} permiso(s)</span>
-      </div>
-      <div class="grupo-tipo-body">`;
-    permisosFiltrados.forEach(a => {
-      const t = trabajadores.find(x => x.id === a.trabajadorId);
-      if (!t) return;
-      const estado = getEstadoPermiso(a);
-      html += `<div class="ausencia-item" style="margin-bottom:8px;">
-        <div class="ausencia-info">
-          <strong>${t.nombre} ${t.apellidos}</strong>
-          <span class="estado-permiso ${estado.clase}">${estado.texto}</span><br>
-          📅 ${fmtDate(a.inicio)} → ${fmtDate(a.fin)} · <strong>${a.diasConsumidos}</strong> días consumidos (${a.diasNaturales} naturales)
-          ${a.obs ? '<br><em>' + a.obs + '</em>' : ''}
-        </div>
-        <button class="small danger" onclick="eliminarAusencia('${a.id}')">️</button>
-      </div>`;
-    });
-    html += `</div></div>`;
+// ✅ NUEVA FUNCIÓN: Renderiza el resumen de todos los trabajadores
+function renderResumen() {
+  const anio = document.getElementById('resumenAnio').value;
+  const cont = document.getElementById('tablaResumen');
+  
+  if (!anio) {
+    cont.innerHTML = '<p style="color:#888;">Seleccione un año.</p>';
+    return;
+  }
+  
+  if (trabajadores.length === 0) {
+    cont.innerHTML = '<p style="color:#888;">No hay trabajadores registrados.</p>';
+    return;
+  }
+  
+  const cfg = configs[anio];
+  const cTotal = cfg ? cfg.compensacion : 0;
+  
+  let html = '<table class="resumen-table">';
+  html += '<thead><tr>';
+  html += '<th>Trabajador</th>';
+  html += '<th>Categoría</th>';
+  html += '<th colspan="3" style="background:#27ae60;">🏖️ Vacaciones</th>';
+  html += '<th colspan="3" style="background:#16a085;">🔄 Compensación</th>';
+  html += '<th colspan="3" style="background:#f39c12;">📝 Asuntos propios</th>';
+  html += '</tr><tr>';
+  html += '<th></th><th></th>';
+  html += '<th>Total</th><th>Disfrutados</th><th>Pedidos</th><th>Por pedir</th>';
+  html += '<th>Total</th><th>Disfrutados</th><th>Pedidos</th><th>Por pedir</th>';
+  html += '<th>Total</th><th>Disfrutados</th><th>Pedidos</th><th>Por pedir</th>';
+  html += '</tr></thead><tbody>';
+  
+  trabajadores.forEach(t => {
+    const d = getDiasTrabajador(t, anio);
+    const catNombre = {encargado:'Encargado', ordenanza:'Ordenanza', limpiador:'Limpiador/a'}[t.categoria];
+    
+    // Calcular días por tipo
+    const permisosAnio = ausencias.filter(a => a.trabajadorId === t.id && a.inicio.startsWith(anio));
+    
+    // Vacaciones
+    const vacTotal = d.vacaciones;
+    const vacDisfrutados = permisosAnio.filter(a => a.tipo === 'vacaciones' && a.fin < fechaLocalStr(new Date())).reduce((s,a) => s + a.diasConsumidos, 0);
+    const vacPedidos = permisosAnio.filter(a => a.tipo === 'vacaciones' && a.fin >= fechaLocalStr(new Date())).reduce((s,a) => s + a.diasConsumidos, 0);
+    const vacPorPedir = vacTotal - vacDisfrutados - vacPedidos;
+    
+    // Compensación
+    const compTotal = cTotal;
+    const compDisfrutados = permisosAnio.filter(a => a.tipo === 'compensacion' && a.fin < fechaLocalStr(new Date())).reduce((s,a) => s + a.diasConsumidos, 0);
+    const compPedidos = permisosAnio.filter(a => a.tipo === 'compensacion' && a.fin >= fechaLocalStr(new Date())).reduce((s,a) => s + a.diasConsumidos, 0);
+    const compPorPedir = compTotal - compDisfrutados - compPedidos;
+    
+    // Asuntos propios
+    const apTotal = d.asuntosPropios;
+    const apDisfrutados = permisosAnio.filter(a => a.tipo === 'asuntos_propios' && a.fin < fechaLocalStr(new Date())).reduce((s,a) => s + a.diasConsumidos, 0);
+    const apPedidos = permisosAnio.filter(a => a.tipo === 'asuntos_propios' && a.fin >= fechaLocalStr(new Date())).reduce((s,a) => s + a.diasConsumidos, 0);
+    const apPorPedir = apTotal - apDisfrutados - apPedidos;
+    
+    html += `<tr>
+      <td class="nombre-cell">${t.nombre} ${t.apellidos}</td>
+      <td>${catNombre}</td>
+      <td class="dias-total">${vacTotal}</td>
+      <td class="dias-disfrutados">${vacDisfrutados}</td>
+      <td class="dias-pedidos">${vacPedidos}</td>
+      <td class="${vacPorPedir < 0 ? 'diferencia-negativa' : 'dias-por-pedir'}">${vacPorPedir}</td>
+      <td class="dias-total">${compTotal}</td>
+      <td class="dias-disfrutados">${compDisfrutados}</td>
+      <td class="dias-pedidos">${compPedidos}</td>
+      <td class="${compPorPedir < 0 ? 'diferencia-negativa' : 'dias-por-pedir'}">${compPorPedir}</td>
+      <td class="dias-total">${apTotal}</td>
+      <td class="dias-disfrutados">${apDisfrutados}</td>
+      <td class="dias-pedidos">${apPedidos}</td>
+      <td class="${apPorPedir < 0 ? 'diferencia-negativa' : 'dias-por-pedir'}">${apPorPedir}</td>
+    </tr>`;
   });
-  cont.innerHTML = html || '<p style="color:#888;">No hay permisos con los filtros seleccionados.</p>';
+  
+  html += '</tbody></table>';
+  cont.innerHTML = html;
 }
 
 document.getElementById('cAnio').value = new Date().getFullYear();
