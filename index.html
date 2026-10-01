@@ -470,7 +470,7 @@
   </div>
 
   <div id="calendario" class="panel">
-    <h2>Calendario Mensual del Equipo</h2>
+    <h2>Calendario Mensual de la plantilla</h2>
     <div class="cal-controls">
       <div class="cal-nav">
         <button onclick="cambiarMes(-1)">◀ Anterior</button>
@@ -1938,7 +1938,7 @@ function generarPDF() {
   const doc = new jsPDF('landscape', 'mm', 'a4');
   doc.setFontSize(18);
   doc.setTextColor(26, 77, 122);
-  doc.text('Control de Personal - Edificio', 14, 20);
+  doc.text('Control de Personal - Pabellón Niño Jesús', 14, 20);
   doc.setFontSize(14);
   doc.text(`Resumen de Permisos - Año ${anio}`, 14, 30);
   doc.setFontSize(10);
