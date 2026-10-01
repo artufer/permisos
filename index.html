@@ -1663,10 +1663,23 @@ function mostrarDetalleTrabajador(trabajadorId, anio) {
       <div class="label">Fecha incorporación</div>
       <div class="value">${fmtDate(t.fecha)}</div>
     </div>
-    <div class="detalle-info-item">
-      <div class="label">Antigüedad (año ${anio})</div>
-      <div class="value">${d.antiguedad} años</div>
-    </div>
+  // ✅ Calcular antigüedad real al día de hoy
+const hoy = new Date();
+const inc = new Date(t.fecha + 'T00:00:00');
+let antiguedadReal = hoy.getFullYear() - inc.getFullYear();
+if (hoy.getMonth() < inc.getMonth() || (hoy.getMonth() === inc.getMonth() && hoy.getDate() < inc.getDate())) {
+  antiguedadReal--;
+}
+antiguedadReal = Math.max(0, antiguedadReal);
+
+html += `<div class="detalle-info-item">
+  <div class="label">Antigüedad (año ${anio})</div>
+  <div class="value">${d.antiguedad} años</div>
+</div>
+<div class="detalle-info-item">
+  <div class="label">Antigüedad real (hoy)</div>
+  <div class="value">${antiguedadReal} años</div>
+</div>`;
     ${t.dni ? `<div class="detalle-info-item">
       <div class="label">DNI</div>
       <div class="value">${t.dni}</div>
