@@ -3,9 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Control de Personal - Pabellón Niño Jesús</title>
+<title>Control de Personal - Edificio</title>
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <script src="config.js"></script>
@@ -71,93 +72,21 @@
   .b-licencia { background: #7f8c8d; }
   .b-reposo { background: #1abc9c; }
   
-  /* ✅ NUEVOS ESTADOS CON COLORES DIFERENCIADOS */
-  .estado-trabajando { 
-    background: #2ecc71; 
-    color: white; 
-    padding: 4px 12px; 
-    border-radius: 12px; 
-    font-weight: 600; 
-    font-size: 12px;
-    display: inline-block;
-  }
-  .estado-vacaciones { 
-    background: #00bcd4; 
-    color: white; 
-    padding: 4px 12px; 
-    border-radius: 12px; 
-    font-weight: 600; 
-    font-size: 12px;
-    display: inline-block;
-    box-shadow: 0 2px 4px rgba(0, 188, 212, 0.3);
-  }
-  .estado-asuntos-propios { 
-    background: #f39c12; 
-    color: white; 
-    padding: 4px 12px; 
-    border-radius: 12px; 
-    font-weight: 600; 
-    font-size: 12px;
-    display: inline-block;
-  }
-  .estado-baja { 
-    background: #e74c3c; 
-    color: white; 
-    padding: 4px 12px; 
-    border-radius: 12px; 
-    font-weight: 600; 
-    font-size: 12px;
-    display: inline-block;
-  }
-  .estado-familiar { 
-    background: #9b59b6; 
-    color: white; 
-    padding: 4px 12px; 
-    border-radius: 12px; 
-    font-weight: 600; 
-    font-size: 12px;
-    display: inline-block;
-  }
-  .estado-reposo { 
-    background: #1abc9c; 
-    color: white; 
-    padding: 4px 12px; 
-    border-radius: 12px; 
-    font-weight: 600; 
-    font-size: 12px;
-    display: inline-block;
-  }
-  .estado-licencia { 
-    background: #7f8c8d; 
-    color: white; 
-    padding: 4px 12px; 
-    border-radius: 12px; 
-    font-weight: 600; 
-    font-size: 12px;
-    display: inline-block;
-  }
-  .estado-compensacion { 
-    background: #16a085; 
-    color: white; 
-    padding: 4px 12px; 
-    border-radius: 12px; 
-    font-weight: 600; 
-    font-size: 12px;
-    display: inline-block;
-  }
+  .estado-trabajando { background: #2ecc71; color: white; padding: 4px 12px; border-radius: 12px; font-weight: 600; font-size: 12px; display: inline-block; }
+  .estado-vacaciones { background: #00bcd4; color: white; padding: 4px 12px; border-radius: 12px; font-weight: 600; font-size: 12px; display: inline-block; box-shadow: 0 2px 4px rgba(0, 188, 212, 0.3); }
+  .estado-asuntos-propios { background: #f39c12; color: white; padding: 4px 12px; border-radius: 12px; font-weight: 600; font-size: 12px; display: inline-block; }
+  .estado-baja { background: #e74c3c; color: white; padding: 4px 12px; border-radius: 12px; font-weight: 600; font-size: 12px; display: inline-block; }
+  .estado-familiar { background: #9b59b6; color: white; padding: 4px 12px; border-radius: 12px; font-weight: 600; font-size: 12px; display: inline-block; }
+  .estado-reposo { background: #1abc9c; color: white; padding: 4px 12px; border-radius: 12px; font-weight: 600; font-size: 12px; display: inline-block; }
+  .estado-licencia { background: #7f8c8d; color: white; padding: 4px 12px; border-radius: 12px; font-weight: 600; font-size: 12px; display: inline-block; }
+  .estado-compensacion { background: #16a085; color: white; padding: 4px 12px; border-radius: 12px; font-weight: 600; font-size: 12px; display: inline-block; }
   
-  /* ✅ Centrar columnas Categoría, Antigüedad y Estado hoy en tabla de plantilla */
   #estadoPlantilla th:nth-child(2),
   #estadoPlantilla th:nth-child(3),
-  #estadoPlantilla th:nth-child(4) {
-    text-align: center;
-  }
+  #estadoPlantilla th:nth-child(4) { text-align: center; }
   #estadoPlantilla td:nth-child(2),
   #estadoPlantilla td:nth-child(3),
-  #estadoPlantilla td:nth-child(4) {
-    text-align: center;
-    vertical-align: middle;
-  }
+  #estadoPlantilla td:nth-child(4) { text-align: center; vertical-align: middle; }
   
   .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; margin-bottom: 15px; }
   .stat { background: linear-gradient(135deg, #1a4d7a, #2c6fa8); color: white; padding: 15px; border-radius: 8px; text-align: center; }
@@ -282,39 +211,16 @@
   .resumen-card-row:last-child { border-bottom: none; }
   .resumen-card-row span:first-child { color: #555; }
   .resumen-card-row span:last-child { font-weight: 600; }
-  @media (max-width: 768px) {
-    .resumen-table-wrapper { display: none; }
-    .resumen-cards { display: block; }
-  }
-  @media (min-width: 769px) {
-    .resumen-table-wrapper { display: block; }
-    .resumen-cards { display: none; }
-  }
+  @media (max-width: 768px) { .resumen-table-wrapper { display: none; } .resumen-cards { display: block; } }
+  @media (min-width: 769px) { .resumen-table-wrapper { display: block; } .resumen-cards { display: none; } }
   
-  .detalle-overlay {
-    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.6); display: flex; align-items: flex-start; justify-content: center;
-    z-index: 9999; opacity: 0; pointer-events: none; transition: opacity 0.25s;
-    backdrop-filter: blur(3px); padding: 20px; overflow-y: auto;
-  }
+  .detalle-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); display: flex; align-items: flex-start; justify-content: center; z-index: 9999; opacity: 0; pointer-events: none; transition: opacity 0.25s; backdrop-filter: blur(3px); padding: 20px; overflow-y: auto; }
   .detalle-overlay.visible { opacity: 1; pointer-events: auto; }
-  .detalle-box {
-    background: white; border-radius: 12px; width: 100%; max-width: 900px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.3); transform: scale(0.95);
-    transition: transform 0.25s; margin: 20px auto; max-height: 90vh; overflow-y: auto;
-  }
+  .detalle-box { background: white; border-radius: 12px; width: 100%; max-width: 900px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); transform: scale(0.95); transition: transform 0.25s; margin: 20px auto; max-height: 90vh; overflow-y: auto; }
   .detalle-overlay.visible .detalle-box { transform: scale(1); }
-  .detalle-header {
-    padding: 20px 25px; background: linear-gradient(135deg, #1a4d7a, #2c6fa8);
-    color: white; display: flex; justify-content: space-between; align-items: center;
-    border-radius: 12px 12px 0 0;
-  }
+  .detalle-header { padding: 20px 25px; background: linear-gradient(135deg, #1a4d7a, #2c6fa8); color: white; display: flex; justify-content: space-between; align-items: center; border-radius: 12px 12px 0 0; }
   .detalle-header h3 { color: white; margin: 0; font-size: 20px; border: none; }
-  .detalle-cerrar {
-    background: rgba(255,255,255,0.2); border: none; color: white;
-    width: 36px; height: 36px; border-radius: 50%; font-size: 20px;
-    cursor: pointer; display: flex; align-items: center; justify-content: center;
-  }
+  .detalle-cerrar { background: rgba(255,255,255,0.2); border: none; color: white; width: 36px; height: 36px; border-radius: 50%; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
   .detalle-cerrar:hover { background: rgba(255,255,255,0.3); }
   .detalle-body { padding: 20px 25px; }
   .detalle-info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
@@ -322,10 +228,7 @@
   .detalle-info-item .label { font-size: 11px; color: #666; text-transform: uppercase; font-weight: 600; }
   .detalle-info-item .value { font-size: 16px; font-weight: 600; color: #1a4d7a; margin-top: 4px; }
   .detalle-seccion { margin-bottom: 20px; }
-  .detalle-seccion-titulo {
-    font-size: 14px; font-weight: 600; color: white; padding: 8px 12px;
-    border-radius: 6px; margin-bottom: 10px; display: flex; justify-content: space-between;
-  }
+  .detalle-seccion-titulo { font-size: 14px; font-weight: 600; color: white; padding: 8px 12px; border-radius: 6px; margin-bottom: 10px; display: flex; justify-content: space-between; }
   .detalle-seccion-titulo.vac { background: #27ae60; }
   .detalle-seccion-titulo.comp { background: #16a085; }
   .detalle-seccion-titulo.ap { background: #f39c12; }
@@ -338,23 +241,69 @@
   .detalle-stat { background: #f8f9fa; padding: 8px; border-radius: 6px; text-align: center; }
   .detalle-stat .lbl { font-size: 10px; color: #666; text-transform: uppercase; }
   .detalle-stat .val { font-size: 18px; font-weight: bold; color: #1a4d7a; }
-  .detalle-permiso-item {
-    background: #f8f9fa; border: 1px solid #e1e4e8; border-radius: 6px;
-    padding: 10px 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;
-  }
+  .detalle-permiso-item { background: #f8f9fa; border: 1px solid #e1e4e8; border-radius: 6px; padding: 10px 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
   .detalle-permiso-info { flex: 1; }
   .detalle-permiso-info strong { color: #1a4d7a; }
-  @media (max-width: 768px) {
-    .detalle-stats { grid-template-columns: repeat(2, 1fr); }
-    .detalle-box { margin: 10px; }
-    .detalle-header { padding: 15px; }
-    .detalle-body { padding: 15px; }
-  }
+  @media (max-width: 768px) { .detalle-stats { grid-template-columns: repeat(2, 1fr); } .detalle-box { margin: 10px; } .detalle-header { padding: 15px; } .detalle-body { padding: 15px; } }
+  
+  /* LOGIN */
+  #loginOverlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 99999; backdrop-filter: blur(5px); }
+  #loginOverlay.hidden { display: none; }
+  .login-box { background: white; border-radius: 12px; width: 100%; max-width: 420px; box-shadow: 0 20px 60px rgba(0,0,0,0.4); overflow: hidden; }
+  .login-header { padding: 25px; background: linear-gradient(135deg, #1a4d7a, #2c6fa8); color: white; text-align: center; }
+  .login-header h2 { color: white; margin: 10px 0 5px; font-size: 22px; border: none; }
+  .login-header p { color: rgba(255,255,255,0.9); font-size: 13px; margin: 0; }
+  .login-body { padding: 25px; }
+  .login-body .form-group { margin-bottom: 15px; }
+  .login-body label { font-size: 13px; font-weight: 600; color: #555; margin-bottom: 6px; display: block; }
+  .login-body input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; box-sizing: border-box; }
+  .login-body input:focus { outline: none; border-color: #1a4d7a; }
+  .login-error { background: #fdecea; border-left: 4px solid #c0392b; padding: 10px; border-radius: 4px; margin-bottom: 15px; color: #c0392b; font-size: 13px; display: none; }
+  .login-error.visible { display: block; }
+  .login-btn { width: 100%; padding: 12px; background: #1a4d7a; color: white; border: none; border-radius: 6px; font-size: 15px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+  .login-btn:hover { background: #143a5c; }
+  .login-footer { padding: 15px 25px; background: #f8f9fa; text-align: center; font-size: 12px; color: #888; border-top: 1px solid #e1e4e8; }
+  
+  .user-info { position: fixed; top: 10px; right: 10px; background: white; padding: 6px 12px; border-radius: 20px; font-size: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 8px; z-index: 100; }
+  .user-info button { padding: 4px 10px; font-size: 11px; background: #c0392b; margin: 0; border-radius: 12px; }
 </style>
 </head>
 <body>
-<div class="container">
-  <h1>🏢 Control de Personal - Pabellón Niño Jesús</h1>
+
+<!-- LOGIN -->
+<div id="loginOverlay">
+  <div class="login-box">
+    <div class="login-header">
+      <div style="font-size: 48px;">🏢</div>
+      <h2>Control de Personal</h2>
+      <p>Introduce tus credenciales para acceder</p>
+    </div>
+    <div class="login-body">
+      <div class="form-group">
+        <label for="loginEmail">Correo electrónico</label>
+        <input type="email" id="loginEmail" placeholder="tu@email.com" autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label for="loginPassword">Contraseña</label>
+        <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password">
+      </div>
+      <div class="login-error" id="loginError">
+        <strong>⚠️ Error:</strong> <span id="loginErrorText"></span>
+      </div>
+      <button class="login-btn" onclick="handleLogin()">🔐 Iniciar Sesión</button>
+    </div>
+    <div class="login-footer">Sistema de gestión de trabajadores · v1.0</div>
+  </div>
+</div>
+
+<!-- USER INFO -->
+<div class="user-info" id="userInfo" style="display: none;">
+  <span>👤 <span id="userEmail"></span></span>
+  <button onclick="handleLogout()">Cerrar sesión</button>
+</div>
+
+<div class="container" id="mainContainer" style="display: none;">
+  <h1>🏢 Control de Personal - Edificio</h1>
   <p style="color:#666;margin-bottom:15px;">Gestión de trabajadores, permisos, festivos y calendario mensual</p>
 
   <div class="tabs">
@@ -362,8 +311,8 @@
     <button class="tab" onclick="showTab('permisos', this)">📝 Permisos</button>
     <button class="tab" onclick="showTab('resumen', this)">📈 Resumen</button>
     <button class="tab" onclick="showTab('calendario', this)">📅 Calendario</button>
-    <button class="tab" onclick="showTab('trabajadores', this)"> Trabajadores</button>
-    <button class="tab" onclick="showTab('config', this)">️ Configuración</button>
+    <button class="tab" onclick="showTab('trabajadores', this)">👥 Trabajadores</button>
+    <button class="tab" onclick="showTab('config', this)">⚙️ Configuración</button>
   </div>
 
   <div id="inicio" class="panel active">
@@ -404,9 +353,7 @@
 
   <div id="resumen" class="panel">
     <h2>Resumen de Permisos por Trabajador</h2>
-    <div class="info" style="margin-top:0;">
-      💡 <strong>Haz clic en el nombre de un trabajador</strong> para ver todos sus datos detallados.
-    </div>
+    <div class="info" style="margin-top:0;">💡 <strong>Haz clic en el nombre de un trabajador</strong> para ver todos sus datos detallados.</div>
     <div class="card">
       <div class="grid-2">
         <div><label>Año</label><select id="resumenAnio" onchange="renderResumen()"></select></div>
@@ -424,9 +371,7 @@
     <h2>Registro de Permisos y Ausencias</h2>
     <div class="card">
       <h3>Nuevo permiso</h3>
-      <div class="info" style="margin-top:0;">
-        ℹ️ <strong>Vacaciones y asuntos propios</strong> del año seleccionado se pueden disfrutar hasta el <strong>31 de enero del año siguiente</strong>.
-      </div>
+      <div class="info" style="margin-top:0;">ℹ️ <strong>Vacaciones y asuntos propios</strong> del año seleccionado se pueden disfrutar hasta el <strong>31 de enero del año siguiente</strong>.</div>
       <div class="grid-2">
         <div><label>Trabajador</label><select id="aTrabajador" onchange="mostrarDisponibles(); renderPermisosTrabajador();"></select></div>
         <div><label>Año</label><select id="aAnio" onchange="mostrarDisponibles()"></select></div>
@@ -436,12 +381,12 @@
         <div><label>Tipo de permiso</label>
           <select id="aTipo" onchange="actualizarInfoTipo()">
             <option value="vacaciones">🏖️ Vacaciones</option>
-            <option value="asuntos_propios">📝 Asuntos propios</option>
+            <option value="asuntos_propios"> Asuntos propios</option>
             <option value="compensacion">🔄 Compensación sábados festivos</option>
             <option value="familiar_primer">👨‍👩‍👧 Familiar 1er grado (máx. 5 días por solicitud)</option>
-            <option value="familiar_segundo">👥 Familiar 2º grado (máx. 4 días por solicitud)</option>
+            <option value="familiar_segundo"> Familiar 2º grado (máx. 4 días por solicitud)</option>
             <option value="reposo">🛏️ Reposo domiciliario (máx. 5 días al año)</option>
-            <option value="licencia">📄 Licencia sin sueldo</option>
+            <option value="licencia"> Licencia sin sueldo</option>
             <option value="baja">🏥 Baja médica</option>
           </select>
         </div>
@@ -470,7 +415,7 @@
   </div>
 
   <div id="calendario" class="panel">
-    <h2>Calendario Mensual de la plantilla</h2>
+    <h2>Calendario Mensual del Equipo</h2>
     <div class="cal-controls">
       <div class="cal-nav">
         <button onclick="cambiarMes(-1)">◀ Anterior</button>
@@ -542,10 +487,10 @@
     <div class="card">
       <h3>💾 Backup y gestión de datos del año</h3>
       <div class="info">
-        <strong>Backup:</strong> Descarga un archivo JSON con todos los datos del año seleccionado (configuración, festivos y permisos). Los trabajadores NO se incluyen (se conservan siempre).<br>
+        <strong>Backup:</strong> Descarga un archivo JSON con todos los datos del año seleccionado.<br>
         <strong>Restaurar:</strong> Carga un archivo JSON de backup previamente descargado.<br>
-        <strong>Borrar año:</strong> Elimina configuración, festivos y permisos del año seleccionado. <strong>Los trabajadores se conservan.</strong><br>
-        <strong>Recalcular días:</strong> Corrige los días consumidos de permisos existentes (útil si se guardaron días naturales en lugar de laborables).
+        <strong>Borrar año:</strong> Elimina configuración, festivos y permisos del año seleccionado.<br>
+        <strong>Recalcular días:</strong> Corrige los días consumidos de permisos existentes.
       </div>
       <div class="grid-3">
         <div><label>Año para backup/borrado</label><select id="backupAnio"></select></div>
@@ -562,8 +507,8 @@
     <div class="card">
       <h3>📊 Tablas de antigüedad</h3>
       <div class="info" style="margin-top:0;">
-        <strong>Vacaciones:</strong> se calculan con la antigüedad al 31/12 del <em>año anterior</em> (los días adicionales se hacen efectivos a partir del año natural siguiente al cumplimiento).<br>
-        <strong>Asuntos propios:</strong> se calculan con la antigüedad al 31/12 del <em>año en curso</em> (el derecho se hace efectivo en el propio año natural en que se cumple la antigüedad).
+        <strong>Vacaciones:</strong> se calculan con la antigüedad al 31/12 del <em>año anterior</em>.<br>
+        <strong>Asuntos propios:</strong> se calculan con la antigüedad al 31/12 del <em>año en curso</em>.
       </div>
       <div class="grid-2">
         <div><strong>🏖️ Vacaciones (días laborables)</strong>
@@ -608,11 +553,82 @@
 <script>
 let trabajadores = [], ausencias = [], configs = {}, festivos = {};
 let db = null, unsubscribes = [];
+let currentUser = null;
+
+// ✅ AUTENTICACIÓN
+async function handleLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  const errorDiv = document.getElementById('loginError');
+  const errorText = document.getElementById('loginErrorText');
+  
+  if (!email || !password) {
+    errorText.textContent = 'Introduce correo y contraseña';
+    errorDiv.classList.add('visible');
+    return;
+  }
+  
+  try {
+    const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
+    currentUser = userCredential.user;
+    errorDiv.classList.remove('visible');
+    
+    document.getElementById('loginOverlay').classList.add('hidden');
+    document.getElementById('mainContainer').style.display = 'block';
+    document.getElementById('userInfo').style.display = 'flex';
+    document.getElementById('userEmail').textContent = currentUser.email;
+    
+    await initFirebase();
+  } catch (error) {
+    console.error('Error de login:', error);
+    let mensaje = error.message;
+    if (error.code === 'auth/user-not-found') mensaje = '❌ Usuario no encontrado en Firebase';
+    else if (error.code === 'auth/wrong-password') mensaje = '❌ Contraseña incorrecta';
+    else if (error.code === 'auth/invalid-email') mensaje = '❌ Email no válido';
+    else if (error.code === 'auth/too-many-requests') mensaje = ' Demasiados intentos. Espera unos minutos';
+    else if (error.code === 'auth/invalid-credential') mensaje = '❌ Credenciales inválidas (usuario o contraseña incorrectos)';
+    else if (error.code === 'auth/network-request-failed') mensaje = '🌐 Error de red. Comprueba tu conexión';
+    else mensaje = `❌ Error: ${error.code} - ${error.message}`;
+    
+    errorText.textContent = mensaje;
+    errorDiv.classList.add('visible');
+  }
+}
+
+async function handleLogout() {
+  try {
+    await firebase.auth().signOut();
+    currentUser = null;
+    unsubscribes.forEach(unsub => unsub());
+    unsubscribes = [];
+    
+    document.getElementById('mainContainer').style.display = 'none';
+    document.getElementById('userInfo').style.display = 'none';
+    document.getElementById('loginOverlay').classList.remove('hidden');
+    document.getElementById('loginEmail').value = '';
+    document.getElementById('loginPassword').value = '';
+    document.getElementById('loginError').classList.remove('visible');
+  } catch (error) {
+    console.error('Error al cerrar sesión:', error);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const loginInputs = [document.getElementById('loginEmail'), document.getElementById('loginPassword')];
+  loginInputs.forEach(input => {
+    if (input) {
+      input.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') handleLogin();
+      });
+    }
+  });
+  setTimeout(() => {
+    document.getElementById('loginEmail').focus();
+  }, 100);
+});
 
 function obtenerFechaLimite(anio, tipo) {
-  if (tipo === 'vacaciones' || tipo === 'asuntos_propios') {
-    return `${parseInt(anio) + 1}-01-31`;
-  }
+  if (tipo === 'vacaciones' || tipo === 'asuntos_propios') return `${parseInt(anio) + 1}-01-31`;
   return `${anio}-12-31`;
 }
 
@@ -626,17 +642,13 @@ function fechaLocalStr(date) {
 async function initFirebase() {
   const bar = document.getElementById('statusBar'), dot = document.getElementById('statusDot'), txt = document.getElementById('statusText');
   bar.style.display = 'flex';
+  
   if (typeof USE_FIREBASE === 'undefined' || !USE_FIREBASE) {
     dot.className = 'status-dot local'; txt.textContent = 'Modo local';
     cargarDatosLocales(); renderInicio(); return;
   }
+  
   try {
-    if (typeof FIREBASE_CONFIG === 'undefined' || FIREBASE_CONFIG.apiKey === 'PEGA_AQUI_TU_API_KEY') {
-      dot.className = 'status-dot offline'; txt.textContent = 'Configura config.js';
-      showAlert('Configuración pendiente', 'Edita config.js con tus credenciales de Firebase.', 'warning');
-      cargarDatosLocales(); renderInicio(); return;
-    }
-    firebase.initializeApp(FIREBASE_CONFIG);
     db = firebase.firestore();
     dot.className = 'status-dot online'; txt.textContent = 'Sincronizado en la nube';
     await cargarDesdeFirestore();
@@ -714,7 +726,7 @@ async function fsDelete(col, id) { if (!db) return; try { await db.collection(co
 
 function showAlert(titulo, mensaje, tipo = 'info') {
   return new Promise(resolve => {
-    const iconos = { info: 'ℹ️', success: '✅', warning: '⚠️', error: '❌', confirm: '❓' };
+    const iconos = { info: 'ℹ️', success: '✅', warning: '️', error: '❌', confirm: '❓' };
     const overlay = document.getElementById('modalOverlay');
     overlay.innerHTML = `<div class="modal-box"><div class="modal-header ${tipo}"><span class="modal-icon">${iconos[tipo]||'ℹ️'}</span><span>${titulo}</span></div><div class="modal-body">${mensaje}</div><div class="modal-footer"><button class="success" id="modalOk">Entendido</button></div></div>`;
     requestAnimationFrame(() => overlay.classList.add('visible'));
@@ -728,7 +740,7 @@ function showConfirm(titulo, mensaje, tipo = 'confirm') {
   return new Promise(resolve => {
     const iconos = { info: 'ℹ️', success: '✅', warning: '⚠️', error: '❌', confirm: '❓' };
     const overlay = document.getElementById('modalOverlay');
-    overlay.innerHTML = `<div class="modal-box"><div class="modal-header ${tipo}"><span class="modal-icon">${iconos[tipo]||'❓'}</span><span>${titulo}</span></div><div class="modal-body">${mensaje}</div><div class="modal-footer"><button id="modalNo">Cancelar</button><button class="${tipo==='error'?'danger':'success'}" id="modalSi">Confirmar</button></div></div>`;
+    overlay.innerHTML = `<div class="modal-box"><div class="modal-header ${tipo}"><span class="modal-icon">${iconos[tipo]||''}</span><span>${titulo}</span></div><div class="modal-body">${mensaje}</div><div class="modal-footer"><button id="modalNo">Cancelar</button><button class="${tipo==='error'?'danger':'success'}" id="modalSi">Confirmar</button></div></div>`;
     requestAnimationFrame(() => overlay.classList.add('visible'));
     const cerrar = v => { overlay.classList.remove('visible'); setTimeout(() => { overlay.innerHTML = ''; resolve(v); }, 250); };
     document.getElementById('modalSi').onclick = () => cerrar(true);
@@ -751,7 +763,7 @@ function showPrompt(titulo, mensaje, valorInicial = '') {
 }
 
 function toast(titulo, mensaje, tipo = 'info', duracion = 3500) {
-  const iconos = { info: 'ℹ️', success: '✅', warning: '️', error: '❌' };
+  const iconos = { info: 'ℹ️', success: '✅', warning: '⚠️', error: '' };
   const cont = document.getElementById('toastContainer');
   const el = document.createElement('div');
   el.className = `toast ${tipo}`;
@@ -944,8 +956,8 @@ function renderInicio() {
       <div class="detalle">
         <div class="detalle-item"><span>✓ Trabajando:</span><strong>${datos.trabajando}</strong></div>
         <div class="detalle-item"><span>🏖️ Vacaciones:</span><strong>${datos.vacaciones}</strong></div>
-        <div class="detalle-item"><span>📝 Asuntos propios:</span><strong>${datos.asuntosPropios}</strong></div>
-        <div class="detalle-item"><span> Baja:</span><strong>${datos.baja}</strong></div>
+        <div class="detalle-item"><span> Asuntos propios:</span><strong>${datos.asuntosPropios}</strong></div>
+        <div class="detalle-item"><span>🏥 Baja:</span><strong>${datos.baja}</strong></div>
       </div>
     </div>`;
   }
@@ -957,24 +969,14 @@ function renderInicio() {
     let estado;
     if (ausHoy) {
       const tipos = {
-        vacaciones: '🏖️ Vacaciones',
-        asuntos_propios: '📝 Asuntos propios',
-        compensacion: '🔄 Compensación',
-        familiar_primer: '👨‍👩‍ Familiar 1º',
-        familiar_segundo: '👥 Familiar 2º',
-        reposo: '🛏️ Reposo dom.',
-        licencia: '📄 Licencia s/s',
-        baja: '🏥 Baja'
+        vacaciones: '🏖️ Vacaciones', asuntos_propios: '📝 Asuntos propios', compensacion: ' Compensación',
+        familiar_primer: '👨‍👩‍ Familiar 1º', familiar_segundo: ' Familiar 2º', reposo: '️ Reposo dom.',
+        licencia: '📄 Licencia s/s', baja: ' Baja'
       };
       const clases = {
-        vacaciones: 'estado-vacaciones',
-        asuntos_propios: 'estado-asuntos-propios',
-        compensacion: 'estado-compensacion',
-        familiar_primer: 'estado-familiar',
-        familiar_segundo: 'estado-familiar',
-        reposo: 'estado-reposo',
-        licencia: 'estado-licencia',
-        baja: 'estado-baja'
+        vacaciones: 'estado-vacaciones', asuntos_propios: 'estado-asuntos-propios', compensacion: 'estado-compensacion',
+        familiar_primer: 'estado-familiar', familiar_segundo: 'estado-familiar', reposo: 'estado-reposo',
+        licencia: 'estado-licencia', baja: 'estado-baja'
       };
       estado = `<span class="${clases[ausHoy.tipo]}">${tipos[ausHoy.tipo]}</span>`;
     } else {
@@ -1211,7 +1213,7 @@ function renderCalendario() {
     if (esFest) clase = 'festivo-col'; else if (dow === 0 || dow === 6) clase = 'finsemana-col';
     html += `<th class="${clase}" title="${fmtDateLong(fechaStr)}">${d}</th>`;
   }
-  html += '<th>✓</th><th></th></tr><tr class="dias"><th class="nombre"></th>';
+  html += '<th>✓</th><th>✗</th></tr><tr class="dias"><th class="nombre"></th>';
   for (let d = 1; d <= diasMes; d++) {
     const fecha = new Date(anio, mes, d);
     const dow = fecha.getDay();
@@ -1356,11 +1358,11 @@ function actualizarInfoTipo() {
     vacaciones: `🏖️ <strong>Vacaciones:</strong> días laborables según antigüedad al 31/12/${parseInt(anio)-1} (22-26). Solo se consumen días de lunes a viernes no festivos. Si el periodo empieza en lunes se incluye el fin de semana anterior; si termina en viernes se incluye el siguiente. El periodo total (extendido) debe tener mínimo 7 días naturales. Máximo 4 periodos al año. <strong>Se pueden disfrutar hasta el 31/01/${anioSiguiente}.</strong>`,
     asuntos_propios: `📝 <strong>Asuntos propios:</strong> días laborables según antigüedad al 31/12/${anio}. No cuentan sábados, domingos ni festivos. <strong>Se pueden disfrutar hasta el 31/01/${anioSiguiente}.</strong>`,
     compensacion: '🔄 <strong>Compensación sábados festivos:</strong> días laborables según configuración anual. No cuentan sábados, domingos ni festivos.',
-    familiar_primer: '👨‍‍👧 <strong>Familiar 1er grado:</strong> máximo 5 días laborables por solicitud. Sin límite anual: puede solicitarse cuantas veces sea necesario.',
-    familiar_segundo: ' <strong>Familiar 2º grado:</strong> máximo 4 días laborables por solicitud. Sin límite anual: puede solicitarse cuantas veces sea necesario.',
-    reposo: '🛏️ <strong>Reposo domiciliario:</strong> máximo 5 días laborables al año (suma de todas las solicitudes). Se cuentan días laborables (lunes a viernes, no festivos). Requiere parte médico.',
-    licencia: ' <strong>Licencia sin sueldo:</strong> sin límite de días. Periodo de excedencia voluntaria sin remuneración.',
-    baja: ' <strong>Baja médica:</strong> sin límite. Se cuentan días naturales (incluye fines de semana y festivos).'
+    familiar_primer: '👨‍👩‍👧 <strong>Familiar 1er grado:</strong> máximo 5 días laborables por solicitud. Sin límite anual.',
+    familiar_segundo: '👥 <strong>Familiar 2º grado:</strong> máximo 4 días laborables por solicitud. Sin límite anual.',
+    reposo: '🛏️ <strong>Reposo domiciliario:</strong> máximo 5 días laborables al año. Requiere parte médico.',
+    licencia: ' <strong>Licencia sin sueldo:</strong> sin límite de días.',
+    baja: ' <strong>Baja médica:</strong> sin límite. Se cuentan días naturales.'
   };
   document.getElementById('infoTipo').innerHTML = info[tipo];
   calcularDias();
@@ -1372,7 +1374,7 @@ function calcularDias() {
   const tipo = document.getElementById('aTipo').value;
   const div = document.getElementById('diasCalculo');
   if (!inicio || !fin) { div.innerHTML = ''; return null; }
-  if (inicio > fin) { div.innerHTML = '<span style="color:#c0392b">⚠️ La fecha de inicio es posterior al fin.</span>'; return null; }
+  if (inicio > fin) { div.innerHTML = '<span style="color:#c0392b">️ La fecha de inicio es posterior al fin.</span>'; return null; }
   const naturales = contarNaturales(inicio, fin);
   const laborales = contarLaborales(inicio, fin);
   let dias, tipoDias, detalle = '';
@@ -1404,41 +1406,27 @@ async function guardarAusencia() {
   if (!trabajadorId || !inicio || !fin) { await showAlert('Datos incompletos', 'Complete trabajador, fecha inicio y fin.', 'warning'); return; }
   if (inicio > fin) { await showAlert('Fechas incorrectas', 'La fecha de inicio no puede ser posterior al fin.', 'warning'); return; }
   
-  const permisosExistentes = ausencias.filter(a => 
-    a.trabajadorId === trabajadorId && 
-    a.inicio <= fin && 
-    a.fin >= inicio
-  );
-  
+  const permisosExistentes = ausencias.filter(a => a.trabajadorId === trabajadorId && a.inicio <= fin && a.fin >= inicio);
   if (permisosExistentes.length > 0) {
-    let mensaje = `⚠️ Ya existen permisos registrados que se solapan con estas fechas:\n\n`;
+    let mensaje = `⚠️ Ya existen permisos que se solapan:\n\n`;
     permisosExistentes.forEach((p, idx) => {
-      const tipoNombre = {
-        vacaciones: '🏖️ Vacaciones',
-        asuntos_propios: '📝 Asuntos propios',
-        compensacion: '🔄 Compensación',
-        familiar_primer: '👨‍‍👧 Familiar 1º',
-        familiar_segundo: '👥 Familiar 2º',
-        reposo: '🛏️ Reposo dom.',
-        licencia: ' Licencia s/s',
-        baja: '🏥 Baja'
-      }[p.tipo] || p.tipo;
+      const tipoNombre = {vacaciones:'🏖️ Vacaciones', asuntos_propios:' Asuntos propios', compensacion:'🔄 Compensación', familiar_primer:'👨👩‍👧 Familiar 1º', familiar_segundo:'👥 Familiar 2º', reposo:'🛏️ Reposo dom.', licencia:'📄 Licencia s/s', baja:'🏥 Baja'}[p.tipo] || p.tipo;
       mensaje += `${idx + 1}. ${tipoNombre}: ${fmtDate(p.inicio)} - ${fmtDate(p.fin)} (${p.diasConsumidos} días)\n`;
     });
-    mensaje += `\n❌ No se puede registrar este permiso. Elimine o modifique los permisos existentes primero.`;
+    mensaje += `\n❌ Elimine o modifique los permisos existentes primero.`;
     await showAlert('Fechas solapadas', mensaje, 'error');
     return;
   }
   
   const fechaLimite = obtenerFechaLimite(anioSel, tipo);
   if ((tipo === 'vacaciones' || tipo === 'asuntos_propios') && fin > fechaLimite) {
-    await showAlert('Fecha fuera de plazo', `Los permisos de ${tipo === 'vacaciones' ? 'vacaciones' : 'asuntos propios'} del año ${anioSel} se pueden disfrutar hasta el 31/01/${parseInt(anioSel)+1}.\n\nLa fecha fin (${fmtDate(fin)}) supera ese límite.`, 'warning');
+    await showAlert('Fecha fuera de plazo', `Los permisos del año ${anioSel} se pueden disfrutar hasta el 31/01/${parseInt(anioSel)+1}.`, 'warning');
     return;
   }
   
   const anio = inicio.split('-')[0];
   if (anio !== anioSel) {
-    const ok = await showConfirm('Año diferente', `La fecha de inicio es del año ${anio} pero seleccionó el año ${anioSel}. ¿Continuar?`, 'warning');
+    const ok = await showConfirm('Año diferente', `La fecha es del año ${anio} pero seleccionó ${anioSel}. ¿Continuar?`, 'warning');
     if (!ok) return;
   }
   const cfg = configs[anio];
@@ -1453,7 +1441,7 @@ async function guardarAusencia() {
   
   if (tipo === 'vacaciones') {
     if (calc.vacaciones.diasNaturalesPeriodo < 7) {
-      await showAlert('Periodo insuficiente', `El periodo total tiene ${calc.vacaciones.diasNaturalesPeriodo} días naturales. El mínimo es 7 días naturales (contando fines de semana y festivos adyacentes).`, 'warning');
+      await showAlert('Periodo insuficiente', `El periodo tiene ${calc.vacaciones.diasNaturalesPeriodo} días naturales. El mínimo es 7.`, 'warning');
       return;
     }
     const periodosActuales = ausencias.filter(a => a.trabajadorId === trabajadorId && a.tipo === 'vacaciones' && a.inicio.startsWith(anio));
@@ -1482,22 +1470,18 @@ async function guardarAusencia() {
       if (!ok) return;
     }
   }
-  if (tipo === 'familiar_primer') {
-    if (calc.dias > 5) {
-      await showAlert('Supera máximo por solicitud', `Los permisos de familiar de 1er grado tienen un máximo de 5 días laborables por solicitud. Esta solicitud tiene ${calc.dias} días.`, 'warning');
-      return;
-    }
+  if (tipo === 'familiar_primer' && calc.dias > 5) {
+    await showAlert('Supera máximo', `Máximo 5 días por solicitud. Esta tiene ${calc.dias}.`, 'warning');
+    return;
   }
-  if (tipo === 'familiar_segundo') {
-    if (calc.dias > 4) {
-      await showAlert('Supera máximo por solicitud', `Los permisos de familiar de 2º grado tienen un máximo de 4 días laborables por solicitud. Esta solicitud tiene ${calc.dias} días.`, 'warning');
-      return;
-    }
+  if (tipo === 'familiar_segundo' && calc.dias > 4) {
+    await showAlert('Supera máximo', `Máximo 4 días por solicitud. Esta tiene ${calc.dias}.`, 'warning');
+    return;
   }
   if (tipo === 'reposo') {
     const rC = ausencias.filter(a => a.trabajadorId === trabajadorId && a.tipo === 'reposo' && a.inicio.startsWith(anio)).reduce((s,a) => s + a.diasConsumidos, 0);
     if (rC + calc.dias > 5) {
-      await showAlert('Supera reposo domiciliario anual', `El reposo domiciliario tiene un máximo de 5 días laborables al año.\n\nYa tiene ${rC} días consumidos y esta solicitud son ${calc.dias} días (total: ${rC + calc.dias}).`, 'warning');
+      await showAlert('Supera reposo', `Máximo 5 días al año. Ya tiene ${rC} + ${calc.dias} = ${rC + calc.dias}.`, 'warning');
       return;
     }
   }
@@ -1571,99 +1555,55 @@ function renderResumen() {
   const anio = document.getElementById('resumenAnio').value;
   const contTabla = document.getElementById('tablaResumen');
   const contCards = document.getElementById('resumenCards');
-  
-  if (!anio) {
-    contTabla.innerHTML = '<p style="color:#888;">Seleccione un año.</p>';
-    contCards.innerHTML = '';
-    return;
-  }
-  
-  if (trabajadores.length === 0) {
-    contTabla.innerHTML = '<p style="color:#888;">No hay trabajadores registrados.</p>';
-    contCards.innerHTML = '';
-    return;
-  }
-  
+  if (!anio) { contTabla.innerHTML = '<p style="color:#888;">Seleccione un año.</p>'; contCards.innerHTML = ''; return; }
+  if (trabajadores.length === 0) { contTabla.innerHTML = '<p style="color:#888;">No hay trabajadores registrados.</p>'; contCards.innerHTML = ''; return; }
   const cfg = configs[anio];
   const cTotal = cfg ? cfg.compensacion : 0;
   const hoy = fechaLocalStr(new Date());
   
-  let html = '<table class="resumen-table">';
-  html += '<thead><tr>';
-  html += '<th>Trabajador</th>';
-  html += '<th>Categoría</th>';
-  html += '<th colspan="4" style="background:#27ae60;">🏖️ Vacaciones</th>';
-  html += '<th colspan="4" style="background:#16a085;">🔄 Compensación</th>';
-  html += '<th colspan="4" style="background:#f39c12;">📝 Asuntos propios</th>';
-  html += '</tr><tr>';
-  html += '<th></th><th></th>';
-  html += '<th>Total</th><th>Consumidos</th><th>Pendientes</th><th>Disponibles</th>';
-  html += '<th>Total</th><th>Consumidos</th><th>Pendientes</th><th>Disponibles</th>';
-  html += '<th>Total</th><th>Consumidos</th><th>Pendientes</th><th>Disponibles</th>';
-  html += '</tr></thead><tbody>';
-  
+  let html = '<table class="resumen-table"><thead><tr><th>Trabajador</th><th>Categoría</th><th colspan="4" style="background:#27ae60;">️ Vacaciones</th><th colspan="4" style="background:#16a085;">🔄 Compensación</th><th colspan="4" style="background:#f39c12;">📝 Asuntos propios</th></tr><tr><th></th><th></th><th>Total</th><th>Consumidos</th><th>Pendientes</th><th>Disponibles</th><th>Total</th><th>Consumidos</th><th>Pendientes</th><th>Disponibles</th><th>Total</th><th>Consumidos</th><th>Pendientes</th><th>Disponibles</th></tr></thead><tbody>';
   let htmlCards = '';
   
   trabajadores.forEach(t => {
     const d = getDiasTrabajador(t, anio);
     const catNombre = {encargado:'Encargado', ordenanza:'Ordenanza', limpiador:'Limpiador/a'}[t.categoria];
-    
     const permisosAnio = ausencias.filter(a => a.trabajadorId === t.id && a.inicio.startsWith(anio));
-    
     const vacTotal = d.vacaciones;
-    const vacPermisos = permisosAnio.filter(a => a.tipo === 'vacaciones');
-    const vacConsumidos = vacPermisos.reduce((sum, a) => sum + a.diasConsumidos, 0);
-    const vacPendientes = vacPermisos.filter(a => a.inicio > hoy).reduce((sum, a) => sum + a.diasConsumidos, 0);
+    const vacConsumidos = permisosAnio.filter(a => a.tipo === 'vacaciones').reduce((s,a) => s + a.diasConsumidos, 0);
+    const vacPendientes = permisosAnio.filter(a => a.tipo === 'vacaciones' && a.inicio > hoy).reduce((s,a) => s + a.diasConsumidos, 0);
     const vacDisponibles = vacTotal - vacConsumidos;
-    
     const compTotal = cTotal;
-    const compPermisos = permisosAnio.filter(a => a.tipo === 'compensacion');
-    const compConsumidos = compPermisos.reduce((sum, a) => sum + a.diasConsumidos, 0);
-    const compPendientes = compPermisos.filter(a => a.inicio > hoy).reduce((sum, a) => sum + a.diasConsumidos, 0);
+    const compConsumidos = permisosAnio.filter(a => a.tipo === 'compensacion').reduce((s,a) => s + a.diasConsumidos, 0);
+    const compPendientes = permisosAnio.filter(a => a.tipo === 'compensacion' && a.inicio > hoy).reduce((s,a) => s + a.diasConsumidos, 0);
     const compDisponibles = compTotal - compConsumidos;
-    
     const apTotal = d.asuntosPropios;
-    const apPermisos = permisosAnio.filter(a => a.tipo === 'asuntos_propios');
-    const apConsumidos = apPermisos.reduce((sum, a) => sum + a.diasConsumidos, 0);
-    const apPendientes = apPermisos.filter(a => a.inicio > hoy).reduce((sum, a) => sum + a.diasConsumidos, 0);
+    const apConsumidos = permisosAnio.filter(a => a.tipo === 'asuntos_propios').reduce((s,a) => s + a.diasConsumidos, 0);
+    const apPendientes = permisosAnio.filter(a => a.tipo === 'asuntos_propios' && a.inicio > hoy).reduce((s,a) => s + a.diasConsumidos, 0);
     const apDisponibles = apTotal - apConsumidos;
     
     html += `<tr class="fila-trabajador" onclick="mostrarDetalleTrabajador('${t.id}', '${anio}')">
-      <td class="nombre-cell">👤 ${t.nombre} ${t.apellidos}</td>
-      <td>${catNombre}</td>
-      <td class="dias-total">${vacTotal}</td>
-      <td class="dias-disfrutados">${vacConsumidos}</td>
-      <td class="dias-pedidos">${vacPendientes}</td>
-      <td class="${vacDisponibles < 0 ? 'diferencia-negativa' : 'dias-por-pedir'}">${vacDisponibles}</td>
-      <td class="dias-total">${compTotal}</td>
-      <td class="dias-disfrutados">${compConsumidos}</td>
-      <td class="dias-pedidos">${compPendientes}</td>
-      <td class="${compDisponibles < 0 ? 'diferencia-negativa' : 'dias-por-pedir'}">${compDisponibles}</td>
-      <td class="dias-total">${apTotal}</td>
-      <td class="dias-disfrutados">${apConsumidos}</td>
-      <td class="dias-pedidos">${apPendientes}</td>
-      <td class="${apDisponibles < 0 ? 'diferencia-negativa' : 'dias-por-pedir'}">${apDisponibles}</td>
+      <td class="nombre-cell">👤 ${t.nombre} ${t.apellidos}</td><td>${catNombre}</td>
+      <td class="dias-total">${vacTotal}</td><td class="dias-disfrutados">${vacConsumidos}</td><td class="dias-pedidos">${vacPendientes}</td><td class="${vacDisponibles < 0 ? 'diferencia-negativa' : 'dias-por-pedir'}">${vacDisponibles}</td>
+      <td class="dias-total">${compTotal}</td><td class="dias-disfrutados">${compConsumidos}</td><td class="dias-pedidos">${compPendientes}</td><td class="${compDisponibles < 0 ? 'diferencia-negativa' : 'dias-por-pedir'}">${compDisponibles}</td>
+      <td class="dias-total">${apTotal}</td><td class="dias-disfrutados">${apConsumidos}</td><td class="dias-pedidos">${apPendientes}</td><td class="${apDisponibles < 0 ? 'diferencia-negativa' : 'dias-por-pedir'}">${apDisponibles}</td>
     </tr>`;
     
     htmlCards += `<div class="resumen-card" onclick="mostrarDetalleTrabajador('${t.id}', '${anio}')">
       <div class="resumen-card-header">👤 ${t.nombre} ${t.apellidos}</div>
-      <div class="resumen-card-cat">${catNombre} · AP: ${d.antiguedad} años · Vac: ${d.antiguedadVac} años (31/12) · <em style="color:#1a4d7a;">Clic para ver detalles</em></div>
-      <div class="resumen-card-section">
-        <div class="resumen-card-section-title vac">🏖️ Vacaciones</div>
+      <div class="resumen-card-cat">${catNombre} · AP: ${d.antiguedad} años · Vac: ${d.antiguedadVac} años</div>
+      <div class="resumen-card-section"><div class="resumen-card-section-title vac">🏖️ Vacaciones</div>
         <div class="resumen-card-row"><span>Total:</span><span>${vacTotal}</span></div>
         <div class="resumen-card-row"><span>Consumidos:</span><span style="color:#27ae60">${vacConsumidos}</span></div>
         <div class="resumen-card-row"><span>Pendientes:</span><span style="color:#f39c12">${vacPendientes}</span></div>
         <div class="resumen-card-row"><span>Disponibles:</span><span style="color:${vacDisponibles<0?'#c0392b':'#27ae60'}">${vacDisponibles}</span></div>
       </div>
-      <div class="resumen-card-section">
-        <div class="resumen-card-section-title comp">🔄 Compensación</div>
+      <div class="resumen-card-section"><div class="resumen-card-section-title comp">🔄 Compensación</div>
         <div class="resumen-card-row"><span>Total:</span><span>${compTotal}</span></div>
         <div class="resumen-card-row"><span>Consumidos:</span><span style="color:#27ae60">${compConsumidos}</span></div>
         <div class="resumen-card-row"><span>Pendientes:</span><span style="color:#f39c12">${compPendientes}</span></div>
         <div class="resumen-card-row"><span>Disponibles:</span><span style="color:${compDisponibles<0?'#c0392b':'#27ae60'}">${compDisponibles}</span></div>
       </div>
-      <div class="resumen-card-section">
-        <div class="resumen-card-section-title ap">📝 Asuntos propios</div>
+      <div class="resumen-card-section"><div class="resumen-card-section-title ap">📝 Asuntos propios</div>
         <div class="resumen-card-row"><span>Total:</span><span>${apTotal}</span></div>
         <div class="resumen-card-row"><span>Consumidos:</span><span style="color:#27ae60">${apConsumidos}</span></div>
         <div class="resumen-card-row"><span>Pendientes:</span><span style="color:#f39c12">${apPendientes}</span></div>
@@ -1671,7 +1611,6 @@ function renderResumen() {
       </div>
     </div>`;
   });
-  
   html += '</tbody></table>';
   contTabla.innerHTML = html;
   contCards.innerHTML = htmlCards;
@@ -1680,80 +1619,35 @@ function renderResumen() {
 function mostrarDetalleTrabajador(trabajadorId, anio) {
   const t = trabajadores.find(x => x.id === trabajadorId);
   if (!t) return;
-  
   const d = getDiasTrabajador(t, anio);
   const cfg = configs[anio];
   const cTotal = cfg ? cfg.compensacion : 0;
   const hoy = fechaLocalStr(new Date());
   const catNombre = {encargado:'Encargado', ordenanza:'Ordenanza', limpiador:'Limpiador/a'}[t.categoria];
-  
   const todosPermisos = ausencias.filter(a => a.trabajadorId === t.id).sort((a,b) => a.inicio.localeCompare(b.inicio));
   const permisosAnio = todosPermisos.filter(a => a.inicio.startsWith(anio));
-  
   const anioSiguiente = (parseInt(anio) + 1).toString();
   const permisosAnioSiguiente = todosPermisos.filter(a => a.inicio.startsWith(anioSiguiente));
-  
   const tiposPermiso = ['vacaciones', 'asuntos_propios', 'compensacion', 'familiar_primer', 'familiar_segundo', 'reposo', 'licencia', 'baja'];
-  const nombresTipo = {
-    vacaciones: '🏖️ Vacaciones',
-    asuntos_propios: ' Asuntos propios',
-    compensacion: '🔄 Compensación',
-    familiar_primer: '👨‍👩‍ Familiar 1º grado',
-    familiar_segundo: '👥 Familiar 2º grado',
-    reposo: '🛏️ Reposo domiciliario',
-    licencia: '📄 Licencia sin sueldo',
-    baja: ' Baja médica'
-  };
-  const clasesTipo = {
-    vacaciones: 'vac', asuntos_propios: 'ap', compensacion: 'comp',
-    familiar_primer: 'fam1', familiar_segundo: 'fam2', reposo: 'reposo',
-    licencia: 'licencia', baja: 'baja'
-  };
-  const maximos = {
-    vacaciones: d.vacaciones,
-    asuntos_propios: d.asuntosPropios,
-    compensacion: cTotal,
-    familiar_primer: '5 por solicitud',
-    familiar_segundo: '4 por solicitud',
-    reposo: 5,
-    licencia: '∞',
-    baja: '∞'
-  };
+  const nombresTipo = {vacaciones:'️ Vacaciones', asuntos_propios:'📝 Asuntos propios', compensacion:'🔄 Compensación', familiar_primer:'👨‍‍👧 Familiar 1º', familiar_segundo:'👥 Familiar 2º', reposo:'🛏️ Reposo domiciliario', licencia:'📄 Licencia sin sueldo', baja:'🏥 Baja médica'};
+  const clasesTipo = {vacaciones:'vac', asuntos_propios:'ap', compensacion:'comp', familiar_primer:'fam1', familiar_segundo:'fam2', reposo:'reposo', licencia:'licencia', baja:'baja'};
+  const maximos = {vacaciones:d.vacaciones, asuntos_propios:d.asuntosPropios, compensacion:cTotal, familiar_primer:'5 por solicitud', familiar_segundo:'4 por solicitud', reposo:5, licencia:'∞', baja:'∞'};
   
   function renderSeccionTipo(tipo, permisosTipo, maximo, anioLabel) {
     const totalConsumido = permisosTipo.reduce((sum, a) => sum + a.diasConsumidos, 0);
     const totalPendiente = permisosTipo.filter(a => a.inicio > hoy).reduce((sum, a) => sum + a.diasConsumidos, 0);
-    let disponible;
-    if (typeof maximo === 'number') {
-      disponible = maximo - totalConsumido;
-    } else {
-      disponible = maximo;
-    }
-    
+    let disponible = typeof maximo === 'number' ? maximo - totalConsumido : maximo;
     let s = `<div class="detalle-seccion">
       <div class="detalle-seccion-titulo ${clasesTipo[tipo]}">
         <span>${nombresTipo[tipo]} <span style="font-size:11px;opacity:0.8;">(${anioLabel})</span></span>
         <span style="font-size:11px;opacity:0.9;">Máx: ${maximo}</span>
       </div>
       <div class="detalle-stats">
-        <div class="detalle-stat">
-          <div class="lbl">Total</div>
-          <div class="val">${typeof maximo === 'number' ? maximo : '-'}</div>
-        </div>
-        <div class="detalle-stat">
-          <div class="lbl">Consumidos</div>
-          <div class="val" style="color:#27ae60">${totalConsumido}</div>
-        </div>
-        <div class="detalle-stat">
-          <div class="lbl">Pendientes</div>
-          <div class="val" style="color:#f39c12">${totalPendiente}</div>
-        </div>
-        <div class="detalle-stat">
-          <div class="lbl">Disponibles</div>
-          <div class="val" style="color:${typeof disponible === 'number' && disponible < 0 ? '#c0392b' : '#27ae60'}">${typeof disponible === 'number' ? disponible : disponible}</div>
-        </div>
+        <div class="detalle-stat"><div class="lbl">Total</div><div class="val">${typeof maximo === 'number' ? maximo : '-'}</div></div>
+        <div class="detalle-stat"><div class="lbl">Consumidos</div><div class="val" style="color:#27ae60">${totalConsumido}</div></div>
+        <div class="detalle-stat"><div class="lbl">Pendientes</div><div class="val" style="color:#f39c12">${totalPendiente}</div></div>
+        <div class="detalle-stat"><div class="lbl">Disponibles</div><div class="val" style="color:${typeof disponible === 'number' && disponible < 0 ? '#c0392b' : '#27ae60'}">${typeof disponible === 'number' ? disponible : disponible}</div></div>
       </div>`;
-    
     if (permisosTipo.length > 0) {
       s += `<div style="margin-top:8px;">`;
       permisosTipo.forEach(p => {
@@ -1762,103 +1656,55 @@ function mostrarDetalleTrabajador(trabajadorId, anio) {
           <div class="detalle-permiso-info">
             <span class="estado-permiso ${estado.clase}">${estado.texto}</span>
             <strong>📅 ${fmtDate(p.inicio)} → ${fmtDate(p.fin)}</strong>
-            <span style="margin-left:10px;color:#666;">${p.diasConsumidos} días consumidos (${p.diasNaturales} naturales)</span>
-            ${p.obs ? `<br><em style="color:#888;font-size:12px;">📝 ${p.obs}</em>` : ''}
+            <span style="margin-left:10px;color:#666;">${p.diasConsumidos} días (${p.diasNaturales} naturales)</span>
+            ${p.obs ? `<br><em style="color:#888;font-size:12px;"> ${p.obs}</em>` : ''}
           </div>
         </div>`;
       });
       s += `</div>`;
     } else {
-      s += `<div style="text-align:center;color:#888;padding:8px;font-size:12px;">Sin permisos de este tipo en ${anioLabel}</div>`;
+      s += `<div style="text-align:center;color:#888;padding:8px;font-size:12px;">Sin permisos en ${anioLabel}</div>`;
     }
-    
     s += `</div>`;
     return s;
   }
   
-  let html = '';
-  
-  html += `<div class="detalle-info-grid">
-    <div class="detalle-info-item">
-      <div class="label">Nombre completo</div>
-      <div class="value">${t.nombre} ${t.apellidos}</div>
-    </div>
-    <div class="detalle-info-item">
-      <div class="label">Categoría</div>
-      <div class="value">${catNombre}</div>
-    </div>
-    <div class="detalle-info-item">
-      <div class="label">Fecha incorporación</div>
-      <div class="value">${fmtDate(t.fecha)}</div>
-    </div>
-    <div class="detalle-info-item">
-      <div class="label">Antigüedad AP (31/12/${anio})</div>
-      <div class="value">${d.antiguedad} años</div>
-    </div>
-    <div class="detalle-info-item">
-      <div class="label">Antigüedad Vac. (31/12/${parseInt(anio)-1})</div>
-      <div class="value">${d.antiguedadVac} años</div>
-    </div>
-    ${t.dni ? `<div class="detalle-info-item">
-      <div class="label">DNI</div>
-      <div class="value">${t.dni}</div>
-    </div>` : ''}
-    ${t.clave ? `<div class="detalle-info-item">
-      <div class="label">Clave de acceso</div>
-      <div class="value"><code style="background:#f0f0f0;padding:4px 10px;border-radius:6px;font-size:18px;letter-spacing:2px;">${t.clave}</code></div>
-    </div>` : ''}
+  let html = `<div class="detalle-info-grid">
+    <div class="detalle-info-item"><div class="label">Nombre completo</div><div class="value">${t.nombre} ${t.apellidos}</div></div>
+    <div class="detalle-info-item"><div class="label">Categoría</div><div class="value">${catNombre}</div></div>
+    <div class="detalle-info-item"><div class="label">Fecha incorporación</div><div class="value">${fmtDate(t.fecha)}</div></div>
+    <div class="detalle-info-item"><div class="label">Antigüedad AP (31/12/${anio})</div><div class="value">${d.antiguedad} años</div></div>
+    <div class="detalle-info-item"><div class="label">Antigüedad Vac. (31/12/${parseInt(anio)-1})</div><div class="value">${d.antiguedadVac} años</div></div>
+    ${t.dni ? `<div class="detalle-info-item"><div class="label">DNI</div><div class="value">${t.dni}</div></div>` : ''}
+    ${t.clave ? `<div class="detalle-info-item"><div class="label">Clave de acceso</div><div class="value"><code style="background:#f0f0f0;padding:4px 10px;border-radius:6px;font-size:18px;letter-spacing:2px;">${t.clave}</code></div></div>` : ''}
   </div>`;
   
   html += `<h4 style="margin-top:10px;">📅 Permisos del año ${anio}</h4>`;
-  tiposPermiso.forEach(tipo => {
-    const permisosTipo = permisosAnio.filter(a => a.tipo === tipo);
-    html += renderSeccionTipo(tipo, permisosTipo, maximos[tipo], anio);
-  });
+  tiposPermiso.forEach(tipo => { html += renderSeccionTipo(tipo, permisosAnio.filter(a => a.tipo === tipo), maximos[tipo], anio); });
   
   if (permisosAnioSiguiente.length > 0) {
-    html += `<h4 style="margin-top:20px;color:#e67e22;"> Permisos del año ${anioSiguiente} (próximo año)</h4>
-    <div class="info" style="margin-top:0;">
-      ℹ️ Estos permisos corresponden al año ${anioSiguiente}. Las vacaciones y asuntos propios del año ${anio} se pueden disfrutar hasta el 31/01/${anioSiguiente}.
-    </div>`;
-    
+    html += `<h4 style="margin-top:20px;color:#e67e22;">📅 Permisos del año ${anioSiguiente}</h4>
+    <div class="info" style="margin-top:0;">️ Vacaciones y AP del año ${anio} se pueden disfrutar hasta el 31/01/${anioSiguiente}.</div>`;
     const dSig = getDiasTrabajador(t, anioSiguiente);
     const cfgSig = configs[anioSiguiente];
     const cTotalSig = cfgSig ? cfgSig.compensacion : 0;
-    const maximosSig = {
-      vacaciones: dSig.vacaciones,
-      asuntos_propios: dSig.asuntosPropios,
-      compensacion: cTotalSig,
-      familiar_primer: '5 por solicitud',
-      familiar_segundo: '4 por solicitud',
-      reposo: 5,
-      licencia: '',
-      baja: '∞'
-    };
-    
+    const maximosSig = {vacaciones:dSig.vacaciones, asuntos_propios:dSig.asuntosPropios, compensacion:cTotalSig, familiar_primer:'5 por solicitud', familiar_segundo:'4 por solicitud', reposo:5, licencia:'∞', baja:'∞'};
     tiposPermiso.forEach(tipo => {
       const permisosTipo = permisosAnioSiguiente.filter(a => a.tipo === tipo);
-      if (permisosTipo.length > 0) {
-        html += renderSeccionTipo(tipo, permisosTipo, maximosSig[tipo], anioSiguiente);
-      }
+      if (permisosTipo.length > 0) html += renderSeccionTipo(tipo, permisosTipo, maximosSig[tipo], anioSiguiente);
     });
   }
   
-  const otrosAnios = [...new Set(todosPermisos.map(a => a.anio))]
-    .filter(a => a !== anio && a !== anioSiguiente)
-    .sort();
-  
+  const otrosAnios = [...new Set(todosPermisos.map(a => a.anio))].filter(a => a !== anio && a !== anioSiguiente).sort();
   if (otrosAnios.length > 0) {
-    html += `<div class="detalle-seccion">
-      <div class="detalle-seccion-titulo" style="background:#1a4d7a;">
-        <span>📚 Historial en otros años</span>
-      </div>
-      <div style="font-size:12px;color:#666;margin-bottom:8px;">Total de permisos registrados en años anteriores: <strong>${todosPermisos.filter(a => a.anio !== anio && a.anio !== anioSiguiente).length}</strong></div>`;
+    html += `<div class="detalle-seccion"><div class="detalle-seccion-titulo" style="background:#1a4d7a;"><span> Historial en otros años</span></div>
+    <div style="font-size:12px;color:#666;margin-bottom:8px;">Total: <strong>${todosPermisos.filter(a => a.anio !== anio && a.anio !== anioSiguiente).length}</strong> permisos</div>`;
     otrosAnios.forEach(otroAnio => {
       const permisosOtroAnio = todosPermisos.filter(a => a.anio === otroAnio);
       const totalDias = permisosOtroAnio.reduce((s,a) => s + a.diasConsumidos, 0);
       html += `<div style="background:#f8f9fa;padding:8px 12px;border-radius:6px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;">
         <span><strong>Año ${otroAnio}</strong> · ${permisosOtroAnio.length} permiso(s)</span>
-        <span style="font-weight:600;color:#1a4d7a;">${totalDias} días totales</span>
+        <span style="font-weight:600;color:#1a4d7a;">${totalDias} días</span>
       </div>`;
     });
     html += `</div>`;
@@ -1875,79 +1721,39 @@ function cerrarDetalle(event) {
 }
 
 async function recalcularPermisosExistentes() {
-  const ok = await showConfirm('Recalcular permisos', 
-    '⚠️ Esta acción va a recalcular los días consumidos de todos los permisos registrados.\n\n' +
-    '• Vacaciones: se contarán solo días laborables (lunes a viernes, no festivos)\n' +
-    '• Asuntos propios, compensación, familiares, reposo: días laborables\n' +
-    '• Baja, licencia: días naturales\n\n' +
-    '¿Deseas continuar?', 'warning');
-  
+  const ok = await showConfirm('Recalcular permisos', '⚠️ Se recalcularán los días consumidos de todos los permisos.\n\n• Vacaciones: días laborables\n• AP, compensación, familiares, reposo: días laborables\n• Baja, licencia: días naturales\n\n¿Continuar?', 'warning');
   if (!ok) return;
-  
   let corregidos = 0;
-  
   for (const a of ausencias) {
     let diasCorrectos = 0;
-    
-    if (a.tipo === 'vacaciones') {
-      const calc = contarDiasVacaciones(a.inicio, a.fin);
-      diasCorrectos = calc.diasConsumidos;
-    } else if (a.tipo === 'asuntos_propios' || a.tipo === 'compensacion' || 
-               a.tipo === 'familiar_primer' || a.tipo === 'familiar_segundo' || 
-               a.tipo === 'reposo') {
-      diasCorrectos = contarLaborales(a.inicio, a.fin);
-    } else {
-      diasCorrectos = contarNaturales(a.inicio, a.fin);
-    }
-    
+    if (a.tipo === 'vacaciones') diasCorrectos = contarDiasVacaciones(a.inicio, a.fin).diasConsumidos;
+    else if (a.tipo === 'asuntos_propios' || a.tipo === 'compensacion' || a.tipo === 'familiar_primer' || a.tipo === 'familiar_segundo' || a.tipo === 'reposo') diasCorrectos = contarLaborales(a.inicio, a.fin);
+    else diasCorrectos = contarNaturales(a.inicio, a.fin);
     if (a.diasConsumidos !== diasCorrectos) {
       a.diasConsumidos = diasCorrectos;
-      await fsSet('ausencias', a.id, {
-        trabajadorId: a.trabajadorId,
-        tipo: a.tipo,
-        inicio: a.inicio,
-        fin: a.fin,
-        obs: a.obs,
-        diasConsumidos: diasCorrectos,
-        diasNaturales: a.diasNaturales,
-        anio: a.anio
-      });
+      await fsSet('ausencias', a.id, {trabajadorId:a.trabajadorId, tipo:a.tipo, inicio:a.inicio, fin:a.fin, obs:a.obs, diasConsumidos:diasCorrectos, diasNaturales:a.diasNaturales, anio:a.anio});
       corregidos++;
     }
   }
-  
-  guardarLocal();
-  refrescarVistaActual();
-  
-  await showAlert('Recálculo completado', 
-    `✅ Se han corregido ${corregidos} permisos con días incorrectos.\n\n` +
-    `Los permisos ahora muestran los días laborables reales consumidos.`, 'success');
+  guardarLocal(); refrescarVistaActual();
+  await showAlert('Recálculo completado', `✅ Se han corregido ${corregidos} permisos.`, 'success');
 }
 
 function generarPDF() {
   const anio = document.getElementById('resumenAnio').value;
-  if (!anio) {
-    showAlert('Año no seleccionado', 'Seleccione un año antes de generar el PDF.', 'warning');
-    return;
-  }
-  if (trabajadores.length === 0) {
-    showAlert('Sin trabajadores', 'No hay trabajadores registrados para generar el PDF.', 'warning');
-    return;
-  }
+  if (!anio) { showAlert('Año no seleccionado', 'Seleccione un año.', 'warning'); return; }
+  if (trabajadores.length === 0) { showAlert('Sin trabajadores', 'No hay trabajadores.', 'warning'); return; }
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF('landscape', 'mm', 'a4');
-  doc.setFontSize(18);
-  doc.setTextColor(26, 77, 122);
-  doc.text('Control de Personal - Pabellón Niño Jesús', 14, 20);
-  doc.setFontSize(14);
-  doc.text(`Resumen de Permisos - Año ${anio}`, 14, 30);
-  doc.setFontSize(10);
-  doc.setTextColor(100);
+  doc.setFontSize(18); doc.setTextColor(26, 77, 122);
+  doc.text('Control de Personal - Edificio', 14, 20);
+  doc.setFontSize(14); doc.text(`Resumen de Permisos - Año ${anio}`, 14, 30);
+  doc.setFontSize(10); doc.setTextColor(100);
   doc.text(`Generado el ${fmtDate(fechaLocalStr(new Date()))}`, 14, 38);
   const cfg = configs[anio];
   const cTotal = cfg ? cfg.compensacion : 0;
   const hoy = fechaLocalStr(new Date());
-  const head = [['Trabajador', 'Categoría', 'Vac. Total', 'Vac. Consum.', 'Vac. Pend.', 'Vac. Disp.', 'Comp. Total', 'Comp. Consum.', 'Comp. Pend.', 'Comp. Disp.', 'AP Total', 'AP Consum.', 'AP Pend.', 'AP Disp.']];
+  const head = [['Trabajador', 'Categoría', 'Vac.Total', 'Vac.Cons.', 'Vac.Pend.', 'Vac.Disp.', 'Comp.Total', 'Comp.Cons.', 'Comp.Pend.', 'Comp.Disp.', 'AP.Total', 'AP.Cons.', 'AP.Pend.', 'AP.Disp.']];
   const body = trabajadores.map(t => {
     const d = getDiasTrabajador(t, anio);
     const catNombre = {encargado:'Encargado', ordenanza:'Ordenanza', limpiador:'Limpiador/a'}[t.categoria];
@@ -1966,50 +1772,25 @@ function generarPDF() {
     const apDisponibles = apTotal - apConsumidos;
     return [`${t.nombre} ${t.apellidos}`, catNombre, vacTotal.toString(), vacConsumidos.toString(), vacPendientes.toString(), vacDisponibles.toString(), compTotal.toString(), compConsumidos.toString(), compPendientes.toString(), compDisponibles.toString(), apTotal.toString(), apConsumidos.toString(), apPendientes.toString(), apDisponibles.toString()];
   });
-  doc.autoTable({
-    head: head, body: body, startY: 45, theme: 'grid',
-    headStyles: { fillColor: [26, 77, 122], textColor: 255, fontSize: 9, fontStyle: 'bold', halign: 'center' },
-    bodyStyles: { fontSize: 9, halign: 'center' },
-    columnStyles: { 0: { halign: 'left', cellWidth: 50 }, 1: { halign: 'left', cellWidth: 30 } },
-    alternateRowStyles: { fillColor: [240, 242, 245] },
-    margin: { left: 14, right: 14 }
-  });
+  doc.autoTable({head, body, startY: 45, theme: 'grid', headStyles: {fillColor: [26, 77, 122], textColor: 255, fontSize: 9, fontStyle: 'bold', halign: 'center'}, bodyStyles: {fontSize: 9, halign: 'center'}, columnStyles: {0: {halign: 'left', cellWidth: 50}, 1: {halign: 'left', cellWidth: 30}}, alternateRowStyles: {fillColor: [240, 242, 245]}, margin: {left: 14, right: 14}});
   const pageCount = doc.internal.getNumberOfPages();
-  for (let i = 1; i <= pageCount; i++) {
-    doc.setPage(i);
-    doc.setFontSize(8);
-    doc.setTextColor(150);
-    doc.text(`Página ${i} de ${pageCount}`, doc.internal.pageSize.getWidth() - 30, doc.internal.pageSize.getHeight() - 10);
-  }
+  for (let i = 1; i <= pageCount; i++) { doc.setPage(i); doc.setFontSize(8); doc.setTextColor(150); doc.text(`Página ${i} de ${pageCount}`, doc.internal.pageSize.getWidth() - 30, doc.internal.pageSize.getHeight() - 10); }
   doc.save(`resumen_permisos_${anio}.pdf`);
   toast('PDF generado', `Archivo resumen_permisos_${anio}.pdf descargado`, 'success');
 }
 
 async function exportarBackup() {
   const anio = document.getElementById('backupAnio').value;
-  if (!anio) {
-    await showAlert('Año no seleccionado', 'Seleccione un año para exportar.', 'warning');
-    return;
-  }
-  const backupData = {
-    version: '1.0',
-    exportDate: new Date().toISOString(),
-    anio: anio,
-    config: configs[anio] || null,
-    festivos: festivos[anio] || [],
-    ausencias: ausencias.filter(a => a.inicio.startsWith(anio))
-  };
+  if (!anio) { await showAlert('Año no seleccionado', 'Seleccione un año.', 'warning'); return; }
+  const backupData = {version: '1.0', exportDate: new Date().toISOString(), anio, config: configs[anio] || null, festivos: festivos[anio] || [], ausencias: ausencias.filter(a => a.inicio.startsWith(anio))};
   const jsonStr = JSON.stringify(backupData, null, 2);
-  const blob = new Blob([jsonStr], { type: 'application/json' });
+  const blob = new Blob([jsonStr], {type: 'application/json'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url;
-  a.download = `backup_control_personal_${anio}.json`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
+  a.href = url; a.download = `backup_control_personal_${anio}.json`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
   URL.revokeObjectURL(url);
-  toast('Backup exportado', `Datos del año ${anio} exportados correctamente`, 'success');
+  toast('Backup exportado', `Datos del año ${anio} exportados`, 'success');
 }
 
 function importarBackup(event) {
@@ -2019,55 +1800,21 @@ function importarBackup(event) {
   reader.onload = async function(e) {
     try {
       const backupData = JSON.parse(e.target.result);
-      if (!backupData.version || !backupData.anio) {
-        await showAlert('Archivo no válido', 'El archivo no tiene el formato de backup correcto.', 'error');
-        return;
-      }
+      if (!backupData.version || !backupData.anio) { await showAlert('Archivo no válido', 'Formato incorrecto.', 'error'); return; }
       const anio = backupData.anio;
-      const ok = await showConfirm('Restaurar backup', 
-        `Se van a restaurar los datos del año ${anio}:\n` +
-        `- Configuración: ${backupData.config ? 'Sí' : 'No'}\n` +
-        `- Festivos: ${backupData.festivos ? backupData.festivos.length : 0}\n` +
-        `- Ausencias: ${backupData.ausencias ? backupData.ausencias.length : 0}\n\n` +
-        `Los datos actuales del año ${anio} serán reemplazados.\nLos trabajadores NO se modifican.\n\n¿Continuar?`, 'confirm');
+      const ok = await showConfirm('Restaurar backup', `Se restaurarán los datos del año ${anio}:\n- Configuración: ${backupData.config ? 'Sí' : 'No'}\n- Festivos: ${backupData.festivos ? backupData.festivos.length : 0}\n- Ausencias: ${backupData.ausencias ? backupData.ausencias.length : 0}\n\n¿Continuar?`, 'confirm');
       if (!ok) return;
-      if (backupData.config) {
-        configs[anio] = backupData.config;
-        await fsSet('configs', anio, backupData.config);
-      }
-      if (festivos[anio]) {
-        for (const f of festivos[anio]) {
-          await fsDelete('festivos', `${anio}_${f.fecha}`);
-        }
-      }
+      if (backupData.config) { configs[anio] = backupData.config; await fsSet('configs', anio, backupData.config); }
+      if (festivos[anio]) { for (const f of festivos[anio]) await fsDelete('festivos', `${anio}_${f.fecha}`); }
       festivos[anio] = [];
-      if (backupData.festivos) {
-        for (const f of backupData.festivos) {
-          festivos[anio].push(f);
-          await fsSet('festivos', `${anio}_${f.fecha}`, f);
-        }
-        festivos[anio].sort((a,b) => a.fecha.localeCompare(b.fecha));
-      }
+      if (backupData.festivos) { for (const f of backupData.festivos) { festivos[anio].push(f); await fsSet('festivos', `${anio}_${f.fecha}`, f); } festivos[anio].sort((a,b) => a.fecha.localeCompare(b.fecha)); }
       const ausenciasActuales = ausencias.filter(a => a.inicio.startsWith(anio));
-      for (const a of ausenciasActuales) {
-        await fsDelete('ausencias', a.id);
-      }
+      for (const a of ausenciasActuales) await fsDelete('ausencias', a.id);
       ausencias = ausencias.filter(a => !a.inicio.startsWith(anio));
-      if (backupData.ausencias) {
-        for (const a of backupData.ausencias) {
-          const { id, ...data } = a;
-          ausencias.push({id, ...data});
-          await fsSet('ausencias', id, data);
-        }
-      }
-      guardarLocal();
-      renderConfig();
-      cargarSelectAniosResumen();
-      renderResumen();
-      toast('Backup restaurado', `Datos del año ${anio} restaurados correctamente`, 'success');
-    } catch (err) {
-      await showAlert('Error al importar', 'Error al leer el archivo: ' + err.message, 'error');
-    }
+      if (backupData.ausencias) { for (const a of backupData.ausencias) { const {id, ...data} = a; ausencias.push({id, ...data}); await fsSet('ausencias', id, data); } }
+      guardarLocal(); renderConfig(); cargarSelectAniosResumen(); renderResumen();
+      toast('Backup restaurado', `Datos del año ${anio} restaurados`, 'success');
+    } catch (err) { await showAlert('Error al importar', 'Error: ' + err.message, 'error'); }
   };
   reader.readAsText(file);
   event.target.value = '';
@@ -2075,38 +1822,16 @@ function importarBackup(event) {
 
 async function borrarDatosAnio() {
   const anio = document.getElementById('backupAnio').value;
-  if (!anio) {
-    await showAlert('Año no seleccionado', 'Seleccione un año para borrar.', 'warning');
-    return;
-  }
-  const ok = await showConfirm('Borrar datos del año', 
-    `⚠️ ATENCIÓN: Se van a borrar TODOS los datos del año ${anio}:\n\n` +
-    `• Configuración del año\n` +
-    `• ${festivos[anio] ? festivos[anio].length : 0} festivos\n` +
-    `• ${ausencias.filter(a => a.inicio.startsWith(anio)).length} permisos/ausencias\n\n` +
-    `✅ Los trabajadores NO se borrarán.\n\n` +
-    `¿Está seguro? Esta acción no se puede deshacer (a menos que tenga un backup).`, 'error');
+  if (!anio) { await showAlert('Año no seleccionado', 'Seleccione un año.', 'warning'); return; }
+  const ok = await showConfirm('Borrar datos del año', `⚠️ Se borrarán TODOS los datos del año ${anio}:\n\n• Configuración\n• ${festivos[anio] ? festivos[anio].length : 0} festivos\n• ${ausencias.filter(a => a.inicio.startsWith(anio)).length} permisos\n\n✅ Los trabajadores NO se borrarán.\n\n¿Está seguro?`, 'error');
   if (!ok) return;
-  if (configs[anio]) {
-    await fsDelete('configs', anio);
-    delete configs[anio];
-  }
-  if (festivos[anio]) {
-    for (const f of festivos[anio]) {
-      await fsDelete('festivos', `${anio}_${f.fecha}`);
-    }
-    delete festivos[anio];
-  }
+  if (configs[anio]) { await fsDelete('configs', anio); delete configs[anio]; }
+  if (festivos[anio]) { for (const f of festivos[anio]) await fsDelete('festivos', `${anio}_${f.fecha}`); delete festivos[anio]; }
   const ausenciasAnio = ausencias.filter(a => a.inicio.startsWith(anio));
-  for (const a of ausenciasAnio) {
-    await fsDelete('ausencias', a.id);
-  }
+  for (const a of ausenciasAnio) await fsDelete('ausencias', a.id);
   ausencias = ausencias.filter(a => !a.inicio.startsWith(anio));
-  guardarLocal();
-  renderConfig();
-  cargarSelectAniosResumen();
-  renderResumen();
-  toast('Datos borrados', `Todos los datos del año ${anio} han sido eliminados`, 'info');
+  guardarLocal(); renderConfig(); cargarSelectAniosResumen(); renderResumen();
+  toast('Datos borrados', `Datos del año ${anio} eliminados`, 'info');
 }
 
 document.getElementById('cAnio').value = new Date().getFullYear();
@@ -2118,7 +1843,34 @@ document.getElementById('cAnio').addEventListener('change', () => {
   else document.getElementById('cCompensacion').value = '';
 });
 
-initFirebase();
+// ✅ INICIALIZAR FIREBASE PRIMERO (antes de onAuthStateChanged)
+if (typeof USE_FIREBASE !== 'undefined' && USE_FIREBASE && 
+    typeof FIREBASE_CONFIG !== 'undefined' && FIREBASE_CONFIG.apiKey !== 'PEGA_AQUI_TU_API_KEY') {
+  firebase.initializeApp(FIREBASE_CONFIG);
+}
+
+// ✅ Verificar sesión activa
+firebase.auth().onAuthStateChanged((user) => {
+  if (user) {
+    currentUser = user;
+    document.getElementById('loginOverlay').classList.add('hidden');
+    document.getElementById('mainContainer').style.display = 'block';
+    document.getElementById('userInfo').style.display = 'flex';
+    document.getElementById('userEmail').textContent = user.email;
+    if (typeof USE_FIREBASE !== 'undefined' && USE_FIREBASE) {
+      db = firebase.firestore();
+      cargarDesdeFirestore().then(() => {
+        subscribirseACambios();
+        renderInicio();
+        toast('Conectado', 'Sesión restaurada', 'success');
+      });
+    }
+  } else {
+    document.getElementById('loginOverlay').classList.remove('hidden');
+    document.getElementById('mainContainer').style.display = 'none';
+    document.getElementById('userInfo').style.display = 'none';
+  }
+});
 </script>
 </body>
 </html>
