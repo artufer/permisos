@@ -95,7 +95,7 @@
     padding: 15px; 
     border-radius: 8px; 
     text-align: center;
-    min-height: 280px;
+    min-height: 340px;
   }
   .stat .num { font-size: 28px; font-weight: bold; }
   .stat .lbl { font-size: 12px; opacity: 0.9; margin-bottom: 5px; }
@@ -105,7 +105,7 @@
     display: flex; 
     flex-direction: column; 
     gap: 2px;
-    max-height: 200px;
+    max-height: 260px;
     overflow-y: auto;
   }
   .stat .detalle-item { 
@@ -1561,7 +1561,6 @@ async function guardarAusencia() {
     await showAlert('Supera máximo', `Máximo 4 días por solicitud. Esta tiene ${calc.dias}.`, 'warning');
     return;
   }
-  // ✅ REPOSO DOMICILIARIO: mínimo 1 día, máximo 4 días por solicitud
   if (tipo === 'reposo') {
     if (calc.dias < 1) {
       await showAlert('Mínimo no alcanzado', `El reposo domiciliario requiere mínimo 1 día laborable.`, 'warning');
