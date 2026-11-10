@@ -309,7 +309,6 @@
   .user-info { position: fixed; top: 10px; right: 10px; background: white; padding: 6px 12px; border-radius: 20px; font-size: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 8px; z-index: 100; }
   .user-info button { padding: 4px 10px; font-size: 11px; background: #c0392b; margin: 0; border-radius: 12px; }
   
-  /* ✅ ESTILOS PARA IMPRESIÓN */
   @media print {
     body { padding: 10px; background: white; }
     @page { size: landscape; margin: 1cm; }
@@ -435,7 +434,7 @@
             <option value="compensacion">🔄 Compensación sábados festivos</option>
             <option value="familiar_primer">👨‍👩‍👧 Familiar 1er grado (máx. 5 días por solicitud)</option>
             <option value="familiar_segundo">👥 Familiar 2º grado (máx. 4 días por solicitud)</option>
-            <option value="reposo">🛏️ Reposo domiciliario (máx. 5 días al año)</option>
+            <option value="reposo">🛏️ Reposo domiciliario (1-4 días por solicitud)</option>
             <option value="licencia">📄 Licencia sin sueldo</option>
             <option value="baja">🏥 Baja médica</option>
           </select>
@@ -634,12 +633,12 @@ async function handleLogin() {
   } catch (error) {
     console.error('Error de login:', error);
     let mensaje = error.message;
-    if (error.code === 'auth/user-not-found') mensaje = '❌ Usuario no encontrado en Firebase';
+    if (error.code === 'auth/user-not-found') mensaje = '❌ Usuario no encontrado';
     else if (error.code === 'auth/wrong-password') mensaje = '❌ Contraseña incorrecta';
     else if (error.code === 'auth/invalid-email') mensaje = '❌ Email no válido';
-    else if (error.code === 'auth/too-many-requests') mensaje = '⏳ Demasiados intentos. Espera unos minutos';
+    else if (error.code === 'auth/too-many-requests') mensaje = '⏳ Demasiados intentos. Espera';
     else if (error.code === 'auth/invalid-credential') mensaje = '❌ Credenciales inválidas';
-    else if (error.code === 'auth/network-request-failed') mensaje = '🌐 Error de red. Comprueba tu conexión';
+    else if (error.code === 'auth/network-request-failed') mensaje = '🌐 Error de red';
     else mensaje = `❌ Error: ${error.code} - ${error.message}`;
     
     errorText.textContent = mensaje;
@@ -1421,7 +1420,6 @@ function mostrarDisponibles() {
   const rC = ausencias.filter(a => a.trabajadorId === tId && a.tipo === 'reposo' && a.inicio.startsWith(anio)).reduce((s,a) => s + a.diasConsumidos, 0);
   const vR = d.vacaciones - vC, apR = d.asuntosPropios - apC;
   const cTotal = cfg ? cfg.compensacion : 0, cR = cTotal - cC;
-  const rR = 5 - rC;
   const anioSiguiente = parseInt(anio) + 1;
   div.innerHTML = `👤 <strong>${t.nombre} ${t.apellidos}</strong> · Año <strong>${anio}</strong><br>
     📅 Antigüedad al 31/12/${anio}: <strong>${d.antiguedad} años</strong> (para asuntos propios)<br>
@@ -1431,7 +1429,7 @@ function mostrarDisponibles() {
     🔄 Compensación: <strong>${cC}/${cTotal}</strong> días laborables consumidos · <strong style="color:${cR<0?'#c0392b':'#27ae60'}">${cR} restantes</strong><br>
     👨‍👩‍👧 Familiar 1º grado: <strong>sin límite anual</strong> · máximo 5 días laborables por solicitud<br>
     👥 Familiar 2º grado: <strong>sin límite anual</strong> · máximo 4 días laborables por solicitud<br>
-    🛏️ Reposo domiciliario: <strong>${rC}/5</strong> días laborables consumidos · <strong style="color:${rR<0?'#c0392b':'#27ae60'}">${rR} restantes</strong><br>
+    🛏️ Reposo domiciliario: <strong>mínimo 1 día, máximo 4 días por solicitud</strong> · Requiere parte médico<br>
     📄 Licencia sin sueldo y 🏥 Baja: sin límite`;
 }
 
@@ -1445,7 +1443,7 @@ function actualizarInfoTipo() {
     compensacion: '🔄 <strong>Compensación sábados festivos:</strong> días laborables según configuración anual. No cuentan sábados, domingos ni festivos.',
     familiar_primer: '👨‍👩‍👧 <strong>Familiar 1er grado:</strong> máximo 5 días laborables por solicitud. Sin límite anual.',
     familiar_segundo: '👥 <strong>Familiar 2º grado:</strong> máximo 4 días laborables por solicitud. Sin límite anual.',
-    reposo: '🛏️ <strong>Reposo domiciliario:</strong> máximo 5 días laborables al año. Requiere parte médico.',
+    reposo: '🛏️ <strong>Reposo domiciliario:</strong> mínimo 1 día, máximo 4 días por solicitud. Requiere parte médico.',
     licencia: '📄 <strong>Licencia sin sueldo:</strong> sin límite de días.',
     baja: '🏥 <strong>Baja médica:</strong> sin límite. Se cuentan días naturales.'
   };
@@ -1563,10 +1561,20 @@ async function guardarAusencia() {
     await showAlert('Supera máximo', `Máximo 4 días por solicitud. Esta tiene ${calc.dias}.`, 'warning');
     return;
   }
+  // ✅ REPOSO DOMICILIARIO: mínimo 1 día, máximo 4 días por solicitud
   if (tipo === 'reposo') {
-    const rC = ausencias.filter(a => a.trabajadorId === trabajadorId && a.tipo === 'reposo' && a.inicio.startsWith(anio)).reduce((s,a) => s + a.diasConsumidos, 0);
-    if (rC + calc.dias > 5) {
-      await showAlert('Supera reposo', `Máximo 5 días al año. Ya tiene ${rC} + ${calc.dias} = ${rC + calc.dias}.`, 'warning');
+    if (calc.dias < 1) {
+      await showAlert('Mínimo no alcanzado', `El reposo domiciliario requiere mínimo 1 día laborable.`, 'warning');
+      return;
+    }
+    if (calc.dias > 4) {
+      await showAlert('Supera máximo por solicitud', `El reposo domiciliario tiene un máximo de 4 días por solicitud. Esta solicitud tiene ${calc.dias} días.`, 'warning');
+      return;
+    }
+  }
+  if (tipo === 'licencia' || tipo === 'baja') {
+    if (calc.dias < 1) {
+      await showAlert('Mínimo no alcanzado', `El permiso requiere mínimo 1 día.`, 'warning');
       return;
     }
   }
@@ -1716,7 +1724,7 @@ function mostrarDetalleTrabajador(trabajadorId, anio) {
   const tiposPermiso = ['vacaciones', 'asuntos_propios', 'compensacion', 'familiar_primer', 'familiar_segundo', 'reposo', 'licencia', 'baja'];
   const nombresTipo = {vacaciones:'🏖️ Vacaciones', asuntos_propios:'📝 Asuntos propios', compensacion:'🔄 Compensación', familiar_primer:'👨‍👩‍👧 Familiar 1º', familiar_segundo:'👥 Familiar 2º', reposo:'🛏️ Reposo domiciliario', licencia:'📄 Licencia sin sueldo', baja:'🏥 Baja médica'};
   const clasesTipo = {vacaciones:'vac', asuntos_propios:'ap', compensacion:'comp', familiar_primer:'fam1', familiar_segundo:'fam2', reposo:'reposo', licencia:'licencia', baja:'baja'};
-  const maximos = {vacaciones:d.vacaciones, asuntos_propios:d.asuntosPropios, compensacion:cTotal, familiar_primer:'5 por solicitud', familiar_segundo:'4 por solicitud', reposo:5, licencia:'∞', baja:'∞'};
+  const maximos = {vacaciones:d.vacaciones, asuntos_propios:d.asuntosPropios, compensacion:cTotal, familiar_primer:'5 por solicitud', familiar_segundo:'4 por solicitud', reposo:'4 por solicitud', licencia:'∞', baja:'∞'};
   
   function renderSeccionTipo(tipo, permisosTipo, maximo, anioLabel) {
     const totalConsumido = permisosTipo.reduce((sum, a) => sum + a.diasConsumidos, 0);
@@ -1773,7 +1781,7 @@ function mostrarDetalleTrabajador(trabajadorId, anio) {
     const dSig = getDiasTrabajador(t, anioSiguiente);
     const cfgSig = configs[anioSiguiente];
     const cTotalSig = cfgSig ? cfgSig.compensacion : 0;
-    const maximosSig = {vacaciones:dSig.vacaciones, asuntos_propios:dSig.asuntosPropios, compensacion:cTotalSig, familiar_primer:'5 por solicitud', familiar_segundo:'4 por solicitud', reposo:5, licencia:'∞', baja:'∞'};
+    const maximosSig = {vacaciones:dSig.vacaciones, asuntos_propios:dSig.asuntosPropios, compensacion:cTotalSig, familiar_primer:'5 por solicitud', familiar_segundo:'4 por solicitud', reposo:'4 por solicitud', licencia:'∞', baja:'∞'};
     tiposPermiso.forEach(tipo => {
       const permisosTipo = permisosAnioSiguiente.filter(a => a.tipo === tipo);
       if (permisosTipo.length > 0) html += renderSeccionTipo(tipo, permisosTipo, maximosSig[tipo], anioSiguiente);
@@ -1919,7 +1927,6 @@ async function borrarDatosAnio() {
   toast('Datos borrados', `Datos del año ${anio} eliminados`, 'info');
 }
 
-// ✅ FUNCIÓN PARA IMPRIMIR EL CALENDARIO
 function imprimirCalendario() {
   const mes = parseInt(document.getElementById('calMes').value);
   const anio = parseInt(document.getElementById('calAnio').value);
@@ -1944,13 +1951,11 @@ function imprimirCalendario() {
         h1 { color: #1a4d7a; margin-bottom: 10px; font-size: 24px; }
         h2 { color: #2c6fa8; margin: 15px 0 10px; font-size: 16px; }
         .info { margin-bottom: 20px; font-size: 14px; color: #666; }
-        
         table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 15px; }
         th, td { padding: 4px; text-align: center; border: 1px solid #ddd; min-width: 28px; height: 28px; }
         th { background: #1a4d7a; color: white; font-size: 10px; }
         th.nombre { min-width: 180px; text-align: left; padding: 6px 10px; background: #1a4d7a; }
         td.nombre { text-align: left; padding: 4px 8px; font-weight: 600; white-space: nowrap; }
-        
         .cal-cell { display: inline-block; width: 100%; height: 100%; }
         .cal-cell.trab { background: #d5f5e3; }
         .cal-cell.vac { background: #27ae60; color: white; font-weight: bold; }
@@ -1963,16 +1968,13 @@ function imprimirCalendario() {
         .cal-cell.reposo { background: #1abc9c; color: white; font-weight: bold; }
         .cal-cell.finsemana { background: #ecf0f1; color: #95a5a6; }
         .cal-cell.festivo { background: #e74c3c; color: white; font-weight: bold; }
-        
         .badge { display: inline-block; padding: 2px 6px; border-radius: 10px; font-size: 9px; font-weight: 600; color: white; }
         .b-enc { background: #8e44ad; }
         .b-ord { background: #3498db; }
         .b-limp { background: #e67e22; }
-        
         .leyenda { display: flex; gap: 12px; flex-wrap: wrap; margin: 15px 0; font-size: 11px; }
         .leyenda-item { display: flex; align-items: center; gap: 5px; }
         .leyenda-color { width: 16px; height: 16px; border-radius: 3px; border: 1px solid rgba(0,0,0,0.1); }
-        
         @media print {
           body { padding: 10px; }
           @page { size: landscape; margin: 1cm; }
