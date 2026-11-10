@@ -88,7 +88,6 @@
   #estadoPlantilla td:nth-child(3),
   #estadoPlantilla td:nth-child(4) { text-align: center; vertical-align: middle; }
   
-  /* ✅ TARJETAS DE ESTADÍSTICAS ACTUALIZADAS */
   .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 15px; margin-bottom: 15px; }
   .stat { 
     background: linear-gradient(135deg, #1a4d7a, #2c6fa8); 
@@ -118,25 +117,24 @@
     border-radius: 4px;
     transition: all 0.2s;
   }
-  /* ✅ Fila de "Trabajando" destacada con fondo verde */
-.stat .detalle-item.trabajando-row { 
-  background: rgba(46, 204, 113, 0.35); 
-  border: 1px solid #2ecc71;
-  padding: 6px 8px;
-  margin-bottom: 4px;
-}
-.stat .detalle-item.trabajando-row span:first-child {
-  color: #ffffff !important;
-  font-weight: 900;
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.9), 0 0 20px rgba(46, 204, 113, 0.6);
-  letter-spacing: 0.5px;
-}
-.stat .detalle-item.trabajando-row strong {
-  color: #ffffff !important;
-  font-size: 16px;
-  font-weight: 900;
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.9), 0 0 20px rgba(46, 204, 113, 0.6);
-}
+  .stat .detalle-item.trabajando-row { 
+    background: rgba(46, 204, 113, 0.35); 
+    border: 1px solid #2ecc71;
+    padding: 6px 8px;
+    margin-bottom: 4px;
+  }
+  .stat .detalle-item.trabajando-row span:first-child {
+    color: #ffffff !important;
+    font-weight: 900;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.9), 0 0 20px rgba(46, 204, 113, 0.6);
+    letter-spacing: 0.5px;
+  }
+  .stat .detalle-item.trabajando-row strong {
+    color: #ffffff !important;
+    font-size: 16px;
+    font-weight: 900;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.9), 0 0 20px rgba(46, 204, 113, 0.6);
+  }
   .stat .detalle-item:last-child { border-bottom: none; }
   .stat .detalle-item strong { color: white; }
   
@@ -291,7 +289,6 @@
   .detalle-permiso-info strong { color: #1a4d7a; }
   @media (max-width: 768px) { .detalle-stats { grid-template-columns: repeat(2, 1fr); } .detalle-box { margin: 10px; } .detalle-header { padding: 15px; } .detalle-body { padding: 15px; } }
   
-  /* LOGIN */
   #loginOverlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 99999; backdrop-filter: blur(5px); }
   #loginOverlay.hidden { display: none; }
   .login-box { background: white; border-radius: 12px; width: 100%; max-width: 420px; box-shadow: 0 20px 60px rgba(0,0,0,0.4); overflow: hidden; }
@@ -311,11 +308,20 @@
   
   .user-info { position: fixed; top: 10px; right: 10px; background: white; padding: 6px 12px; border-radius: 20px; font-size: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 8px; z-index: 100; }
   .user-info button { padding: 4px 10px; font-size: 11px; background: #c0392b; margin: 0; border-radius: 12px; }
+  
+  /* ✅ ESTILOS PARA IMPRESIÓN */
+  @media print {
+    body { padding: 10px; background: white; }
+    @page { size: landscape; margin: 1cm; }
+    .tabs, .user-info, .cal-controls, .no-print { display: none !important; }
+    table.cal { font-size: 9px; }
+    table.cal th, table.cal td { min-width: 24px; height: 24px; padding: 2px; }
+    .cal-cell, .badge, .stat, .detalle-item { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
 </style>
 </head>
 <body>
 
-<!-- LOGIN -->
 <div id="loginOverlay">
   <div class="login-box">
     <div class="login-header">
@@ -341,7 +347,6 @@
   </div>
 </div>
 
-<!-- USER INFO -->
 <div class="user-info" id="userInfo" style="display: none;">
   <span>👤 <span id="userEmail"></span></span>
   <button onclick="handleLogout()">Cerrar sesión</button>
@@ -354,7 +359,7 @@
   <div class="tabs">
     <button class="tab active" onclick="showTab('inicio', this)">📊 Inicio</button>
     <button class="tab" onclick="showTab('permisos', this)">📝 Permisos</button>
-    <button class="tab" onclick="showTab('resumen', this)"> Resumen</button>
+    <button class="tab" onclick="showTab('resumen', this)">📈 Resumen</button>
     <button class="tab" onclick="showTab('calendario', this)">📅 Calendario</button>
     <button class="tab" onclick="showTab('trabajadores', this)">👥 Trabajadores</button>
     <button class="tab" onclick="showTab('config', this)">⚙️ Configuración</button>
@@ -392,7 +397,7 @@
       <input type="hidden" id="tId">
     </div>
     <h3>Listado de trabajadores</h3>
-    <div class="info">💡 La antigüedad para <strong>asuntos propios</strong> se calcula al 31/12 del año en curso (efecto inmediato). La antigüedad para <strong>vacaciones</strong> se calcula al 31/12 del año anterior (efecto año siguiente).</div>
+    <div class="info">💡 La antigüedad para <strong>asuntos propios</strong> se calcula al 31/12 del año en curso. La antigüedad para <strong>vacaciones</strong> se calcula al 31/12 del año anterior.</div>
     <div id="listaTrabajadores"></div>
   </div>
 
@@ -427,10 +432,10 @@
           <select id="aTipo" onchange="actualizarInfoTipo()">
             <option value="vacaciones">🏖️ Vacaciones</option>
             <option value="asuntos_propios">📝 Asuntos propios</option>
-            <option value="compensacion"> Compensación sábados festivos</option>
-            <option value="familiar_primer">‍👩‍👧 Familiar 1er grado (máx. 5 días por solicitud)</option>
+            <option value="compensacion">🔄 Compensación sábados festivos</option>
+            <option value="familiar_primer">👨‍👩‍👧 Familiar 1er grado (máx. 5 días por solicitud)</option>
             <option value="familiar_segundo">👥 Familiar 2º grado (máx. 4 días por solicitud)</option>
-            <option value="reposo">️ Reposo domiciliario (máx. 5 días al año)</option>
+            <option value="reposo">🛏️ Reposo domiciliario (máx. 5 días al año)</option>
             <option value="licencia">📄 Licencia sin sueldo</option>
             <option value="baja">🏥 Baja médica</option>
           </select>
@@ -478,6 +483,9 @@
         </select>
       </div>
     </div>
+    <div style="margin-top: 15px; text-align: right;">
+      <button class="pdf" onclick="imprimirCalendario()" style="background: #16a085;">🖨️ Imprimir calendario</button>
+    </div>
     <div class="leyenda">
       <strong>Leyenda:</strong>
       <div class="leyenda-item"><div class="leyenda-color" style="background:#d5f5e3;"></div>Trabajando</div>
@@ -516,7 +524,7 @@
     </div>
 
     <div class="card">
-      <h3> Festivos del año</h3>
+      <h3>📆 Festivos del año</h3>
       <div class="info">Introduce los festivos (nacionales, autonómicos y locales). <strong>No se contarán</strong> al calcular vacaciones, asuntos propios ni compensaciones.</div>
       <div class="grid-2">
         <div><label>Fecha del festivo</label><input type="date" id="fFecha"></div>
@@ -524,7 +532,7 @@
       </div>
       <button class="success" onclick="añadirFestivo()">➕ Añadir festivo</button>
       <button onclick="copiarFestivos()">📋 Copiar de otro año</button>
-      <button class="danger" onclick="borrarFestivosAnio()">️ Borrar todos del año</button>
+      <button class="danger" onclick="borrarFestivosAnio()">🗑️ Borrar todos del año</button>
       <div style="margin-top:15px;"><label>Ver/editar festivos del año:</label><select id="fVerAnio" onchange="renderFestivos()"></select></div>
       <div id="listaFestivos" style="margin-top:10px;"></div>
     </div>
@@ -545,7 +553,7 @@
       <button class="success" onclick="exportarBackup()">💾 Exportar backup del año</button>
       <button class="warning" onclick="document.getElementById('importFile').click()">📂 Importar backup</button>
       <input type="file" id="importFile" accept=".json" style="display:none" onchange="importarBackup(event)">
-      <button class="danger" onclick="borrarDatosAnio()">️ Borrar datos del año</button>
+      <button class="danger" onclick="borrarDatosAnio()">🗑️ Borrar datos del año</button>
       <button class="warning" onclick="recalcularPermisosExistentes()">🔄 Recalcular días de permisos</button>
     </div>
 
@@ -628,10 +636,10 @@ async function handleLogin() {
     let mensaje = error.message;
     if (error.code === 'auth/user-not-found') mensaje = '❌ Usuario no encontrado en Firebase';
     else if (error.code === 'auth/wrong-password') mensaje = '❌ Contraseña incorrecta';
-    else if (error.code === 'auth/invalid-email') mensaje = ' Email no válido';
+    else if (error.code === 'auth/invalid-email') mensaje = '❌ Email no válido';
     else if (error.code === 'auth/too-many-requests') mensaje = '⏳ Demasiados intentos. Espera unos minutos';
-    else if (error.code === 'auth/invalid-credential') mensaje = ' Credenciales inválidas (usuario o contraseña incorrectos)';
-    else if (error.code === 'auth/network-request-failed') mensaje = ' Error de red. Comprueba tu conexión';
+    else if (error.code === 'auth/invalid-credential') mensaje = '❌ Credenciales inválidas';
+    else if (error.code === 'auth/network-request-failed') mensaje = '🌐 Error de red. Comprueba tu conexión';
     else mensaje = `❌ Error: ${error.code} - ${error.message}`;
     
     errorText.textContent = mensaje;
@@ -782,7 +790,7 @@ function showAlert(titulo, mensaje, tipo = 'info') {
 
 function showConfirm(titulo, mensaje, tipo = 'confirm') {
   return new Promise(resolve => {
-    const iconos = { info: 'ℹ️', success: '✅', warning: '️', error: '❌', confirm: '❓' };
+    const iconos = { info: 'ℹ️', success: '✅', warning: '⚠️', error: '❌', confirm: '❓' };
     const overlay = document.getElementById('modalOverlay');
     overlay.innerHTML = `<div class="modal-box"><div class="modal-header ${tipo}"><span class="modal-icon">${iconos[tipo]||'❓'}</span><span>${titulo}</span></div><div class="modal-body">${mensaje}</div><div class="modal-footer"><button id="modalNo">Cancelar</button><button class="${tipo==='error'?'danger':'success'}" id="modalSi">Confirmar</button></div></div>`;
     requestAnimationFrame(() => overlay.classList.add('visible'));
@@ -807,7 +815,7 @@ function showPrompt(titulo, mensaje, valorInicial = '') {
 }
 
 function toast(titulo, mensaje, tipo = 'info', duracion = 3500) {
-  const iconos = { info: 'ℹ️', success: '✅', warning: '️', error: '❌' };
+  const iconos = { info: 'ℹ️', success: '✅', warning: '⚠️', error: '❌' };
   const cont = document.getElementById('toastContainer');
   const el = document.createElement('div');
   el.className = `toast ${tipo}`;
@@ -966,7 +974,6 @@ function getEstadoPermiso(ausencia) {
   return { texto: 'En curso', clase: 'estado-curso' };
 }
 
-// ✅ FUNCIÓN RENDER INICIO ACTUALIZADA CON TODAS LAS MODALIDADES
 function renderInicio() {
   const hoy = fechaLocalStr(new Date());
   const anioActual = new Date().getFullYear().toString();
@@ -1002,7 +1009,7 @@ function renderInicio() {
   const modalidades = [
     { key: 'trabajando', label: '✓ Trabajando' },
     { key: 'vacaciones', label: '🏖️ Vacaciones' },
-    { key: 'asuntos_propios', label: ' Asuntos propios' },
+    { key: 'asuntos_propios', label: '📝 Asuntos propios' },
     { key: 'compensacion', label: '🔄 Compensación sábados festivos' },
     { key: 'familiar_primer', label: '👨‍👩‍👧 Familiar 1º grado' },
     { key: 'familiar_segundo', label: '👥 Familiar 2º grado' },
@@ -1019,12 +1026,10 @@ function renderInicio() {
       const esTrabajando = m.key === 'trabajando';
       
       if (esTrabajando) {
-        // ✅ Fila de "Trabajando" con clase especial para resaltar
         detalleHtml += `<div class="detalle-item trabajando-row">
           <span>${m.label}:</span><strong>${valor}</strong>
         </div>`;
       } else {
-        // ✅ Resto de modalidades con colores normales
         const color = valor > 0 ? '#ffeb3b' : 'rgba(255,255,255,0.7)';
         const peso = valor > 0 ? 'bold' : 'normal';
         detalleHtml += `<div class="detalle-item" style="color:${color};font-weight:${peso};">
@@ -1050,8 +1055,8 @@ function renderInicio() {
     if (ausHoy) {
       const tipos = {
         vacaciones: '🏖️ Vacaciones', asuntos_propios: '📝 Asuntos propios', compensacion: '🔄 Compensación',
-        familiar_primer: '👨👩‍👧 Familiar 1º', familiar_segundo: '👥 Familiar 2º', reposo: '🛏️ Reposo dom.',
-        licencia: ' Licencia s/s', baja: ' Baja'
+        familiar_primer: '👨‍👩‍👧 Familiar 1º', familiar_segundo: '👥 Familiar 2º', reposo: '🛏️ Reposo dom.',
+        licencia: '📄 Licencia s/s', baja: '🏥 Baja'
       };
       const clases = {
         vacaciones: 'estado-vacaciones', asuntos_propios: 'estado-asuntos-propios', compensacion: 'estado-compensacion',
@@ -1425,9 +1430,9 @@ function mostrarDisponibles() {
     📝 Asuntos propios: <strong>${apC}/${d.asuntosPropios}</strong> días laborables consumidos · <strong style="color:${apR<0?'#c0392b':'#27ae60'}">${apR} restantes</strong> <em>(disponibles hasta 31/01/${anioSiguiente})</em><br>
     🔄 Compensación: <strong>${cC}/${cTotal}</strong> días laborables consumidos · <strong style="color:${cR<0?'#c0392b':'#27ae60'}">${cR} restantes</strong><br>
     👨‍👩‍👧 Familiar 1º grado: <strong>sin límite anual</strong> · máximo 5 días laborables por solicitud<br>
-     Familiar 2º grado: <strong>sin límite anual</strong> · máximo 4 días laborables por solicitud<br>
+    👥 Familiar 2º grado: <strong>sin límite anual</strong> · máximo 4 días laborables por solicitud<br>
     🛏️ Reposo domiciliario: <strong>${rC}/5</strong> días laborables consumidos · <strong style="color:${rR<0?'#c0392b':'#27ae60'}">${rR} restantes</strong><br>
-    📄 Licencia sin sueldo y  Baja: sin límite`;
+    📄 Licencia sin sueldo y 🏥 Baja: sin límite`;
 }
 
 function actualizarInfoTipo() {
@@ -1435,14 +1440,14 @@ function actualizarInfoTipo() {
   const anio = document.getElementById('aAnio').value;
   const anioSiguiente = anio ? parseInt(anio) + 1 : '';
   const info = {
-    vacaciones: `️ <strong>Vacaciones:</strong> días laborables según antigüedad al 31/12/${parseInt(anio)-1} (22-26). Solo se consumen días de lunes a viernes no festivos. Si el periodo empieza en lunes se incluye el fin de semana anterior; si termina en viernes se incluye el siguiente. El periodo total (extendido) debe tener mínimo 7 días naturales. Máximo 4 periodos al año. <strong>Se pueden disfrutar hasta el 31/01/${anioSiguiente}.</strong>`,
+    vacaciones: `🏖️ <strong>Vacaciones:</strong> días laborables según antigüedad al 31/12/${parseInt(anio)-1} (22-26). Solo se consumen días de lunes a viernes no festivos. Si el periodo empieza en lunes se incluye el fin de semana anterior; si termina en viernes se incluye el siguiente. El periodo total (extendido) debe tener mínimo 7 días naturales. Máximo 4 periodos al año. <strong>Se pueden disfrutar hasta el 31/01/${anioSiguiente}.</strong>`,
     asuntos_propios: `📝 <strong>Asuntos propios:</strong> días laborables según antigüedad al 31/12/${anio}. No cuentan sábados, domingos ni festivos. <strong>Se pueden disfrutar hasta el 31/01/${anioSiguiente}.</strong>`,
     compensacion: '🔄 <strong>Compensación sábados festivos:</strong> días laborables según configuración anual. No cuentan sábados, domingos ni festivos.',
-    familiar_primer: '👨‍👩‍ <strong>Familiar 1er grado:</strong> máximo 5 días laborables por solicitud. Sin límite anual.',
+    familiar_primer: '👨‍👩‍👧 <strong>Familiar 1er grado:</strong> máximo 5 días laborables por solicitud. Sin límite anual.',
     familiar_segundo: '👥 <strong>Familiar 2º grado:</strong> máximo 4 días laborables por solicitud. Sin límite anual.',
     reposo: '🛏️ <strong>Reposo domiciliario:</strong> máximo 5 días laborables al año. Requiere parte médico.',
     licencia: '📄 <strong>Licencia sin sueldo:</strong> sin límite de días.',
-    baja: ' <strong>Baja médica:</strong> sin límite. Se cuentan días naturales.'
+    baja: '🏥 <strong>Baja médica:</strong> sin límite. Se cuentan días naturales.'
   };
   document.getElementById('infoTipo').innerHTML = info[tipo];
   calcularDias();
@@ -1454,7 +1459,7 @@ function calcularDias() {
   const tipo = document.getElementById('aTipo').value;
   const div = document.getElementById('diasCalculo');
   if (!inicio || !fin) { div.innerHTML = ''; return null; }
-  if (inicio > fin) { div.innerHTML = '<span style="color:#c0392b">️ La fecha de inicio es posterior al fin.</span>'; return null; }
+  if (inicio > fin) { div.innerHTML = '<span style="color:#c0392b">⚠️ La fecha de inicio es posterior al fin.</span>'; return null; }
   const naturales = contarNaturales(inicio, fin);
   const laborales = contarLaborales(inicio, fin);
   let dias, tipoDias, detalle = '';
@@ -1472,7 +1477,7 @@ function calcularDias() {
     dias = naturales;
     tipoDias = 'naturales (incluye fines de semana y festivos)';
   }
-  div.innerHTML = ` <strong>${naturales}</strong> días naturales · <strong>${dias}</strong> días ${tipoDias} consumidos${detalle}`;
+  div.innerHTML = `📊 <strong>${naturales}</strong> días naturales · <strong>${dias}</strong> días ${tipoDias} consumidos${detalle}`;
   return {naturales, laborales, dias, vacaciones: tipo === 'vacaciones' ? contarDiasVacaciones(inicio, fin) : null};
 }
 
@@ -1490,7 +1495,7 @@ async function guardarAusencia() {
   if (permisosExistentes.length > 0) {
     let mensaje = `⚠️ Ya existen permisos que se solapan:\n\n`;
     permisosExistentes.forEach((p, idx) => {
-      const tipoNombre = {vacaciones:'🏖️ Vacaciones', asuntos_propios:'📝 Asuntos propios', compensacion:'🔄 Compensación', familiar_primer:'👨‍👩‍ Familiar 1º', familiar_segundo:'👥 Familiar 2º', reposo:'🛏️ Reposo dom.', licencia:'📄 Licencia s/s', baja:' Baja'}[p.tipo] || p.tipo;
+      const tipoNombre = {vacaciones:'🏖️ Vacaciones', asuntos_propios:'📝 Asuntos propios', compensacion:'🔄 Compensación', familiar_primer:'👨‍👩‍👧 Familiar 1º', familiar_segundo:'👥 Familiar 2º', reposo:'🛏️ Reposo dom.', licencia:'📄 Licencia s/s', baja:'🏥 Baja'}[p.tipo] || p.tipo;
       mensaje += `${idx + 1}. ${tipoNombre}: ${fmtDate(p.inicio)} - ${fmtDate(p.fin)} (${p.diasConsumidos} días)\n`;
     });
     mensaje += `\n❌ Elimine o modifique los permisos existentes primero.`;
@@ -1611,7 +1616,7 @@ function renderPermisosTrabajador() {
   const mostrarDisfrutados = document.getElementById('filtroDisfrutados').checked;
   const ordenadas = [...permisosTrabajador].sort((a,b) => a.inicio.localeCompare(b.inicio));
   let html = '';
-  const nombres = {vacaciones:'🏖️ Vacaciones', asuntos_propios:'📝 Asuntos propios', compensacion:'🔄 Compensación', familiar_primer:'👨‍👩‍ Familiar 1º', familiar_segundo:'👥 Familiar 2º', reposo:'🛏️ Reposo dom.', licencia:'📄 Licencia s/s', baja:'🏥 Baja'};
+  const nombres = {vacaciones:'🏖️ Vacaciones', asuntos_propios:'📝 Asuntos propios', compensacion:'🔄 Compensación', familiar_primer:'👨‍👩‍👧 Familiar 1º', familiar_segundo:'👥 Familiar 2º', reposo:'🛏️ Reposo dom.', licencia:'📄 Licencia s/s', baja:'🏥 Baja'};
   const clases = {vacaciones:'b-vac', asuntos_propios:'b-ap', compensacion:'b-comp', familiar_primer:'b-fam1', familiar_segundo:'b-fam2', reposo:'b-reposo', licencia:'b-licencia', baja:'b-baja'};
   ordenadas.forEach(a => {
     const estado = getEstadoPermiso(a);
@@ -1662,7 +1667,7 @@ function renderResumen() {
     const apDisponibles = apTotal - apConsumidos;
     
     html += `<tr class="fila-trabajador" onclick="mostrarDetalleTrabajador('${t.id}', '${anio}')">
-      <td class="nombre-cell"> ${t.nombre} ${t.apellidos}</td><td>${catNombre}</td>
+      <td class="nombre-cell">👤 ${t.nombre} ${t.apellidos}</td><td>${catNombre}</td>
       <td class="dias-total">${vacTotal}</td><td class="dias-disfrutados">${vacConsumidos}</td><td class="dias-pedidos">${vacPendientes}</td><td class="${vacDisponibles < 0 ? 'diferencia-negativa' : 'dias-por-pedir'}">${vacDisponibles}</td>
       <td class="dias-total">${compTotal}</td><td class="dias-disfrutados">${compConsumidos}</td><td class="dias-pedidos">${compPendientes}</td><td class="${compDisponibles < 0 ? 'diferencia-negativa' : 'dias-por-pedir'}">${compDisponibles}</td>
       <td class="dias-total">${apTotal}</td><td class="dias-disfrutados">${apConsumidos}</td><td class="dias-pedidos">${apPendientes}</td><td class="${apDisponibles < 0 ? 'diferencia-negativa' : 'dias-por-pedir'}">${apDisponibles}</td>
@@ -1683,7 +1688,7 @@ function renderResumen() {
         <div class="resumen-card-row"><span>Pendientes:</span><span style="color:#f39c12">${compPendientes}</span></div>
         <div class="resumen-card-row"><span>Disponibles:</span><span style="color:${compDisponibles<0?'#c0392b':'#27ae60'}">${compDisponibles}</span></div>
       </div>
-      <div class="resumen-card-section"><div class="resumen-card-section-title ap"> Asuntos propios</div>
+      <div class="resumen-card-section"><div class="resumen-card-section-title ap">📝 Asuntos propios</div>
         <div class="resumen-card-row"><span>Total:</span><span>${apTotal}</span></div>
         <div class="resumen-card-row"><span>Consumidos:</span><span style="color:#27ae60">${apConsumidos}</span></div>
         <div class="resumen-card-row"><span>Pendientes:</span><span style="color:#f39c12">${apPendientes}</span></div>
@@ -1709,7 +1714,7 @@ function mostrarDetalleTrabajador(trabajadorId, anio) {
   const anioSiguiente = (parseInt(anio) + 1).toString();
   const permisosAnioSiguiente = todosPermisos.filter(a => a.inicio.startsWith(anioSiguiente));
   const tiposPermiso = ['vacaciones', 'asuntos_propios', 'compensacion', 'familiar_primer', 'familiar_segundo', 'reposo', 'licencia', 'baja'];
-  const nombresTipo = {vacaciones:'🏖️ Vacaciones', asuntos_propios:'📝 Asuntos propios', compensacion:'🔄 Compensación', familiar_primer:'👨‍‍👧 Familiar 1º', familiar_segundo:'👥 Familiar 2º', reposo:'🛏️ Reposo domiciliario', licencia:'📄 Licencia sin sueldo', baja:'🏥 Baja médica'};
+  const nombresTipo = {vacaciones:'🏖️ Vacaciones', asuntos_propios:'📝 Asuntos propios', compensacion:'🔄 Compensación', familiar_primer:'👨‍👩‍👧 Familiar 1º', familiar_segundo:'👥 Familiar 2º', reposo:'🛏️ Reposo domiciliario', licencia:'📄 Licencia sin sueldo', baja:'🏥 Baja médica'};
   const clasesTipo = {vacaciones:'vac', asuntos_propios:'ap', compensacion:'comp', familiar_primer:'fam1', familiar_segundo:'fam2', reposo:'reposo', licencia:'licencia', baja:'baja'};
   const maximos = {vacaciones:d.vacaciones, asuntos_propios:d.asuntosPropios, compensacion:cTotal, familiar_primer:'5 por solicitud', familiar_segundo:'4 por solicitud', reposo:5, licencia:'∞', baja:'∞'};
   
@@ -1737,7 +1742,7 @@ function mostrarDetalleTrabajador(trabajadorId, anio) {
             <span class="estado-permiso ${estado.clase}">${estado.texto}</span>
             <strong>📅 ${fmtDate(p.inicio)} → ${fmtDate(p.fin)}</strong>
             <span style="margin-left:10px;color:#666;">${p.diasConsumidos} días (${p.diasNaturales} naturales)</span>
-            ${p.obs ? `<br><em style="color:#888;font-size:12px;"> ${p.obs}</em>` : ''}
+            ${p.obs ? `<br><em style="color:#888;font-size:12px;">📝 ${p.obs}</em>` : ''}
           </div>
         </div>`;
       });
@@ -1768,7 +1773,7 @@ function mostrarDetalleTrabajador(trabajadorId, anio) {
     const dSig = getDiasTrabajador(t, anioSiguiente);
     const cfgSig = configs[anioSiguiente];
     const cTotalSig = cfgSig ? cfgSig.compensacion : 0;
-    const maximosSig = {vacaciones:dSig.vacaciones, asuntos_propios:dSig.asuntosPropios, compensacion:cTotalSig, familiar_primer:'5 por solicitud', familiar_segundo:'4 por solicitud', reposo:5, licencia:'', baja:'∞'};
+    const maximosSig = {vacaciones:dSig.vacaciones, asuntos_propios:dSig.asuntosPropios, compensacion:cTotalSig, familiar_primer:'5 por solicitud', familiar_segundo:'4 por solicitud', reposo:5, licencia:'∞', baja:'∞'};
     tiposPermiso.forEach(tipo => {
       const permisosTipo = permisosAnioSiguiente.filter(a => a.tipo === tipo);
       if (permisosTipo.length > 0) html += renderSeccionTipo(tipo, permisosTipo, maximosSig[tipo], anioSiguiente);
@@ -1914,6 +1919,87 @@ async function borrarDatosAnio() {
   toast('Datos borrados', `Datos del año ${anio} eliminados`, 'info');
 }
 
+// ✅ FUNCIÓN PARA IMPRIMIR EL CALENDARIO
+function imprimirCalendario() {
+  const mes = parseInt(document.getElementById('calMes').value);
+  const anio = parseInt(document.getElementById('calAnio').value);
+  const categoria = document.getElementById('calCategoria').value;
+  
+  const nombreMesTexto = nombreMes(mes);
+  const catTexto = categoria ? {encargado: 'Encargados', ordenanza: 'Ordenanzas', limpiador: 'Limpiadores/as'}[categoria] : 'Todas las categorías';
+  
+  const tablaCal = document.getElementById('tablaCalendario').outerHTML;
+  const leyenda = document.querySelector('.leyenda').outerHTML;
+  
+  const ventana = window.open('', '_blank', 'width=1200,height=800');
+  ventana.document.write(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <title>Calendario ${nombreMesTexto} ${anio}</title>
+      <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; padding: 20px; color: #333; }
+        h1 { color: #1a4d7a; margin-bottom: 10px; font-size: 24px; }
+        h2 { color: #2c6fa8; margin: 15px 0 10px; font-size: 16px; }
+        .info { margin-bottom: 20px; font-size: 14px; color: #666; }
+        
+        table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 15px; }
+        th, td { padding: 4px; text-align: center; border: 1px solid #ddd; min-width: 28px; height: 28px; }
+        th { background: #1a4d7a; color: white; font-size: 10px; }
+        th.nombre { min-width: 180px; text-align: left; padding: 6px 10px; background: #1a4d7a; }
+        td.nombre { text-align: left; padding: 4px 8px; font-weight: 600; white-space: nowrap; }
+        
+        .cal-cell { display: inline-block; width: 100%; height: 100%; }
+        .cal-cell.trab { background: #d5f5e3; }
+        .cal-cell.vac { background: #27ae60; color: white; font-weight: bold; }
+        .cal-cell.ap { background: #f39c12; color: white; font-weight: bold; }
+        .cal-cell.comp { background: #16a085; color: white; font-weight: bold; }
+        .cal-cell.baja { background: #c0392b; color: white; font-weight: bold; }
+        .cal-cell.fam1 { background: #9b59b6; color: white; font-weight: bold; }
+        .cal-cell.fam2 { background: #8e44ad; color: white; font-weight: bold; }
+        .cal-cell.licencia { background: #7f8c8d; color: white; font-weight: bold; }
+        .cal-cell.reposo { background: #1abc9c; color: white; font-weight: bold; }
+        .cal-cell.finsemana { background: #ecf0f1; color: #95a5a6; }
+        .cal-cell.festivo { background: #e74c3c; color: white; font-weight: bold; }
+        
+        .badge { display: inline-block; padding: 2px 6px; border-radius: 10px; font-size: 9px; font-weight: 600; color: white; }
+        .b-enc { background: #8e44ad; }
+        .b-ord { background: #3498db; }
+        .b-limp { background: #e67e22; }
+        
+        .leyenda { display: flex; gap: 12px; flex-wrap: wrap; margin: 15px 0; font-size: 11px; }
+        .leyenda-item { display: flex; align-items: center; gap: 5px; }
+        .leyenda-color { width: 16px; height: 16px; border-radius: 3px; border: 1px solid rgba(0,0,0,0.1); }
+        
+        @media print {
+          body { padding: 10px; }
+          @page { size: landscape; margin: 1cm; }
+          table { font-size: 9px; }
+          th, td { min-width: 24px; height: 24px; padding: 2px; }
+          .cal-cell, .badge { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        }
+      </style>
+    </head>
+    <body>
+      <h1>📅 Calendario Mensual del Equipo</h1>
+      <div class="info">
+        <strong>Mes:</strong> ${nombreMesTexto} ${anio} · 
+        <strong>Categoría:</strong> ${catTexto} · 
+        <strong>Generado:</strong> ${new Date().toLocaleDateString('es-ES')}
+      </div>
+      ${leyenda}
+      ${tablaCal}
+      <script>
+        window.onload = function() { setTimeout(() => { window.print(); }, 300); }
+      <\/script>
+    </body>
+    </html>
+  `);
+  ventana.document.close();
+}
+
 document.getElementById('cAnio').value = new Date().getFullYear();
 document.getElementById('aInicio').addEventListener('change', calcularDias);
 document.getElementById('aFin').addEventListener('change', calcularDias);
@@ -1923,13 +2009,11 @@ document.getElementById('cAnio').addEventListener('change', () => {
   else document.getElementById('cCompensacion').value = '';
 });
 
-// ✅ INICIALIZAR FIREBASE PRIMERO
 if (typeof USE_FIREBASE !== 'undefined' && USE_FIREBASE && 
     typeof FIREBASE_CONFIG !== 'undefined' && FIREBASE_CONFIG.apiKey !== 'PEGA_AQUI_TU_API_KEY') {
   firebase.initializeApp(FIREBASE_CONFIG);
 }
 
-// ✅ Verificar sesión activa
 firebase.auth().onAuthStateChanged((user) => {
   if (user) {
     currentUser = user;
