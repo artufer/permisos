@@ -53,6 +53,8 @@
   button.pdf:hover { background: #c0392b; }
   button.warning { background: #f39c12; }
   button.warning:hover { background: #d68910; }
+  button.edit { background: #3498db; }
+  button.edit:hover { background: #2980b9; }
   button.small { padding: 4px 10px; font-size: 12px; }
   table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
   th, td { padding: 8px; text-align: left; border-bottom: 1px solid #e1e4e8; }
@@ -145,6 +147,7 @@
   .err { background: #fdecea; border-left: 4px solid #c0392b; padding: 10px; margin: 10px 0; font-size: 13px; border-radius: 4px; }
   .ok { background: #e8f8f0; border-left: 4px solid #27ae60; padding: 10px; margin: 10px 0; font-size: 13px; border-radius: 4px; }
   .ausencia-item { background: white; border: 1px solid #e1e4e8; border-radius: 6px; padding: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+  .ausencia-item.editando { border-left: 4px solid #3498db; background: #eaf4fb; }
   .ausencia-info { flex: 1; }
   .ausencia-info strong { color: #1a4d7a; }
   .estado-permiso { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 600; margin-left: 8px; }
@@ -423,8 +426,8 @@
 
   <div id="permisos" class="panel">
     <h2>Registro de Permisos y Ausencias</h2>
-    <div class="card">
-      <h3>Nuevo permiso</h3>
+    <div class="card" id="cardNuevoPermiso">
+      <h3 id="tituloFormPermiso">Nuevo permiso</h3>
       <div class="info" style="margin-top:0;">ℹ️ <strong>Vacaciones y asuntos propios</strong> del año seleccionado se pueden disfrutar hasta el <strong>31 de enero del año siguiente</strong>.</div>
       <div class="grid-2">
         <div><label>Trabajador</label><select id="aTrabajador" onchange="mostrarDisponibles(); renderPermisosTrabajador();"></select></div>
@@ -454,8 +457,10 @@
       <div id="infoTipo" class="info"></div>
       <div id="diasCalculo" style="margin-bottom:10px;font-weight:600;"></div>
       <div><label>Observaciones (opcional)</label><input type="text" id="aObs" placeholder="Notas..."></div>
-      <button class="success" onclick="guardarAusencia()">💾 Registrar permiso</button>
+      <button class="success" id="btnGuardarAusencia" onclick="guardarAusencia()">💾 Registrar permiso</button>
+      <button id="btnCancelarEdicion" onclick="cancelarEdicion()" style="display:none;background:#7f8c8d;">❌ Cancelar edición</button>
       <button onclick="calcularDias()">🔢 Calcular días</button>
+      <input type="hidden" id="aIdEdicion" value="">
     </div>
 
     <div class="seccion-permisos">
@@ -538,7 +543,7 @@
       <div class="info">Introduce los festivos (nacionales, autonómicos y locales de <strong>León</strong>). <strong>No se contarán</strong> al calcular vacaciones, asuntos propios ni compensaciones. Los festivos se consultan automáticamente en todos los cálculos.</div>
       <div class="grid-2">
         <div><label>Fecha del festivo</label><input type="date" id="fFecha"></div>
-        <div><label>Descripción</label><input type="text" id="fNombre" placeholder="Ej: Día de León"></div>
+        <div><label>Descripción</label><input type="text" id="fNombre" placeholder="Ej: San Froilán"></div>
       </div>
       <button class="success" onclick="añadirFestivo()">➕ Añadir festivo</button>
       <button onclick="copiarFestivos()">📋 Copiar de otro año</button>
@@ -1283,7 +1288,6 @@ function getAusenciaEnFecha(trabajadorId, fechaStr) {
   return ausencias.find(a => a.trabajadorId === trabajadorId && a.inicio <= fechaStr && a.fin >= fechaStr);
 }
 
-// ✅ TIPOS DE AUSENCIA QUE CUENTAN DÍAS NATURALES (incluyen fines de semana y festivos)
 const TIPOS_DIAS_NATURALES = ['baja', 'licencia'];
 
 function renderCalendario() {
@@ -1341,40 +1345,27 @@ function renderCalendario() {
         const aus = getAusenciaEnFecha(t.id, fechaStr);
         let clase = 'fuera', contenido = '', title = '';
         
-        // ✅ PRIORIDAD: Baja y Licencia tienen prioridad sobre festivos y fines de semana
-        // (se cuentan como días naturales continuos)
         if (aus && TIPOS_DIAS_NATURALES.includes(aus.tipo)) {
           const tipos = {baja: {c:'baja', l:'B', n:'Baja'}, licencia: {c:'licencia', l:'LS', n:'Licencia s/s'}};
           const info = tipos[aus.tipo];
-          clase = info.c; 
-          contenido = info.l; 
-          title = `${info.n}${aus.obs ? ' - ' + aus.obs : ''}`;
+          clase = info.c; contenido = info.l; title = `${info.n}${aus.obs ? ' - ' + aus.obs : ''}`;
           diasAus++;
         }
         else if (esFest) { 
           const fi = festivos[anio.toString()].find(f => f.fecha === fechaStr); 
-          clase = 'festivo'; 
-          contenido = 'F'; 
-          title = `Festivo: ${fi.nombre}`; 
+          clase = 'festivo'; contenido = 'F'; title = `Festivo: ${fi.nombre}`; 
         }
         else if (dow === 0 || dow === 6) { 
-          clase = 'finsemana'; 
-          contenido = nombreDiaCorto(dow); 
-          title = dow === 0 ? 'Domingo' : 'Sábado'; 
+          clase = 'finsemana'; contenido = nombreDiaCorto(dow); title = dow === 0 ? 'Domingo' : 'Sábado'; 
         }
         else if (aus) {
           const tipos = {vacaciones: {c:'vac', l:'V', n:'Vacaciones'}, asuntos_propios: {c:'ap', l:'AP', n:'Asuntos propios'}, compensacion: {c:'comp', l:'C', n:'Compensación'}, familiar_primer: {c:'fam1', l:'F1', n:'Familiar 1º'}, familiar_segundo: {c:'fam2', l:'F2', n:'Familiar 2º'}, reposo: {c:'reposo', l:'RD', n:'Reposo dom.'}, huelga: {c:'huelga', l:'H', n:'Huelga'}};
           const info = tipos[aus.tipo] || {c:'baja', l:'?', n:aus.tipo};
-          clase = info.c; 
-          contenido = info.l; 
-          title = `${info.n}${aus.obs ? ' - ' + aus.obs : ''}`;
+          clase = info.c; contenido = info.l; title = `${info.n}${aus.obs ? ' - ' + aus.obs : ''}`;
           diasAus++;
         } 
         else { 
-          clase = 'trab'; 
-          contenido = '✓'; 
-          title = 'Trabajando'; 
-          diasTrab++; 
+          clase = 'trab'; contenido = '✓'; title = 'Trabajando'; diasTrab++; 
         }
         if (fechaStr === hoyStr) clase += ' hoy';
         html += `<td><span class="cal-cell ${clase}" title="${fmtDate(fechaStr)} - ${title}">${contenido}</span></td>`;
@@ -1383,7 +1374,6 @@ function renderCalendario() {
       for (let d = 1; d <= diasMes; d++) {
         const fechaStr = fechaLocalStr(new Date(anio, mes, d));
         const aus = getAusenciaEnFecha(t.id, fechaStr);
-        // ✅ Para el resumen diario: baja y licencia cuentan como ausentes aunque sea festivo/fin de semana
         if (aus) resumenDia[d].ausentes++; else resumenDia[d].trabajan++;
       }
     });
@@ -1527,6 +1517,63 @@ function calcularDias() {
   return {naturales, laborales, dias, vacaciones: tipo === 'vacaciones' ? contarDiasVacaciones(inicio, fin) : null};
 }
 
+// ✅ EDITAR PERMISO: carga los datos en el formulario
+function editarAusencia(id) {
+  const a = ausencias.find(x => x.id === id);
+  if (!a) return;
+  
+  // Cargar datos en el formulario
+  document.getElementById('aTrabajador').value = a.trabajadorId;
+  document.getElementById('aAnio').value = a.anio;
+  document.getElementById('aTipo').value = a.tipo;
+  document.getElementById('aInicio').value = a.inicio;
+  document.getElementById('aFin').value = a.fin;
+  document.getElementById('aObs').value = a.obs || '';
+  document.getElementById('aIdEdicion').value = a.id;
+  
+  // Cambiar UI a modo edición
+  document.getElementById('tituloFormPermiso').textContent = '✏️ Editando permiso';
+  document.getElementById('btnGuardarAusencia').textContent = '💾 Guardar cambios';
+  document.getElementById('btnCancelarEdicion').style.display = 'inline-block';
+  document.getElementById('cardNuevoPermiso').style.borderLeft = '4px solid #3498db';
+  
+  // Actualizar info y días
+  actualizarInfoTipo();
+  mostrarDisponibles();
+  renderPermisosTrabajador();
+  
+  // Resaltar el permiso que se está editando
+  setTimeout(() => {
+    const item = document.getElementById('ausencia-' + id);
+    if (item) {
+      item.classList.add('editando');
+      item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, 100);
+  
+  // Scroll al formulario
+  document.getElementById('cardNuevoPermiso').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  
+  toast('Editando permiso', 'Modifica los datos y guarda los cambios', 'info');
+}
+
+// ✅ CANCELAR EDICIÓN
+function cancelarEdicion() {
+  document.getElementById('tituloFormPermiso').textContent = 'Nuevo permiso';
+  document.getElementById('btnGuardarAusencia').textContent = '💾 Registrar permiso';
+  document.getElementById('btnCancelarEdicion').style.display = 'none';
+  document.getElementById('cardNuevoPermiso').style.borderLeft = '';
+  document.getElementById('aIdEdicion').value = '';
+  document.getElementById('aInicio').value = '';
+  document.getElementById('aFin').value = '';
+  document.getElementById('aObs').value = '';
+  
+  // Quitar resaltado
+  document.querySelectorAll('.ausencia-item.editando').forEach(el => el.classList.remove('editando'));
+  
+  toast('Edición cancelada', 'Formulario restablecido', 'info');
+}
+
 async function guardarAusencia() {
   const trabajadorId = document.getElementById('aTrabajador').value;
   const tipo = document.getElementById('aTipo').value;
@@ -1534,10 +1581,18 @@ async function guardarAusencia() {
   const fin = document.getElementById('aFin').value;
   const anioSel = document.getElementById('aAnio').value;
   const obs = document.getElementById('aObs').value.trim();
+  const idEdicion = document.getElementById('aIdEdicion').value; // ✅ ID del permiso que se está editando
+  
   if (!trabajadorId || !inicio || !fin) { await showAlert('Datos incompletos', 'Complete trabajador, fecha inicio y fin.', 'warning'); return; }
   if (inicio > fin) { await showAlert('Fechas incorrectas', 'La fecha de inicio no puede ser posterior al fin.', 'warning'); return; }
   
-  const permisosExistentes = ausencias.filter(a => a.trabajadorId === trabajadorId && a.inicio <= fin && a.fin >= inicio);
+  // ✅ Al editar, excluir el propio permiso de la comprobación de solapamiento
+  const permisosExistentes = ausencias.filter(a => 
+    a.trabajadorId === trabajadorId && 
+    a.inicio <= fin && 
+    a.fin >= inicio &&
+    a.id !== idEdicion  // ✅ Excluir el que se está editando
+  );
   if (permisosExistentes.length > 0) {
     let mensaje = `⚠️ Ya existen permisos que se solapan:\n\n`;
     permisosExistentes.forEach((p, idx) => {
@@ -1575,7 +1630,7 @@ async function guardarAusencia() {
       await showAlert('Periodo insuficiente', `El periodo tiene ${calc.vacaciones.diasNaturalesPeriodo} días naturales. El mínimo es 7.`, 'warning');
       return;
     }
-    const periodosActuales = ausencias.filter(a => a.trabajadorId === trabajadorId && a.tipo === 'vacaciones' && a.inicio.startsWith(anio));
+    const periodosActuales = ausencias.filter(a => a.trabajadorId === trabajadorId && a.tipo === 'vacaciones' && a.inicio.startsWith(anio) && a.id !== idEdicion);
     if (cfg && periodosActuales.length >= cfg.maxPeriodos) {
       const ok = await showConfirm('Máximo periodos', `Ya tiene ${periodosActuales.length} periodos (máx ${cfg.maxPeriodos}). ¿Continuar?`, 'warning');
       if (!ok) return;
@@ -1587,14 +1642,14 @@ async function guardarAusencia() {
     }
   }
   if (tipo === 'asuntos_propios') {
-    const apC = ausencias.filter(a => a.trabajadorId === trabajadorId && a.tipo === 'asuntos_propios' && a.inicio.startsWith(anio)).reduce((s,a) => s + a.diasConsumidos, 0);
+    const apC = ausencias.filter(a => a.trabajadorId === trabajadorId && a.tipo === 'asuntos_propios' && a.inicio.startsWith(anio) && a.id !== idEdicion).reduce((s,a) => s + a.diasConsumidos, 0);
     if (apC + calc.dias > d.asuntosPropios) {
       const ok = await showConfirm('Supera AP', `Se quedaría con ${apC + calc.dias}/${d.asuntosPropios} días. ¿Continuar?`, 'warning');
       if (!ok) return;
     }
   }
   if (tipo === 'compensacion') {
-    const cC = ausencias.filter(a => a.trabajadorId === trabajadorId && a.tipo === 'compensacion' && a.inicio.startsWith(anio)).reduce((s,a) => s + a.diasConsumidos, 0);
+    const cC = ausencias.filter(a => a.trabajadorId === trabajadorId && a.tipo === 'compensacion' && a.inicio.startsWith(anio) && a.id !== idEdicion).reduce((s,a) => s + a.diasConsumidos, 0);
     const cTotal = cfg ? cfg.compensacion : 0;
     if (cTotal > 0 && cC + calc.dias > cTotal) {
       const ok = await showConfirm('Supera compensación', `${cC + calc.dias}/${cTotal}. ¿Continuar?`, 'warning');
@@ -1631,16 +1686,31 @@ async function guardarAusencia() {
       return;
     }
   }
-  const nuevoId = 'A' + Date.now();
+  
   const data = { trabajadorId, tipo, inicio, fin, obs, diasConsumidos: calc.dias, diasNaturales: calc.naturales, anio };
-  ausencias.push({id: nuevoId, ...data});
-  await fsSet('ausencias', nuevoId, data);
+  
+  // ✅ GUARDAR: crear nuevo o actualizar existente
+  if (idEdicion) {
+    // Actualizar permiso existente
+    const idx = ausencias.findIndex(a => a.id === idEdicion);
+    if (idx >= 0) {
+      ausencias[idx] = { id: idEdicion, ...data };
+    }
+    await fsSet('ausencias', idEdicion, data);
+    toast('Permiso actualizado', `${t.nombre} · ${tipo} · ${calc.dias} días`, 'success');
+    cancelarEdicion(); // Resetear formulario
+  } else {
+    // Crear nuevo permiso
+    const nuevoId = 'A' + Date.now();
+    ausencias.push({id: nuevoId, ...data});
+    await fsSet('ausencias', nuevoId, data);
+    document.getElementById('aObs').value = '';
+    toast('Permiso registrado', `${t.nombre} · ${tipo} · ${calc.dias} días`, 'success');
+  }
+  
   guardarLocal();
-  document.getElementById('aObs').value = '';
   renderPermisosTrabajador();
   mostrarDisponibles();
-  const nombres = {vacaciones:'Vacaciones', asuntos_propios:'Asuntos propios', compensacion:'Compensación', familiar_primer:'Familiar 1º', familiar_segundo:'Familiar 2º', reposo:'Reposo dom.', huelga:'Huelga', licencia:'Licencia s/s', baja:'Baja'};
-  toast('Permiso registrado', `${t.nombre} · ${nombres[tipo]} · ${calc.dias} días`, 'success');
 }
 
 async function eliminarAusencia(id) {
@@ -1650,6 +1720,12 @@ async function eliminarAusencia(id) {
   if (!ok) return;
   ausencias = ausencias.filter(a => a.id !== id);
   await fsDelete('ausencias', id);
+  
+  // Si estábamos editando este permiso, cancelar edición
+  if (document.getElementById('aIdEdicion').value === id) {
+    cancelarEdicion();
+  }
+  
   guardarLocal();
   renderPermisosTrabajador();
   mostrarDisponibles();
@@ -1679,19 +1755,24 @@ function renderPermisosTrabajador() {
   let html = '';
   const nombres = {vacaciones:'🏖️ Vacaciones', asuntos_propios:'📝 Asuntos propios', compensacion:'🔄 Compensación', familiar_primer:'👨‍👩‍👧 Familiar 1º', familiar_segundo:'👥 Familiar 2º', reposo:'🛏️ Reposo dom.', huelga:'✊ Huelga', licencia:'📄 Licencia s/s', baja:'🏥 Baja'};
   const clases = {vacaciones:'b-vac', asuntos_propios:'b-ap', compensacion:'b-comp', familiar_primer:'b-fam1', familiar_segundo:'b-fam2', reposo:'b-reposo', huelga:'b-huelga', licencia:'b-licencia', baja:'b-baja'};
+  const idEdicion = document.getElementById('aIdEdicion').value;
   ordenadas.forEach(a => {
     const estado = getEstadoPermiso(a);
     if (estado.texto === 'Pendiente' && !mostrarPendientes) return;
     if (estado.texto === 'En curso' && !mostrarCurso) return;
     if (estado.texto === 'Disfrutado' && !mostrarDisfrutados) return;
-    html += `<div class="ausencia-item">
+    const esEditando = a.id === idEdicion ? 'editando' : '';
+    html += `<div class="ausencia-item ${esEditando}" id="ausencia-${a.id}">
       <div class="ausencia-info">
         <span class="badge ${clases[a.tipo]}">${nombres[a.tipo]}</span>
         <span class="estado-permiso ${estado.clase}">${estado.texto}</span><br>
         📅 ${fmtDate(a.inicio)} → ${fmtDate(a.fin)} · <strong>${a.diasConsumidos}</strong> días consumidos (${a.diasNaturales} naturales)
         ${a.obs ? '<br><em>' + a.obs + '</em>' : ''}
       </div>
-      <button class="small danger" onclick="eliminarAusencia('${a.id}')">🗑️</button>
+      <div>
+        <button class="small edit" onclick="editarAusencia('${a.id}')" title="Editar permiso">✏️ Editar</button>
+        <button class="small danger" onclick="eliminarAusencia('${a.id}')" title="Eliminar permiso">🗑️</button>
+      </div>
     </div>`;
   });
   cont.innerHTML = html || '<p style="color:#888;">No hay permisos con los filtros seleccionados.</p>';
@@ -2045,9 +2126,7 @@ function imprimirCalendario() {
         <strong>Categoría:</strong> ${catTexto} · 
         <strong>Generado:</strong> ${new Date().toLocaleDateString('es-ES')}
       </div>
-      <div class="leyenda">
-        <strong>Leyenda:</strong>
-      </div>
+      <div class="leyenda"><strong>Leyenda:</strong></div>
       <div class="leyenda-linea">
         <div class="leyenda-item"><div class="leyenda-color" style="background:#d5f5e3;color:#27ae60;">✓</div>Trabajando</div>
         <div class="leyenda-item"><div class="leyenda-color" style="background:#27ae60;">V</div>Vacaciones</div>
