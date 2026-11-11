@@ -71,6 +71,7 @@
   .b-fam2 { background: #8e44ad; }
   .b-licencia { background: #7f8c8d; }
   .b-reposo { background: #1abc9c; }
+  .b-huelga { background: #2c3e50; }
   
   .estado-trabajando { background: #2ecc71; color: white; padding: 4px 12px; border-radius: 12px; font-weight: 600; font-size: 12px; display: inline-block; }
   .estado-vacaciones { background: #00bcd4; color: white; padding: 4px 12px; border-radius: 12px; font-weight: 600; font-size: 12px; display: inline-block; box-shadow: 0 2px 4px rgba(0, 188, 212, 0.3); }
@@ -80,6 +81,7 @@
   .estado-reposo { background: #1abc9c; color: white; padding: 4px 12px; border-radius: 12px; font-weight: 600; font-size: 12px; display: inline-block; }
   .estado-licencia { background: #7f8c8d; color: white; padding: 4px 12px; border-radius: 12px; font-weight: 600; font-size: 12px; display: inline-block; }
   .estado-compensacion { background: #16a085; color: white; padding: 4px 12px; border-radius: 12px; font-weight: 600; font-size: 12px; display: inline-block; }
+  .estado-huelga { background: #2c3e50; color: white; padding: 4px 12px; border-radius: 12px; font-weight: 600; font-size: 12px; display: inline-block; }
   
   #estadoPlantilla th:nth-child(2),
   #estadoPlantilla th:nth-child(3),
@@ -175,13 +177,15 @@
   .cal-cell.fam2 { background: #8e44ad; color: white; font-weight: bold; }
   .cal-cell.licencia { background: #7f8c8d; color: white; font-weight: bold; }
   .cal-cell.reposo { background: #1abc9c; color: white; font-weight: bold; }
+  .cal-cell.huelga { background: #2c3e50; color: white; font-weight: bold; }
   .cal-cell.finsemana { background: #ecf0f1; color: #95a5a6; }
   .cal-cell.festivo { background: #e74c3c; color: white; font-weight: bold; }
   .cal-cell.fuera { background: #f8f9fa; }
   .cal-cell.hoy { outline: 2px solid #1a4d7a; outline-offset: -2px; }
-  .leyenda { display: flex; gap: 12px; flex-wrap: wrap; margin: 15px 0; font-size: 12px; align-items: center; }
+  .leyenda { display: flex; gap: 12px; flex-wrap: wrap; margin: 10px 0; font-size: 12px; align-items: center; }
+  .leyenda-linea { display: flex; gap: 12px; flex-wrap: wrap; margin: 5px 0; align-items: center; }
   .leyenda-item { display: flex; align-items: center; gap: 5px; }
-  .leyenda-color { width: 18px; height: 18px; border-radius: 3px; border: 1px solid rgba(0,0,0,0.1); }
+  .leyenda-color { width: 18px; height: 18px; border-radius: 3px; border: 1px solid rgba(0,0,0,0.1); display: inline-flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; color: white; }
   .resumen-dia { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 5px; margin-top: 15px; }
   .resumen-dia-item { background: #f8f9fa; border: 1px solid #e1e4e8; border-radius: 4px; padding: 6px; text-align: center; font-size: 11px; }
   .resumen-dia-item .dia-num { font-weight: bold; color: #1a4d7a; font-size: 14px; }
@@ -280,6 +284,7 @@
   .detalle-seccion-titulo.reposo { background: #1abc9c; }
   .detalle-seccion-titulo.licencia { background: #7f8c8d; }
   .detalle-seccion-titulo.baja { background: #c0392b; }
+  .detalle-seccion-titulo.huelga { background: #2c3e50; }
   .detalle-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 10px; }
   .detalle-stat { background: #f8f9fa; padding: 8px; border-radius: 6px; text-align: center; }
   .detalle-stat .lbl { font-size: 10px; color: #666; text-transform: uppercase; }
@@ -435,6 +440,7 @@
             <option value="familiar_primer">👨‍👩‍👧 Familiar 1er grado (máx. 5 días por solicitud)</option>
             <option value="familiar_segundo">👥 Familiar 2º grado (máx. 4 días por solicitud)</option>
             <option value="reposo">🛏️ Reposo domiciliario (1-4 días por solicitud)</option>
+            <option value="huelga">✊ Huelga (1 día completo, sin máximo anual)</option>
             <option value="licencia">📄 Licencia sin sueldo</option>
             <option value="baja">🏥 Baja médica</option>
           </select>
@@ -464,7 +470,7 @@
   </div>
 
   <div id="calendario" class="panel">
-    <h2>Calendario Mensual del Equipo</h2>
+    <h2>Calendario Mensual de los Trabajadores</h2>
     <div class="cal-controls">
       <div class="cal-nav">
         <button onclick="cambiarMes(-1)">◀ Anterior</button>
@@ -487,17 +493,22 @@
     </div>
     <div class="leyenda">
       <strong>Leyenda:</strong>
-      <div class="leyenda-item"><div class="leyenda-color" style="background:#d5f5e3;"></div>Trabajando</div>
-      <div class="leyenda-item"><div class="leyenda-color" style="background:#27ae60;"></div>Vacaciones</div>
-      <div class="leyenda-item"><div class="leyenda-color" style="background:#f39c12;"></div>Asuntos propios</div>
-      <div class="leyenda-item"><div class="leyenda-color" style="background:#16a085;"></div>Compensación</div>
-      <div class="leyenda-item"><div class="leyenda-color" style="background:#9b59b6;"></div>Familiar 1º</div>
-      <div class="leyenda-item"><div class="leyenda-color" style="background:#8e44ad;"></div>Familiar 2º</div>
-      <div class="leyenda-item"><div class="leyenda-color" style="background:#1abc9c;"></div>Reposo dom.</div>
-      <div class="leyenda-item"><div class="leyenda-color" style="background:#7f8c8d;"></div>Licencia s/s</div>
-      <div class="leyenda-item"><div class="leyenda-color" style="background:#c0392b;"></div>Baja</div>
-      <div class="leyenda-item"><div class="leyenda-color" style="background:#ecf0f1;"></div>Fin de semana</div>
-      <div class="leyenda-item"><div class="leyenda-color" style="background:#e74c3c;"></div>Festivo</div>
+    </div>
+    <div class="leyenda-linea">
+      <div class="leyenda-item"><div class="leyenda-color" style="background:#d5f5e3;color:#27ae60;">✓</div>Trabajando</div>
+      <div class="leyenda-item"><div class="leyenda-color" style="background:#27ae60;">V</div>Vacaciones</div>
+      <div class="leyenda-item"><div class="leyenda-color" style="background:#f39c12;">AP</div>Asuntos propios</div>
+      <div class="leyenda-item"><div class="leyenda-color" style="background:#16a085;">C</div>Compensación</div>
+      <div class="leyenda-item"><div class="leyenda-color" style="background:#9b59b6;">F1</div>Familiar 1º</div>
+      <div class="leyenda-item"><div class="leyenda-color" style="background:#8e44ad;">F2</div>Familiar 2º</div>
+    </div>
+    <div class="leyenda-linea">
+      <div class="leyenda-item"><div class="leyenda-color" style="background:#1abc9c;">RD</div>Reposo dom.</div>
+      <div class="leyenda-item"><div class="leyenda-color" style="background:#2c3e50;">H</div>Huelga</div>
+      <div class="leyenda-item"><div class="leyenda-color" style="background:#7f8c8d;">LS</div>Licencia s/s</div>
+      <div class="leyenda-item"><div class="leyenda-color" style="background:#c0392b;">B</div>Baja</div>
+      <div class="leyenda-item"><div class="leyenda-color" style="background:#ecf0f1;color:#95a5a6;">S/D</div>Fin de semana</div>
+      <div class="leyenda-item"><div class="leyenda-color" style="background:#e74c3c;">F</div>Festivo</div>
     </div>
     <div class="cal-wrapper"><table class="cal" id="tablaCalendario"></table></div>
     <h3 style="margin-top:20px;">Resumen diario</h3>
@@ -508,7 +519,7 @@
     <h2>Configuración Anual y Festivos</h2>
     <div class="card">
       <h3>⚙️ Parámetros del año</h3>
-      <div class="info">Los días de vacaciones y asuntos propios se calculan según la antigüedad del trabajador. La <strong>compensación por sábados festivos</strong> varía cada año.</div>
+      <div class="info">Los días de vacaciones y asuntos propios se calculan según la antigüedad del trabajador. La <strong>compensación por sábados festivos</strong> varía cada año. Los festivos se configuran por año y se consultan para todos los cálculos.</div>
       <div class="grid-3">
         <div><label>Año</label><input type="number" id="cAnio" min="2020" max="2040"></div>
         <div><label>Días compensación (sábados festivos)</label><input type="number" id="cCompensacion" min="0" max="30" placeholder="Ej: 3"></div>
@@ -524,10 +535,10 @@
 
     <div class="card">
       <h3>📆 Festivos del año</h3>
-      <div class="info">Introduce los festivos (nacionales, autonómicos y locales). <strong>No se contarán</strong> al calcular vacaciones, asuntos propios ni compensaciones.</div>
+      <div class="info">Introduce los festivos (nacionales, autonómicos y locales de <strong>León</strong>). <strong>No se contarán</strong> al calcular vacaciones, asuntos propios ni compensaciones. Los festivos se consultan automáticamente en todos los cálculos.</div>
       <div class="grid-2">
         <div><label>Fecha del festivo</label><input type="date" id="fFecha"></div>
-        <div><label>Descripción</label><input type="text" id="fNombre" placeholder="Ej: Año Nuevo"></div>
+        <div><label>Descripción</label><input type="text" id="fNombre" placeholder="Ej: Día de León"></div>
       </div>
       <button class="success" onclick="añadirFestivo()">➕ Añadir festivo</button>
       <button onclick="copiarFestivos()">📋 Copiar de otro año</button>
@@ -978,9 +989,9 @@ function renderInicio() {
   const anioActual = new Date().getFullYear().toString();
   
   const categorias = {
-    encargado: { total: 0, trabajando: 0, vacaciones: 0, asuntos_propios: 0, compensacion: 0, familiar_primer: 0, familiar_segundo: 0, reposo: 0, licencia: 0, baja: 0 },
-    ordenanza: { total: 0, trabajando: 0, vacaciones: 0, asuntos_propios: 0, compensacion: 0, familiar_primer: 0, familiar_segundo: 0, reposo: 0, licencia: 0, baja: 0 },
-    limpiador: { total: 0, trabajando: 0, vacaciones: 0, asuntos_propios: 0, compensacion: 0, familiar_primer: 0, familiar_segundo: 0, reposo: 0, licencia: 0, baja: 0 }
+    encargado: { total: 0, trabajando: 0, vacaciones: 0, asuntos_propios: 0, compensacion: 0, familiar_primer: 0, familiar_segundo: 0, reposo: 0, huelga: 0, licencia: 0, baja: 0 },
+    ordenanza: { total: 0, trabajando: 0, vacaciones: 0, asuntos_propios: 0, compensacion: 0, familiar_primer: 0, familiar_segundo: 0, reposo: 0, huelga: 0, licencia: 0, baja: 0 },
+    limpiador: { total: 0, trabajando: 0, vacaciones: 0, asuntos_propios: 0, compensacion: 0, familiar_primer: 0, familiar_segundo: 0, reposo: 0, huelga: 0, licencia: 0, baja: 0 }
   };
   
   trabajadores.forEach(t => {
@@ -1013,6 +1024,7 @@ function renderInicio() {
     { key: 'familiar_primer', label: '👨‍👩‍👧 Familiar 1º grado' },
     { key: 'familiar_segundo', label: '👥 Familiar 2º grado' },
     { key: 'reposo', label: '🛏️ Reposo domiciliario' },
+    { key: 'huelga', label: '✊ Huelga' },
     { key: 'licencia', label: '📄 Licencia sin sueldo' },
     { key: 'baja', label: '🏥 Baja médica' }
   ];
@@ -1055,12 +1067,12 @@ function renderInicio() {
       const tipos = {
         vacaciones: '🏖️ Vacaciones', asuntos_propios: '📝 Asuntos propios', compensacion: '🔄 Compensación',
         familiar_primer: '👨‍👩‍👧 Familiar 1º', familiar_segundo: '👥 Familiar 2º', reposo: '🛏️ Reposo dom.',
-        licencia: '📄 Licencia s/s', baja: '🏥 Baja'
+        huelga: '✊ Huelga', licencia: '📄 Licencia s/s', baja: '🏥 Baja'
       };
       const clases = {
         vacaciones: 'estado-vacaciones', asuntos_propios: 'estado-asuntos-propios', compensacion: 'estado-compensacion',
         familiar_primer: 'estado-familiar', familiar_segundo: 'estado-familiar', reposo: 'estado-reposo',
-        licencia: 'estado-licencia', baja: 'estado-baja'
+        huelga: 'estado-huelga', licencia: 'estado-licencia', baja: 'estado-baja'
       };
       estado = `<span class="${clases[ausHoy.tipo]}">${tipos[ausHoy.tipo]}</span>`;
     } else {
@@ -1271,6 +1283,9 @@ function getAusenciaEnFecha(trabajadorId, fechaStr) {
   return ausencias.find(a => a.trabajadorId === trabajadorId && a.inicio <= fechaStr && a.fin >= fechaStr);
 }
 
+// ✅ TIPOS DE AUSENCIA QUE CUENTAN DÍAS NATURALES (incluyen fines de semana y festivos)
+const TIPOS_DIAS_NATURALES = ['baja', 'licencia'];
+
 function renderCalendario() {
   const mes = parseInt(document.getElementById('calMes').value);
   const anio = parseInt(document.getElementById('calAnio').value);
@@ -1325,21 +1340,51 @@ function renderCalendario() {
         const esFest = festivos[anio.toString()] && festivos[anio.toString()].some(f => f.fecha === fechaStr);
         const aus = getAusenciaEnFecha(t.id, fechaStr);
         let clase = 'fuera', contenido = '', title = '';
-        if (esFest) { const fi = festivos[anio.toString()].find(f => f.fecha === fechaStr); clase = 'festivo'; contenido = 'F'; title = `Festivo: ${fi.nombre}`; }
-        else if (dow === 0 || dow === 6) { clase = 'finsemana'; contenido = nombreDiaCorto(dow); title = dow === 0 ? 'Domingo' : 'Sábado'; }
-        else if (aus) {
-          const tipos = {vacaciones: {c:'vac', l:'V', n:'Vacaciones'}, asuntos_propios: {c:'ap', l:'AP', n:'Asuntos propios'}, compensacion: {c:'comp', l:'C', n:'Compensación'}, familiar_primer: {c:'fam1', l:'F1', n:'Familiar 1º'}, familiar_segundo: {c:'fam2', l:'F2', n:'Familiar 2º'}, reposo: {c:'reposo', l:'RD', n:'Reposo dom.'}, licencia: {c:'licencia', l:'LS', n:'Licencia s/s'}, baja: {c:'baja', l:'B', n:'Baja'}};
-          const info = tipos[aus.tipo] || {c:'baja', l:'?', n:aus.tipo};
-          clase = info.c; contenido = info.l; title = `${info.n}${aus.obs ? ' - ' + aus.obs : ''}`;
+        
+        // ✅ PRIORIDAD: Baja y Licencia tienen prioridad sobre festivos y fines de semana
+        // (se cuentan como días naturales continuos)
+        if (aus && TIPOS_DIAS_NATURALES.includes(aus.tipo)) {
+          const tipos = {baja: {c:'baja', l:'B', n:'Baja'}, licencia: {c:'licencia', l:'LS', n:'Licencia s/s'}};
+          const info = tipos[aus.tipo];
+          clase = info.c; 
+          contenido = info.l; 
+          title = `${info.n}${aus.obs ? ' - ' + aus.obs : ''}`;
           diasAus++;
-        } else { clase = 'trab'; contenido = '✓'; title = 'Trabajando'; diasTrab++; }
+        }
+        else if (esFest) { 
+          const fi = festivos[anio.toString()].find(f => f.fecha === fechaStr); 
+          clase = 'festivo'; 
+          contenido = 'F'; 
+          title = `Festivo: ${fi.nombre}`; 
+        }
+        else if (dow === 0 || dow === 6) { 
+          clase = 'finsemana'; 
+          contenido = nombreDiaCorto(dow); 
+          title = dow === 0 ? 'Domingo' : 'Sábado'; 
+        }
+        else if (aus) {
+          const tipos = {vacaciones: {c:'vac', l:'V', n:'Vacaciones'}, asuntos_propios: {c:'ap', l:'AP', n:'Asuntos propios'}, compensacion: {c:'comp', l:'C', n:'Compensación'}, familiar_primer: {c:'fam1', l:'F1', n:'Familiar 1º'}, familiar_segundo: {c:'fam2', l:'F2', n:'Familiar 2º'}, reposo: {c:'reposo', l:'RD', n:'Reposo dom.'}, huelga: {c:'huelga', l:'H', n:'Huelga'}};
+          const info = tipos[aus.tipo] || {c:'baja', l:'?', n:aus.tipo};
+          clase = info.c; 
+          contenido = info.l; 
+          title = `${info.n}${aus.obs ? ' - ' + aus.obs : ''}`;
+          diasAus++;
+        } 
+        else { 
+          clase = 'trab'; 
+          contenido = '✓'; 
+          title = 'Trabajando'; 
+          diasTrab++; 
+        }
         if (fechaStr === hoyStr) clase += ' hoy';
         html += `<td><span class="cal-cell ${clase}" title="${fmtDate(fechaStr)} - ${title}">${contenido}</span></td>`;
       }
       html += `<td style="background:#d5f5e3;font-weight:bold;">${diasTrab}</td><td style="background:#fadbd8;font-weight:bold;">${diasAus}</td></tr>`;
       for (let d = 1; d <= diasMes; d++) {
         const fechaStr = fechaLocalStr(new Date(anio, mes, d));
-        if (getAusenciaEnFecha(t.id, fechaStr)) resumenDia[d].ausentes++; else resumenDia[d].trabajan++;
+        const aus = getAusenciaEnFecha(t.id, fechaStr);
+        // ✅ Para el resumen diario: baja y licencia cuentan como ausentes aunque sea festivo/fin de semana
+        if (aus) resumenDia[d].ausentes++; else resumenDia[d].trabajan++;
       }
     });
   }
@@ -1418,6 +1463,7 @@ function mostrarDisponibles() {
   const apC = ausencias.filter(a => a.trabajadorId === tId && a.tipo === 'asuntos_propios' && a.inicio.startsWith(anio)).reduce((s,a) => s + a.diasConsumidos, 0);
   const cC = ausencias.filter(a => a.trabajadorId === tId && a.tipo === 'compensacion' && a.inicio.startsWith(anio)).reduce((s,a) => s + a.diasConsumidos, 0);
   const rC = ausencias.filter(a => a.trabajadorId === tId && a.tipo === 'reposo' && a.inicio.startsWith(anio)).reduce((s,a) => s + a.diasConsumidos, 0);
+  const hC = ausencias.filter(a => a.trabajadorId === tId && a.tipo === 'huelga' && a.inicio.startsWith(anio)).length;
   const vR = d.vacaciones - vC, apR = d.asuntosPropios - apC;
   const cTotal = cfg ? cfg.compensacion : 0, cR = cTotal - cC;
   const anioSiguiente = parseInt(anio) + 1;
@@ -1430,7 +1476,8 @@ function mostrarDisponibles() {
     👨‍👩‍👧 Familiar 1º grado: <strong>sin límite anual</strong> · máximo 5 días laborables por solicitud<br>
     👥 Familiar 2º grado: <strong>sin límite anual</strong> · máximo 4 días laborables por solicitud<br>
     🛏️ Reposo domiciliario: <strong>mínimo 1 día, máximo 4 días por solicitud</strong> · Requiere parte médico<br>
-    📄 Licencia sin sueldo y 🏥 Baja: sin límite`;
+    ✊ Huelga: <strong>${hC} día(s) registrado(s)</strong> · sin límite anual · solo 1 día completo por solicitud<br>
+    📄 Licencia sin sueldo y 🏥 Baja: sin límite (días naturales)`;
 }
 
 function actualizarInfoTipo() {
@@ -1444,8 +1491,9 @@ function actualizarInfoTipo() {
     familiar_primer: '👨‍👩‍👧 <strong>Familiar 1er grado:</strong> máximo 5 días laborables por solicitud. Sin límite anual.',
     familiar_segundo: '👥 <strong>Familiar 2º grado:</strong> máximo 4 días laborables por solicitud. Sin límite anual.',
     reposo: '🛏️ <strong>Reposo domiciliario:</strong> mínimo 1 día, máximo 4 días por solicitud. Requiere parte médico.',
-    licencia: '📄 <strong>Licencia sin sueldo:</strong> sin límite de días.',
-    baja: '🏥 <strong>Baja médica:</strong> sin límite. Se cuentan días naturales.'
+    huelga: '✊ <strong>Huelga:</strong> exactamente 1 día completo por solicitud. Sin límite anual.',
+    licencia: '📄 <strong>Licencia sin sueldo:</strong> sin límite. Se cuentan días naturales (incluye fines de semana y festivos).',
+    baja: '🏥 <strong>Baja médica:</strong> sin límite. Se cuentan días naturales (incluye fines de semana y festivos). El periodo completo se muestra como baja en el calendario.'
   };
   document.getElementById('infoTipo').innerHTML = info[tipo];
   calcularDias();
@@ -1468,7 +1516,7 @@ function calcularDias() {
     detalle = ` · Periodo total: ${calc.diasNaturalesPeriodo} días naturales`;
     if (calc.fueExtendido) detalle += ` (extendido: ${fmtDate(calc.periodoExtendidoInicio)} a ${fmtDate(calc.periodoExtendidoFin)})`;
     if (calc.festivosEnPeriodo > 0) detalle += ` · ${calc.festivosEnPeriodo} festivo(s) no consumen días`;
-  } else if (tipo === 'asuntos_propios' || tipo === 'compensacion' || tipo === 'familiar_primer' || tipo === 'familiar_segundo' || tipo === 'reposo') {
+  } else if (tipo === 'asuntos_propios' || tipo === 'compensacion' || tipo === 'familiar_primer' || tipo === 'familiar_segundo' || tipo === 'reposo' || tipo === 'huelga') {
     dias = laborales;
     tipoDias = 'laborables (excluye sábados, domingos y festivos)';
   } else {
@@ -1493,7 +1541,7 @@ async function guardarAusencia() {
   if (permisosExistentes.length > 0) {
     let mensaje = `⚠️ Ya existen permisos que se solapan:\n\n`;
     permisosExistentes.forEach((p, idx) => {
-      const tipoNombre = {vacaciones:'🏖️ Vacaciones', asuntos_propios:'📝 Asuntos propios', compensacion:'🔄 Compensación', familiar_primer:'👨‍👩‍👧 Familiar 1º', familiar_segundo:'👥 Familiar 2º', reposo:'🛏️ Reposo dom.', licencia:'📄 Licencia s/s', baja:'🏥 Baja'}[p.tipo] || p.tipo;
+      const tipoNombre = {vacaciones:'🏖️ Vacaciones', asuntos_propios:'📝 Asuntos propios', compensacion:'🔄 Compensación', familiar_primer:'👨‍👩‍👧 Familiar 1º', familiar_segundo:'👥 Familiar 2º', reposo:'🛏️ Reposo dom.', huelga:'✊ Huelga', licencia:'📄 Licencia s/s', baja:'🏥 Baja'}[p.tipo] || p.tipo;
       mensaje += `${idx + 1}. ${tipoNombre}: ${fmtDate(p.inicio)} - ${fmtDate(p.fin)} (${p.diasConsumidos} días)\n`;
     });
     mensaje += `\n❌ Elimine o modifique los permisos existentes primero.`;
@@ -1571,6 +1619,12 @@ async function guardarAusencia() {
       return;
     }
   }
+  if (tipo === 'huelga') {
+    if (calc.dias !== 1) {
+      await showAlert('La huelga debe ser de 1 día completo', `La huelga solo puede registrarse por exactamente 1 día laborable. Esta solicitud tiene ${calc.dias} días.`, 'warning');
+      return;
+    }
+  }
   if (tipo === 'licencia' || tipo === 'baja') {
     if (calc.dias < 1) {
       await showAlert('Mínimo no alcanzado', `El permiso requiere mínimo 1 día.`, 'warning');
@@ -1585,7 +1639,7 @@ async function guardarAusencia() {
   document.getElementById('aObs').value = '';
   renderPermisosTrabajador();
   mostrarDisponibles();
-  const nombres = {vacaciones:'Vacaciones', asuntos_propios:'Asuntos propios', compensacion:'Compensación', familiar_primer:'Familiar 1º', familiar_segundo:'Familiar 2º', reposo:'Reposo dom.', licencia:'Licencia s/s', baja:'Baja'};
+  const nombres = {vacaciones:'Vacaciones', asuntos_propios:'Asuntos propios', compensacion:'Compensación', familiar_primer:'Familiar 1º', familiar_segundo:'Familiar 2º', reposo:'Reposo dom.', huelga:'Huelga', licencia:'Licencia s/s', baja:'Baja'};
   toast('Permiso registrado', `${t.nombre} · ${nombres[tipo]} · ${calc.dias} días`, 'success');
 }
 
@@ -1623,8 +1677,8 @@ function renderPermisosTrabajador() {
   const mostrarDisfrutados = document.getElementById('filtroDisfrutados').checked;
   const ordenadas = [...permisosTrabajador].sort((a,b) => a.inicio.localeCompare(b.inicio));
   let html = '';
-  const nombres = {vacaciones:'🏖️ Vacaciones', asuntos_propios:'📝 Asuntos propios', compensacion:'🔄 Compensación', familiar_primer:'👨‍👩‍👧 Familiar 1º', familiar_segundo:'👥 Familiar 2º', reposo:'🛏️ Reposo dom.', licencia:'📄 Licencia s/s', baja:'🏥 Baja'};
-  const clases = {vacaciones:'b-vac', asuntos_propios:'b-ap', compensacion:'b-comp', familiar_primer:'b-fam1', familiar_segundo:'b-fam2', reposo:'b-reposo', licencia:'b-licencia', baja:'b-baja'};
+  const nombres = {vacaciones:'🏖️ Vacaciones', asuntos_propios:'📝 Asuntos propios', compensacion:'🔄 Compensación', familiar_primer:'👨‍👩‍👧 Familiar 1º', familiar_segundo:'👥 Familiar 2º', reposo:'🛏️ Reposo dom.', huelga:'✊ Huelga', licencia:'📄 Licencia s/s', baja:'🏥 Baja'};
+  const clases = {vacaciones:'b-vac', asuntos_propios:'b-ap', compensacion:'b-comp', familiar_primer:'b-fam1', familiar_segundo:'b-fam2', reposo:'b-reposo', huelga:'b-huelga', licencia:'b-licencia', baja:'b-baja'};
   ordenadas.forEach(a => {
     const estado = getEstadoPermiso(a);
     if (estado.texto === 'Pendiente' && !mostrarPendientes) return;
@@ -1720,10 +1774,10 @@ function mostrarDetalleTrabajador(trabajadorId, anio) {
   const permisosAnio = todosPermisos.filter(a => a.inicio.startsWith(anio));
   const anioSiguiente = (parseInt(anio) + 1).toString();
   const permisosAnioSiguiente = todosPermisos.filter(a => a.inicio.startsWith(anioSiguiente));
-  const tiposPermiso = ['vacaciones', 'asuntos_propios', 'compensacion', 'familiar_primer', 'familiar_segundo', 'reposo', 'licencia', 'baja'];
-  const nombresTipo = {vacaciones:'🏖️ Vacaciones', asuntos_propios:'📝 Asuntos propios', compensacion:'🔄 Compensación', familiar_primer:'👨‍👩‍👧 Familiar 1º', familiar_segundo:'👥 Familiar 2º', reposo:'🛏️ Reposo domiciliario', licencia:'📄 Licencia sin sueldo', baja:'🏥 Baja médica'};
-  const clasesTipo = {vacaciones:'vac', asuntos_propios:'ap', compensacion:'comp', familiar_primer:'fam1', familiar_segundo:'fam2', reposo:'reposo', licencia:'licencia', baja:'baja'};
-  const maximos = {vacaciones:d.vacaciones, asuntos_propios:d.asuntosPropios, compensacion:cTotal, familiar_primer:'5 por solicitud', familiar_segundo:'4 por solicitud', reposo:'4 por solicitud', licencia:'∞', baja:'∞'};
+  const tiposPermiso = ['vacaciones', 'asuntos_propios', 'compensacion', 'familiar_primer', 'familiar_segundo', 'reposo', 'huelga', 'licencia', 'baja'];
+  const nombresTipo = {vacaciones:'🏖️ Vacaciones', asuntos_propios:'📝 Asuntos propios', compensacion:'🔄 Compensación', familiar_primer:'👨‍👩‍👧 Familiar 1º', familiar_segundo:'👥 Familiar 2º', reposo:'🛏️ Reposo domiciliario', huelga:'✊ Huelga', licencia:'📄 Licencia sin sueldo', baja:'🏥 Baja médica'};
+  const clasesTipo = {vacaciones:'vac', asuntos_propios:'ap', compensacion:'comp', familiar_primer:'fam1', familiar_segundo:'fam2', reposo:'reposo', huelga:'huelga', licencia:'licencia', baja:'baja'};
+  const maximos = {vacaciones:d.vacaciones, asuntos_propios:d.asuntosPropios, compensacion:cTotal, familiar_primer:'5 por solicitud', familiar_segundo:'4 por solicitud', reposo:'4 por solicitud', huelga:'1 día (sin máximo anual)', licencia:'∞', baja:'∞'};
   
   function renderSeccionTipo(tipo, permisosTipo, maximo, anioLabel) {
     const totalConsumido = permisosTipo.reduce((sum, a) => sum + a.diasConsumidos, 0);
@@ -1780,7 +1834,7 @@ function mostrarDetalleTrabajador(trabajadorId, anio) {
     const dSig = getDiasTrabajador(t, anioSiguiente);
     const cfgSig = configs[anioSiguiente];
     const cTotalSig = cfgSig ? cfgSig.compensacion : 0;
-    const maximosSig = {vacaciones:dSig.vacaciones, asuntos_propios:dSig.asuntosPropios, compensacion:cTotalSig, familiar_primer:'5 por solicitud', familiar_segundo:'4 por solicitud', reposo:'4 por solicitud', licencia:'∞', baja:'∞'};
+    const maximosSig = {vacaciones:dSig.vacaciones, asuntos_propios:dSig.asuntosPropios, compensacion:cTotalSig, familiar_primer:'5 por solicitud', familiar_segundo:'4 por solicitud', reposo:'4 por solicitud', huelga:'1 día (sin máximo anual)', licencia:'∞', baja:'∞'};
     tiposPermiso.forEach(tipo => {
       const permisosTipo = permisosAnioSiguiente.filter(a => a.tipo === tipo);
       if (permisosTipo.length > 0) html += renderSeccionTipo(tipo, permisosTipo, maximosSig[tipo], anioSiguiente);
@@ -1813,13 +1867,13 @@ function cerrarDetalle(event) {
 }
 
 async function recalcularPermisosExistentes() {
-  const ok = await showConfirm('Recalcular permisos', '⚠️ Se recalcularán los días consumidos de todos los permisos.\n\n• Vacaciones: días laborables\n• AP, compensación, familiares, reposo: días laborables\n• Baja, licencia: días naturales\n\n¿Continuar?', 'warning');
+  const ok = await showConfirm('Recalcular permisos', '⚠️ Se recalcularán los días consumidos de todos los permisos.\n\n• Vacaciones: días laborables\n• AP, compensación, familiares, reposo, huelga: días laborables\n• Baja, licencia: días naturales\n\n¿Continuar?', 'warning');
   if (!ok) return;
   let corregidos = 0;
   for (const a of ausencias) {
     let diasCorrectos = 0;
     if (a.tipo === 'vacaciones') diasCorrectos = contarDiasVacaciones(a.inicio, a.fin).diasConsumidos;
-    else if (a.tipo === 'asuntos_propios' || a.tipo === 'compensacion' || a.tipo === 'familiar_primer' || a.tipo === 'familiar_segundo' || a.tipo === 'reposo') diasCorrectos = contarLaborales(a.inicio, a.fin);
+    else if (a.tipo === 'asuntos_propios' || a.tipo === 'compensacion' || a.tipo === 'familiar_primer' || a.tipo === 'familiar_segundo' || a.tipo === 'reposo' || a.tipo === 'huelga') diasCorrectos = contarLaborales(a.inicio, a.fin);
     else diasCorrectos = contarNaturales(a.inicio, a.fin);
     if (a.diasConsumidos !== diasCorrectos) {
       a.diasConsumidos = diasCorrectos;
@@ -1935,7 +1989,6 @@ function imprimirCalendario() {
   const catTexto = categoria ? {encargado: 'Encargados', ordenanza: 'Ordenanzas', limpiador: 'Limpiadores/as'}[categoria] : 'Todas las categorías';
   
   const tablaCal = document.getElementById('tablaCalendario').outerHTML;
-  const leyenda = document.querySelector('.leyenda').outerHTML;
   
   const ventana = window.open('', '_blank', 'width=1200,height=800');
   ventana.document.write(`
@@ -1950,6 +2003,10 @@ function imprimirCalendario() {
         h1 { color: #1a4d7a; margin-bottom: 10px; font-size: 24px; }
         h2 { color: #2c6fa8; margin: 15px 0 10px; font-size: 16px; }
         .info { margin-bottom: 20px; font-size: 14px; color: #666; }
+        .leyenda { display: flex; gap: 12px; flex-wrap: wrap; margin: 10px 0; font-size: 11px; }
+        .leyenda-linea { display: flex; gap: 12px; flex-wrap: wrap; margin: 5px 0; align-items: center; }
+        .leyenda-item { display: flex; align-items: center; gap: 5px; }
+        .leyenda-color { width: 16px; height: 16px; border-radius: 3px; border: 1px solid rgba(0,0,0,0.1); display: inline-flex; align-items: center; justify-content: center; font-size: 9px; font-weight: bold; color: white; }
         table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 15px; }
         th, td { padding: 4px; text-align: center; border: 1px solid #ddd; min-width: 28px; height: 28px; }
         th { background: #1a4d7a; color: white; font-size: 10px; }
@@ -1965,32 +2022,48 @@ function imprimirCalendario() {
         .cal-cell.fam2 { background: #8e44ad; color: white; font-weight: bold; }
         .cal-cell.licencia { background: #7f8c8d; color: white; font-weight: bold; }
         .cal-cell.reposo { background: #1abc9c; color: white; font-weight: bold; }
+        .cal-cell.huelga { background: #2c3e50; color: white; font-weight: bold; }
         .cal-cell.finsemana { background: #ecf0f1; color: #95a5a6; }
         .cal-cell.festivo { background: #e74c3c; color: white; font-weight: bold; }
         .badge { display: inline-block; padding: 2px 6px; border-radius: 10px; font-size: 9px; font-weight: 600; color: white; }
         .b-enc { background: #8e44ad; }
         .b-ord { background: #3498db; }
         .b-limp { background: #e67e22; }
-        .leyenda { display: flex; gap: 12px; flex-wrap: wrap; margin: 15px 0; font-size: 11px; }
-        .leyenda-item { display: flex; align-items: center; gap: 5px; }
-        .leyenda-color { width: 16px; height: 16px; border-radius: 3px; border: 1px solid rgba(0,0,0,0.1); }
         @media print {
           body { padding: 10px; }
           @page { size: landscape; margin: 1cm; }
           table { font-size: 9px; }
           th, td { min-width: 24px; height: 24px; padding: 2px; }
-          .cal-cell, .badge { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          .cal-cell, .badge, .leyenda-color { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         }
       </style>
     </head>
     <body>
-      <h1>📅 Calendario Mensual del Equipo</h1>
+      <h1>📅 Calendario Mensual de los Trabajadores</h1>
       <div class="info">
         <strong>Mes:</strong> ${nombreMesTexto} ${anio} · 
         <strong>Categoría:</strong> ${catTexto} · 
         <strong>Generado:</strong> ${new Date().toLocaleDateString('es-ES')}
       </div>
-      ${leyenda}
+      <div class="leyenda">
+        <strong>Leyenda:</strong>
+      </div>
+      <div class="leyenda-linea">
+        <div class="leyenda-item"><div class="leyenda-color" style="background:#d5f5e3;color:#27ae60;">✓</div>Trabajando</div>
+        <div class="leyenda-item"><div class="leyenda-color" style="background:#27ae60;">V</div>Vacaciones</div>
+        <div class="leyenda-item"><div class="leyenda-color" style="background:#f39c12;">AP</div>Asuntos propios</div>
+        <div class="leyenda-item"><div class="leyenda-color" style="background:#16a085;">C</div>Compensación</div>
+        <div class="leyenda-item"><div class="leyenda-color" style="background:#9b59b6;">F1</div>Familiar 1º</div>
+        <div class="leyenda-item"><div class="leyenda-color" style="background:#8e44ad;">F2</div>Familiar 2º</div>
+      </div>
+      <div class="leyenda-linea">
+        <div class="leyenda-item"><div class="leyenda-color" style="background:#1abc9c;">RD</div>Reposo dom.</div>
+        <div class="leyenda-item"><div class="leyenda-color" style="background:#2c3e50;">H</div>Huelga</div>
+        <div class="leyenda-item"><div class="leyenda-color" style="background:#7f8c8d;">LS</div>Licencia s/s</div>
+        <div class="leyenda-item"><div class="leyenda-color" style="background:#c0392b;">B</div>Baja</div>
+        <div class="leyenda-item"><div class="leyenda-color" style="background:#ecf0f1;color:#95a5a6;">S/D</div>Fin de semana</div>
+        <div class="leyenda-item"><div class="leyenda-color" style="background:#e74c3c;">F</div>Festivo</div>
+      </div>
       ${tablaCal}
       <script>
         window.onload = function() { setTimeout(() => { window.print(); }, 300); }
